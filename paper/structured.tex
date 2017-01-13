@@ -242,7 +242,8 @@ If a matrix $\mA \in \K^{n\times n}$ is invertible, and is structured
 with respect to an operator $\nabla_{\vu,\vv}$, its inverse is
 structured with respect to $\nabla_{\vv,\vu}$: if $\mD_\vu \mA - \mA
 \mD_\vv = \mG \mH^t$, one easily deduces that $\mD_\vv \mA^{-1} - \mA^{-1}
-\mD_\vu = - (\mA^{-1} \mG) (\mA^{-t} \mH)^t$.
+\mD_\vu = - (\mA^{-1} \mG) (\mA^{-t} \mH)^t$ where $A^{-t}$ is a shorthand 
+for $(A^{-1})^t$.
 
 
 \smallskip\noindent{\bf \small Algorithms.}  In most the paper, we
@@ -528,13 +529,13 @@ we define
 with
 \begin{align}
 \mY^{(i)}_0&= -{\mA^{(i)}_{0,0}}{}^{-1} \mG^{(i)}_0,\  
-&\mY^{(i)}_1&=-\mA^{(i)}_{1,0}{\mA^{(i)}_{0,0}}{}^{-1}\mG^{(i)}_0 + \mG^{(i)}_0,\label{eq:defYi}\\
+&\mY^{(i)}_1&=-\mA^{(i)}_{1,0}{\mA^{(i)}_{0,0}}{}^{-1}\mG^{(i)}_0 + \mG^{(i)}_1,\label{eq:defYi}\\
 \mZ^{(i)}_0&= {\mA^{(i)}_{0,0}}^{-t} \mH^{(i)}_0,\  
 &\mZ^{(i)}_1&=-{\mA^{(i)}_{0,1}}{}^t{\mA^{(i)}_{0,0}}{}^{-t}\mH^{(i)}_0 + \mH^{(i)}_1\label{eq:defZi}.
 \end{align}
 Given integers $a,b$, $\vu_{a:b}$ denotes the sequence
 $(u_a,\dots,u_b)$ (and similarly for $\vv_{a:b}$); we then
-define $\ve^{(i)}=(\vv_{1:i},\vu_{[i+1:m})$ and
+define $\ve^{(i)}=(\vv_{1:i},\vu_{i+1:m})$ and
 $\vf^{(i)}=(\vu_{1:i},\vv_{i+1:n})$.
 Then, a key result for the sequel is the following, which
 is~\cite[Proposition~1]{Cardinal99}; remark that the operator $\nabla_{\ve^{(i)},\vf^{(i)}}$
@@ -600,9 +601,9 @@ $$
 \begin{proof}
   By construction, $\mS^{(i,j)}_{1,1}$ is the Schur complement of ${\mA^{(i)}_{0,0}}$,
   seen as a submatrix of $\mA^{(i+j)}_{0,0}$; this proves our first claim. From the definition of
-  $\mS^{(i)}$ in~\eqref{eq:Siblock}, a direct calculation shows that $\mS_{i+j}$
+  $\mS^{(i)}$ in~\eqref{eq:Siblock}, a direct calculation shows that $\mS^{(i+j)}$
   is given by
-$$\mS_{i+j} = \left [ \begin{matrix} 
+$$\mS^{(i+j)} = \left [ \begin{matrix} 
 \mJ^{(i,j)}_{0,0} &
          \mS^{(i,j)}_{0,1}\mS^{(i,j)}_{1,1}{}^{-1} &
          \mJ^{(i,j)}_{0,2} \\
@@ -610,14 +611,14 @@ $$\mS_{i+j} = \left [ \begin{matrix}
          \mS^{(i,j)}_{1,1}{}^{-1} &
         -\mS^{(i,j)}_{1,1}{}^{-1} \mS^{(i,j)}_{1,2}\\ 
 \mJ^{(i,j)}_{2,0} &
-         \mS^{(i,j)}_{1,1}{}^{-1}\mS^{(i,j)}_{2,1} & 
+         \mS^{(i,j)}_{2,1}\mS^{(i,j)}_{1,1}{}^{-1} & 
 \mJ^{(i,j)}_{2,0} 
     \end{matrix}\right ],$$
 with $\mJ^{(i,j)}_{a,b}=\mS^{(i,j)}_{a,b} -\mS^{(i,j)}_{a,1} \mS^{(i,j)}_{1,1}{}^{-1}\mS^{(i,j)}_{1,b}$
 for all $a,b$.
 In other words, up to permuting the first two blocks of rows, and the
-first two blocks of columns, $\mS^{(i+j)}$ is derived from $\mS^{(i)}$ in
-the same manner that $\mS^{(i)}$ is derived from $\mA$. We may thus apply
+first two blocks of columns, $\mS^{(i+j)}$ is derived from $\mS^{(j)}$ in
+the same manner that $\mS^{(i)}$ is derived from $S^{(0)}=\mA$. We may thus apply
 the rule that we used in Lemma~\ref{lemma:cpj-cm} to derive
 $(\mY^{(i)},\mZ^{(i)})$ from $(\mG,\mH)$ in order to derive
 $(\mY^{(i+j)},\mZ^{(i+j)})$ from $(\mY^{(i)},\mZ^{(i)})$.  Taking into account the
