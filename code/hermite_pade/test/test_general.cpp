@@ -51,7 +51,6 @@ void read_vecf_type(Vec<ZZX> &vec_F, Vec<long>& type, const string& name){
   file.close();
 }
 
-
 /*------------------------------------------------------------*/
 /* usage:                                                     */
 /* prog_name filename                                         */
