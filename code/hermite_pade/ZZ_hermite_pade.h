@@ -46,6 +46,8 @@ class hermite_pade {
   ZZ c, d;                                        // constants for the preconditioners
   lzz_p_cauchy_like_geometric invA;
   
+  double time_mulA = 0;
+  
   /*----------------------------------------------------------------*/
   /* applies a block reversal to v                                  */
   /* e.g., type = [1,2] v = [v1,v2,v3,v4,v5]                        */

@@ -40,6 +40,9 @@ Vec<long> hermite_pade_algebraic::find_new_type(){
   hermite_pade::random_solution_mod_p(v1);
   hermite_pade::random_solution_mod_p(v2);
 	
+  // magma_init();
+  // magma_assign(v1, "v1");
+  // magma_assign(v2, "v2");
   zz_pXY b1(v1);
   zz_pXY b2(v2);
   zz_pXY gcd;
@@ -60,8 +63,6 @@ void hermite_pade_algebraic::init(const Vec<long> &type_in){
   ZZ_p::init(p_powers[0]);
   zz_pX f_field = conv<zz_pX>(f_full_prec);
   type = type_in;
-
-  cout << "init with p=" << ZZ_p::modulus() << endl;
   
   // setting up the mosaic Hankel matrix
   Vec<hankel> vec_H;
