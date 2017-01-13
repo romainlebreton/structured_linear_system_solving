@@ -471,6 +471,7 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
     
     //cout << "mult: " << mul_M_right(soln) << endl;
   }
+  cout << "mul time: " << time_mulA << endl;
 }
 
 
