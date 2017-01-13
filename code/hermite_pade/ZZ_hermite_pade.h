@@ -46,7 +46,9 @@ class hermite_pade {
   ZZ c, d;                                        // constants for the preconditioners
   lzz_p_cauchy_like_geometric invA;
   
-  double time_mulA = 0;
+  long mode = 0; // determines the subroutine to solve Mx = b mod p^2^n, 0-DAC, 1-Dixon, 2-Newton
+  
+  double time_mulA = 0; // time spent on just multiplications
   
   /*----------------------------------------------------------------*/
   /* applies a block reversal to v                                  */
@@ -121,9 +123,14 @@ class hermite_pade {
   void update_solution(Vec<ZZ>& x, const Vec<ZZ_p> &b, long n);
   
   /*----------------------------------------------------------------*/
-  /* solves for Mx = b mod p^(2^n)                                  */
+  /* solves for Mx = b mod p^(2^n) using DAC                        */
   /*----------------------------------------------------------------*/
   void DAC (Vec<ZZ> &x, const Vec<ZZ> &b, long n);
+  
+  /*----------------------------------------------------------------*/
+  /* solves for Mx = b mod p^(2^n) using Dixon's algorithm          */
+  /*----------------------------------------------------------------*/
+  void Dixon (Vec<ZZ> &x, Vec<ZZ> b_in, long n);
   
   /*----------------------------------------------------------------*/
   /* checks if every entry can be reconstructed                     */
@@ -158,6 +165,9 @@ class hermite_pade {
   /*----------------------------------------------------------------*/
   long NumRows() const;
   long NumCols() const;
+  
+  // changes the mode
+  void switch_mode(long i);
 };
 
 
