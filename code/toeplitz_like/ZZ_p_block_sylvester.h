@@ -19,6 +19,7 @@ class ZZ_p_block_sylvester{
 protected:
   Vec<long> type; // the type for the matrix (in Hermite-Pade approximants)
   long max_of_type;
+  long num_cols;
   long prec; // precision of the returned vector
   bool initialized = false; 
   
@@ -43,11 +44,16 @@ public:
 /*----------------------------------------------------*/
 /*----------------------------------------------------*/
 class ZZ_p_block_sylvester_general: public ZZ_p_block_sylvester {
-  Vec<ZZ_pX> f;
+
+  Vec<ZZ_pX> f, f_rev;
+  Mat<ZZ_pX> matF;
+  Mat<ZZ_pX> matF_left;
+
 
 public:
+
   /*----------------------------------------------------*/
-  /* is this useful?                                    */
+  /* sets up the matrix                                 */
   /*----------------------------------------------------*/
   void init (const Vec<ZZ_pX> &fs, const Vec<long> &type, long prec);
 
@@ -59,9 +65,26 @@ public:
   ZZ_p_block_sylvester_general(const Vec<ZZ_pX> &fs, const Vec<long> &type, long prec);
 
   /*----------------------------------------------------*/
+  /* does nothing                                       */  
+  /*----------------------------------------------------*/
+  ZZ_p_block_sylvester_general();
+
+  /*----------------------------------------------------*/
   /* right multiplication                               */
   /*----------------------------------------------------*/
-  Vec<ZZ_p> mul_right(const Vec<ZZ_p> &rhs); // TODO: mult -> mul  // TODO: void version
+  Vec<ZZ_p> mul_right(const Vec<ZZ_p> &rhs); // TODO: void version
+  Mat<ZZ_p> mul_right(const Mat<ZZ_p> &rhs);
+
+  /*----------------------------------------------------*/
+  /* left multiplication                                */
+  /*----------------------------------------------------*/
+  Vec<ZZ_p> mul_left(const Vec<ZZ_p> &rhs); // TODO: void version
+  Mat<ZZ_p> mul_left(const Mat<ZZ_p> &rhs);
+
+  /*----------------------------------------------------*/
+  /* makes a dense matrix                               */
+  /*----------------------------------------------------*/
+  void to_dense(Mat<ZZ_p> & dense);
 };
 
 
@@ -78,26 +101,34 @@ class ZZ_p_bivariate_modular_composition : public ZZ_p_block_sylvester {
 
   ZZ_pX f_field;
   ZZ_pX F_field;
-  Mat<ZZ_pX> B; // the right side of the matrix multiplication
+  /* Mat<ZZ_pX> B; // the right side of the matrix multiplication for mul-right */
+  /* Mat<ZZ_pX> C; // the right side of the matrix multiplication for mul-left */
   long sqrtP; // ceiling of the sqrt of the number of blocks
+
+  ZZ_p_block_sylvester_general S;
+
+  /* /\*----------------------------------------------------*\/ */
+  /* /\* creates a matrix of f^i for i = 0..sqrtP-1         *\/ */
+  /* /\* partitions each f^i into len(type) slices          *\/ */
+  /* /\*----------------------------------------------------*\/ */
+  /* void create_rhs_matrix (Mat<ZZ_pX>& B, const Vec<ZZ_pX>& powsF); */
+
+  /* /\*----------------------------------------------------*\/ */
+  /* /\* creates a matrix for left-multiplication           *\/ */
+  /* /\*----------------------------------------------------*\/ */
+  /* void create_rhs_matrix_left (Mat<ZZ_pX>& C, const Vec<ZZ_pX>& powsF); */
   
-  /*----------------------------------------------------*/
-  /* given the result of create_lhs_list, returns a     */
-  /* matrix representation with dimension               */
-  /*  ceil(len(type)/sqrtP) x sqrtP                     */
-  /*----------------------------------------------------*/
-  void create_lhs_matrix (Mat<ZZ_pX>& mat, const Vec<ZZ_pX>& vec);
+  /* /\*----------------------------------------------------*\/ */
+  /* /\* given the result of create_lhs_list, returns a     *\/ */
+  /* /\* matrix representation with dimension               *\/ */
+  /* /\*  ceil(len(type)/sqrtP) x sqrtP                     *\/ */
+  /* /\*----------------------------------------------------*\/ */
+  /* void create_lhs_matrix (Mat<ZZ_pX>& mat, const Vec<ZZ_pX>& vec); */
 
-  /*----------------------------------------------------*/
-  /* creates a matrix of f^i for i = 0..sqrtP-1         */
-  /* partitions each f^i into len(type) slices          */
-  /*----------------------------------------------------*/
-  void create_rhs_matrix (Mat<ZZ_pX>&, const Vec<ZZ_pX>&);
-
-  /*----------------------------------------------------*/
-  /* converts the sliced up matrix into a vector        */
-  /*----------------------------------------------------*/
-  void deslice (Vec<ZZ_pX>& de_sliced, const Mat<ZZ_pX> & sliced_mat);
+  /* /\*----------------------------------------------------*\/ */
+  /* /\* converts the sliced up matrix into a vector        *\/ */
+  /* /\*----------------------------------------------------*\/ */
+  /* void deslice (Vec<ZZ_pX>& de_sliced, const Mat<ZZ_pX> & sliced_mat); */
 
 public:
   /*----------------------------------------------------*/
@@ -131,6 +162,11 @@ public:
   /* header for multiplying                             */
   /*----------------------------------------------------*/
   Vec<ZZ_p> mul_right (const Vec<ZZ_p> &rhs);  //TODO: void version
+
+  /*----------------------------------------------------*/
+  /* header for multiplying left                        */
+  /*----------------------------------------------------*/
+  Vec<ZZ_p> mul_left (const Vec<ZZ_p> &rhs);  //TODO: void version
 };
 
 

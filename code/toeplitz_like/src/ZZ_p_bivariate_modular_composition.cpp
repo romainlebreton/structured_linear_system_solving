@@ -22,85 +22,20 @@ void ZZ_p_bivariate_modular_composition::init (const ZZ_pX &f, const Vec<long> &
   Vec<ZZ_pX> fs;
   
   fs.SetLength(sqrtP);
+  Vec<long> Stype;
+  Stype.SetLength(sqrtP);
+
   ZZ_pX_poly_multiplier multF(f, prec);
   for (long i = 0; i < sqrtP; i++){
+    Stype[i] = max_of_type;
     fs[i] = running;
     multF.mul(running, running);
     trunc(running, running, prec);
   }
-  
+
   F_field = running;
-  create_rhs_matrix(B, fs);
-}
 
-/*----------------------------------------------------*/
-/* given the result of create_lhs_list, returns       */
-/* a matrix representation with dimension             */
-/* ceil(len(type)/sqrtP) x sqrtP                      */
-/*----------------------------------------------------*/
-void ZZ_p_bivariate_modular_composition::create_lhs_matrix(Mat<ZZ_pX> &A, const Vec<ZZ_pX> &v){
-  A.SetDims(ceil((type.length()*1.0) / sqrtP), sqrtP);
-  for (long i = 0; i < A.NumRows(); i++)
-    for (long j = 0; j < A.NumCols(); j++)
-      if(A.NumCols() * i + j < v.length())
-	A.put(i, j, v[A.NumCols() * i + j]);
-}
-
-/*----------------------------------------------------*/
-/* creates a matrix of f^i for i = 0..sqrtP-1         */
-/* partitions each f^i into len(type) slices          */
-/*----------------------------------------------------*/
-void ZZ_p_bivariate_modular_composition::create_rhs_matrix(Mat<ZZ_pX> &B,const Vec<ZZ_pX> &v){
-
-  long cols = ceil( (1.0*prec) / (1.0*(max_of_type+1)));
-  
-  B.SetDims(v.length(), cols);
-  for (long i = 0; i < B.NumRows(); i++){
-    long acc = 0;
-    for (long j = 0; j < B.NumCols(); j++){
-      ZZ_pX p;
-      for (long s = 0; s < max_of_type + 1; s++)
-	SetCoeff(p, s, coeff(v[i], acc + s));
-      acc += max_of_type + 1;
-      B.put(i, j, p);
-    }
-  }
- }
-
-/*----------------------------------------------------*/
-/* converts the sliced up matrix into a vector        */
-/*----------------------------------------------------*/
-void ZZ_p_bivariate_modular_composition::deslice(Vec<ZZ_pX> &D, const Mat<ZZ_pX> &C){
-
-  D.SetLength(C.NumRows());
-
-  for (long i = 0; i < C.NumRows(); i++){
-    ZZ_pX v;
-
-    v.rep.SetLength(prec + max_of_type + 1);
-    ZZ_p* cv = v.rep.elts();
-    const ZZ_pX * Ci = C[i].elts();
-
-    const ZZ_p * cC = Ci[0].rep.elts();
-    long old_len = Ci[0].rep.length();
-    for (long j = 0; j < old_len; j++)
-      cv[j] = cC[j];
-    cv += max_of_type + 1;
-
-    for (long a = 1; a < C.NumCols(); a++){
-      const ZZ_p * cC = Ci[a].rep.elts();
-      long new_len = Ci[a].rep.length();
-      for (long j = 0; j < min(old_len-(max_of_type+1), new_len); j++)
-	cv[j] += cC[j];
-      for (long j = max(0, old_len-(max_of_type+1)); j < new_len; j++)
-	cv[j] = cC[j];
-      old_len = new_len;
-      cv += max_of_type + 1;
-    }
-    v.normalize();
-    D[i] = trunc(v, prec);
-  }
-
+  S = ZZ_p_block_sylvester_general(fs, Stype, prec);
 }
 
 /*----------------------------------------------------*/
@@ -129,15 +64,38 @@ Vec<ZZ_p> ZZ_p_bivariate_modular_composition::mul_right_comp(const Vec<ZZ_p> &rh
 
   if (!initialized) 
     throw "must init first";
-  Mat<ZZ_pX> A0, A;
-  Vec<ZZ_pX> rhs_poly;
 
-  create_lhs_list(rhs_poly, rhs);
-  create_lhs_matrix(A0, rhs_poly);
-  mul_CRT_CTFT(A, A0, B);
-  Vec<ZZ_pX> B1; // TODO: change this name!
+  Mat<ZZ_p> rhs_mat;
+  rhs_mat.SetDims(sqrtP * (max_of_type+1), ceil((type.length()*1.0) / sqrtP));
+  long idx = 0;
+  long nb = 0;
+  for (long k = 0; k < rhs_mat.NumCols(); k++){
+    long acc = 0;
+    for (long i = 0; i < sqrtP; i++){
+      if (idx < type.length()){
+	for (long j = 0; j < type[idx]+1; j++)
+	  if (nb < num_cols){
+	    rhs_mat[acc + j][k] = rhs[nb];
+	    nb++;
+	  }
+	acc += max_of_type + 1;
+	idx++;
+      }
+    }
+  }
 
-  deslice(B1, A);
+  Mat<ZZ_p> prod = S.mul_right(rhs_mat);
+
+  Vec<ZZ_pX> B1;
+  B1.SetLength(prod.NumCols());
+  for (long i = 0; i < prod.NumCols(); i++){
+    ZZ_pX a;
+    a.rep.SetLength(prec);
+    for (long j = 0; j < prec; j++)
+      a.rep[j] = prod[j][i];
+    a.normalize();
+    B1[i] = a;
+  }
 
   ZZ_pX p;
   p = B1[B1.length() - 1];

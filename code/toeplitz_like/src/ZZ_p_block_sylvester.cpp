@@ -10,8 +10,11 @@ ZZ_p_block_sylvester::ZZ_p_block_sylvester(const Vec<long> &t, long p):
   prec {p}, 
   initialized {true} {
     max_of_type = 0;
-    for (long i = 0; i < t.length(); i++)
+    num_cols = 0;
+    for (long i = 0; i < t.length(); i++){
       max_of_type = max(max_of_type, t[i]);
+      num_cols += t[i]+1;
+    }
 }
 
 /*----------------------------------------------------*/

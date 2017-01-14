@@ -8,8 +8,8 @@ using namespace std;
 * of n with rank defect 1                        *
 *************************************************/
 int main(){
-  for (long nbits = 1; nbits < 1000; nbits++){
-    for (long n = 1; n < 300; n++){
+  for (long nbits = 1; nbits < 20; nbits++){
+    for (long n = 1; n < 50; n++){
       ostringstream oss;
       oss << "test" << nbits << "_" << n << ".data";
       string filename = oss.str();

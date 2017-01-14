@@ -42,7 +42,7 @@ Vec<hankel> hermite_pade_general::increase_rank(long add){
 SmartPtr<ZZ_p_block_sylvester> hermite_pade_general::create_bmc(){
   Vec<ZZ_pX> fs_p;
   conv(fs_p, vec_fs);
-  return MakeSmart<ZZ_p_block_sylvester_general>(ZZ_p_block_sylvester_general(fs_p, type, sizeX));
+  return MakeSmart<ZZ_p_block_sylvester_general>(ZZ_p_block_sylvester_general(fs_p, type, original_sizeX));
 }
 
 /*----------------------------------------------------------------*/
@@ -56,11 +56,17 @@ Vec<ZZ_p> hermite_pade_general::mul_M_right(const Vec<ZZ_p> &b){
     for (long i = 0; i < type.length(); i++){
       Vec<ZZ_p> values;
       for (long j = vec_added[i].length()-1; j >= 0; j--)
-	values.append(ZZ_p(vec_added[i][j]));
+				values.append(ZZ_p(vec_added[i][j]));
       lower += conv<ZZ_pX>(values) * conv<ZZ_pX>(b_split[i]);
     }
-    for (long i = 0; i < deg(lower)+1; i++)
-      upper[i+original_sizeX] = lower[i];
+    upper.SetLength(original_sizeX);
+    //cout << "upper: " << upper << endl;
+    //cout << "lower: " << lower << endl;
+    for (long i = 0; i < deg(lower)+1; i++){
+    	//cout << "i: " << i << endl;
+      upper.append(lower[i]);
+      //cout << "upper: " << upper[i+original_sizeX] << endl;
+    }
   }
   return upper;
 }
@@ -98,21 +104,29 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
   Vec<zz_p> e_zz_p, f_zz_p; // the diagonal matrices
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
   rank = invert(invA, CL); // inverting M mod p
+  cout << "original rank: " << rank << endl;
   sizeX = X_int.length();
   sizeY = Y_int.length();
   original_sizeX = sizeX;
   
+  //Mat<zz_p> mat;
+  
   if (sizeY -rank != 1){
     hankel_matrices.append(increase_rank(sizeY-rank-1));
     MH = mosaic_hankel(hankel_matrices);
+    //to_dense(mat, MH);
+    //cout << "new mat: " << mat << endl;
   }
   else
     rows_added = 0;
 
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
   rank = invert(invA, CL); // inverting M mod p
+  cout << "new rank: " << rank << endl;
   sizeX = X_int.length();
   sizeY = Y_int.length();
+  //CL.to_dense(mat);
+  //cout << "CL: " << mat << endl;
 
   // converting the preconditioners that do not change
   this->e = conv<Vec<ZZ>>(e_zz_p);
