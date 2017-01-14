@@ -1,1 +1,1 @@
-## Using structured linear algebra to compute Hermite-Padé apporixmants
+## Using structured linear algebra to compute Hermite-Padé approximants
