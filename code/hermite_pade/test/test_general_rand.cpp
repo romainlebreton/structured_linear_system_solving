@@ -39,15 +39,17 @@ void rand_gen(Vec<ZZX> &f, Vec<long> &type, long& nbits, char* filename){
 		}
 		f.append(y);
 	}
-	cout << "f: " << f << endl;
-	cout << "type: " << type << endl;
+	//cout << "f: " << f << endl;
+	//cout << "type: " << type << endl;
 }
 
 void run_DAC(const Vec<ZZX> &f, const Vec<long> &type, long prec){
-	cout << "Running DAC" << endl;
-	hermite_pade_general hp(f, type, prec);
-	Vec<ZZX> sol;
+  cout << "Running DAC" << endl;
+  double t = GetTime();
+  hermite_pade_general hp(f, type, prec);
+  Vec<ZZX> sol;
   hp.random_solution(sol);
+  cout << "Took : " << GetTime() - t << endl;
   //cout << "sol ZZ: " << sol << endl;
   ZZX resZZ;
   for (long i = 0; i < type.length(); i++)
@@ -104,17 +106,17 @@ int main(int argc, char **argv){
     
   double t;
   if (mode == 0){
-  	t = GetTime();
+  	//t = GetTime();
   	run_CRT(f,type,s+1,nbits);
-  	cout << "Took: " << GetTime()-t << endl;
+  	//cout << "Took: " << GetTime()-t << endl;
   }else if(mode == 1){
-  	t = GetTime();
+  	//t = GetTime();
   	run_DAC(f,type,s+1);
-  	cout << "Took: " << GetTime()-t << endl;
+  	//cout << "Took: " << GetTime()-t << endl;
   }else{
-  	t = GetTime();
+  	//t = GetTime();
   	run_Dixon(f,type,s+1);
-  	cout << "Took: " << GetTime()-t << endl;
+  	//cout << "Took: " << GetTime()-t << endl;
   }
   
 

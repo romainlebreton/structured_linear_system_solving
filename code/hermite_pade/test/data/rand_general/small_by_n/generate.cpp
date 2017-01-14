@@ -12,7 +12,7 @@ int main(){
     for (long n = 1; n < 60; n++){
       for (long t = 1; t <= 5; t++){
         ostringstream oss;
-        oss << "test" << nbits << "_" << n << "x" << t << ".data";
+        oss << "test" << nbits << "_" << t << "x" << n << ".data";
         string filename = oss.str();
         cout << "creating: " << filename << endl;
         ofstream ofs{filename};
