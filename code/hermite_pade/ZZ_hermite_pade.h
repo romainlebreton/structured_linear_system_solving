@@ -13,6 +13,7 @@
 
 #include "ZZ_p_block_sylvester.h"
 #include "lzz_p_cauchy_geometric.h"
+#include "ZZ_p_cauchy_geometric.h"
 #include "lzz_pX_mosaic_hankel.h"
 #include "ZZ_pX_CRT.h"
 
@@ -45,6 +46,8 @@ class hermite_pade {
   Vec<ZZ> e, f;                                   // diagonal preconditioners for the Cauchy matrix
   ZZ c, d;                                        // constants for the preconditioners
   lzz_p_cauchy_like_geometric invA;
+  Vec<ZZ_p_cauchy_like_geometric> lift_invA;      // for Newton
+
   
   long mode = 0; // determines the subroutine to solve Mx = b mod p^2^n, 0-DAC, 1-Dixon, 2-Newton
   
@@ -121,6 +124,11 @@ class hermite_pade {
   /* if Mx = b mod p^(2^{n-1}), updates x so that Mx = b mod p^(2^n)*/
   /*----------------------------------------------------------------*/
   void update_solution(Vec<ZZ>& x, const Vec<ZZ_p> &b, long n);
+
+  /*----------------------------------------------------------------*/
+  /* solves Mx = b mod p^(2^n) by Newton iteration                  */
+  /*----------------------------------------------------------------*/
+  void Newton(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n);
   
   /*----------------------------------------------------------------*/
   /* solves for Mx = b mod p^(2^n) using DAC                        */
@@ -166,7 +174,9 @@ class hermite_pade {
   long NumRows() const;
   long NumCols() const;
   
-  // changes the mode
+  /*----------------------------------------------------------------*/
+  /* mode switch. 0-DAC, 1-Dixon, 2-Newton                          */
+  /*----------------------------------------------------------------*/
   void switch_mode(long i);
 };
 

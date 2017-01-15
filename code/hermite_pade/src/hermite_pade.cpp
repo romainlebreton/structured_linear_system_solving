@@ -192,22 +192,66 @@ void hermite_pade::update_solution(Vec<ZZ>& x, const Vec<ZZ_p> &b, long n){
   Vec<ZZ_p> r = mulA_right(conv<Vec<ZZ_p>>(x)) - b; // mod p^(2^n)
   Vec<ZZ> r_ZZ = conv<Vec<ZZ>>(r);
   for (long i = 0; i < r.length(); i++){
-  	if(r_ZZ[i] % p_powers[n-1] != ZZ(0)) throw "not zero";
+    if(r_ZZ[i] % p_powers[n-1] != ZZ(0)) throw "not zero";
     r_ZZ[i] = r_ZZ[i] / p_powers[n-1];
   }
   Vec<ZZ> x_1;
   if (mode == 0)
-  	DAC(x_1, r_ZZ, n-1);
+    DAC(x_1, r_ZZ, n-1);
   else if(mode == 1)
-  	Dixon(x_1, r_ZZ, n-1);
+    Dixon(x_1, r_ZZ, n-1);
   x = x - p_powers[n-1] * x_1;
+}
+
+/*----------------------------------------------------------------*/
+/* solves Mx = b mod p^(2^n) by Newton iteration                  */
+/*----------------------------------------------------------------*/
+void hermite_pade::Newton(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n){
+  if (n == 0){
+    zz_pContext push;
+    ctx.restore();
+    Vec<zz_p> x_zz_p;
+    Vec<zz_p> b_zz_p = conv<Vec<zz_p>>(b_in);
+    b_zz_p.SetLength(rank); // TODO: why do we need this?
+    invA.mul_right(x_zz_p, b_zz_p);
+    x = conv<Vec<ZZ>>(x_zz_p);
+    return;
+  }
+  // set up the first inverse mod p
+  if (n == 1){
+    zz_pContext push;
+    ctx.restore();
+    long old_n = level;
+    switch_context(0);
+    lift_invA.SetLength(0);
+
+    ZZ_p_cauchy_like_geometric C(conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(invA.G)), conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(invA.H)), 
+				 conv<ZZ_p>(conv<ZZ>(invA.C.u1)), conv<ZZ_p>(conv<ZZ>(invA.C.v1)), conv<ZZ_p>(conv<ZZ>(invA.C.rho)) );
+    lift_invA.append(C);
+    switch_context(old_n);
+  }
+
+  zz_pContext push;
+  ctx.restore();
+  long old_n = level;
+  switch_context(n);
+
+  ZZ_p_cauchy_like_geometric C_n(conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(lift_invA[n-1].G)), 
+				 conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(lift_invA[n-1].H)), 
+				 conv<ZZ_p>(conv<ZZ>(lift_invA[n-1].C.u1)), 
+				 conv<ZZ_p>(conv<ZZ>(lift_invA[n-1].C.v1)), 
+				 conv<ZZ_p>(conv<ZZ>(lift_invA[n-1].C.rho)) );
+
+
+  
+  switch_context(old_n);
 }
 
 /*----------------------------------------------------------------*/
 /* solves for Mx = b mod p^(2^n)                                  */
 /*----------------------------------------------------------------*/
 void hermite_pade::DAC(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n){
-	//cout << "DAC" << endl;
+  //cout << "DAC" << endl;
   if (n == 0){ // we are mod p
     zz_pContext push;
     ctx.restore();
@@ -234,45 +278,45 @@ void hermite_pade::DAC(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n){
 /* solves for Mx = b mod p^(2^n) using Dixon's algorithm          */
 /*----------------------------------------------------------------*/
 void hermite_pade::Dixon (Vec<ZZ> &x, Vec<ZZ> b_in, long n){
-	//cout << "DIXON" << endl;
-	// Vector of the x's
-	Vec<Vec<ZZ>> vec_x;
-
+  //cout << "DIXON" << endl;
+  // Vector of the x's
+  Vec<Vec<ZZ>> vec_x;
+  
   // computing x_0
-	zz_pContext push;
-	ctx.restore();
-	Vec<zz_p> x_zz_p;
-	Vec<zz_p> b_zz_p = conv<Vec<zz_p>>(b_in);
-
-	invA.mul_right(x_zz_p, b_zz_p);
-	vec_x.append(conv<Vec<ZZ>>(x_zz_p));
-	
-	auto old_n = level;
-	long t = power_long(2,n);
-	switch_context(n);
-	
-	for (long i = 1; i < t; ++i){
-		Vec<ZZ_p> b_ZZ_p = conv<Vec<ZZ_p>>(b_in);
-		auto c_ZZ_p = mulA_right(conv<Vec<ZZ_p>>(vec_x[i-1]));
-		b_ZZ_p = b_ZZ_p - c_ZZ_p;
-		b_in = conv<Vec<ZZ>>(b_ZZ_p);
-		for (long j = 0; j < b_ZZ_p.length(); j++)
-			b_in[j] = b_in[j] / p;
-		b_zz_p = conv<Vec<zz_p>>(b_in);
-		invA.mul_right(x_zz_p, b_zz_p);
-		vec_x.append(conv<Vec<ZZ>>(x_zz_p));
-	}
-	
-	switch_context(n);
-	Vec <ZZ_p>x_ZZ_p = conv<Vec<ZZ_p>>(vec_x[0]); // running total
-	ZZ p_running = ZZ(p);
-	for (long i = 1; i < t; i++){
-		Vec<ZZ_p> temp = conv<Vec<ZZ_p>>(vec_x[i]);
-		x_ZZ_p += conv<ZZ_p>(p_running) * temp;
-		p_running *= p;
-	}
-	x = conv<Vec<ZZ>>(x_ZZ_p);
-	switch_context(old_n);
+  zz_pContext push;
+  ctx.restore();
+  Vec<zz_p> x_zz_p;
+  Vec<zz_p> b_zz_p = conv<Vec<zz_p>>(b_in);
+  
+  invA.mul_right(x_zz_p, b_zz_p);
+  vec_x.append(conv<Vec<ZZ>>(x_zz_p));
+  
+  auto old_n = level;
+  long t = power_long(2, n);
+  switch_context(n);
+  
+  for (long i = 1; i < t; ++i){
+    Vec<ZZ_p> b_ZZ_p = conv<Vec<ZZ_p>>(b_in);
+    auto c_ZZ_p = mulA_right(conv<Vec<ZZ_p>>(vec_x[i-1]));
+    b_ZZ_p = b_ZZ_p - c_ZZ_p;
+    b_in = conv<Vec<ZZ>>(b_ZZ_p);
+    for (long j = 0; j < b_ZZ_p.length(); j++)
+      b_in[j] = b_in[j] / p;
+    b_zz_p = conv<Vec<zz_p>>(b_in);
+    invA.mul_right(x_zz_p, b_zz_p);
+    vec_x.append(conv<Vec<ZZ>>(x_zz_p));
+  }
+  
+  switch_context(n);
+  Vec <ZZ_p>x_ZZ_p = conv<Vec<ZZ_p>>(vec_x[0]); // running total
+  ZZ p_running = ZZ(p);
+  for (long i = 1; i < t; i++){
+    Vec<ZZ_p> temp = conv<Vec<ZZ_p>>(vec_x[i]);
+    x_ZZ_p += conv<ZZ_p>(p_running) * temp;
+    p_running *= p;
+  }
+  x = conv<Vec<ZZ>>(x_ZZ_p);
+  switch_context(old_n);
 }
 
 /*----------------------------------------------------------------*/
@@ -323,24 +367,31 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
     ell = (sol[i][1] * ell) / GCD(sol[i][1], ell);
   for (long i = 0; i < sol.length(); i++)
     sol_ZZ[i] = (sol[i][0] * ell) / sol[i][1];
-  
+
+  // alternative test: check if we compute twice the same solution
+#if false  
+  static Vec<ZZ> sol_ZZ_old;
+  if (sol_ZZ != sol_ZZ_old){
+    sol_ZZ_old = sol_ZZ;
+    return false;
+  }
+#else
   ZZ_pContext push;
   ctx2.restore();
   
   Vec<ZZ_p> sol_ZZ_p;
   for (long int i = 0; i < sol.length(); i++)
     sol_ZZ_p.append(conv<ZZ_p>(sol_ZZ[i]));
-    // sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
+  // sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
 
   auto bmc = create_bmc();
   auto x = bmc->mul_right(sol_ZZ_p);
-  //cout << "x: " << x << endl;
   for (long int i = 0; i < x.length(); i++)
     if (x[i] != ZZ_p(0)){
-    	cout << "failed p2" << endl;
-    	//cout << "sol: " << sol_ZZ << endl;
+      cout << "failed p2" << endl;
       return false;
     }
+#endif
 
   sol_poly = split_on_type(sol_ZZ);
 
@@ -366,10 +417,12 @@ void hermite_pade::random_solution_mod_p(Vec<zz_pX> & pol){
     ex1[rank+i] = add1[i];
   }
   ex1 = mulA_right(ex1);
-	if (mode == 0)
-  	DAC(sol1, conv<Vec<ZZ>>(ex1), 0);
+
+  if (mode == 0)
+    DAC(sol1, conv<Vec<ZZ>>(ex1), 0);
   else if (mode == 1)
-  	Dixon(sol1, conv<Vec<ZZ>>(ex1),0);
+    Dixon(sol1, conv<Vec<ZZ>>(ex1),0);
+
   conv(ex1, sol1);
   ex1.SetLength(sizeY, ZZ_p(0));
   
@@ -377,7 +430,6 @@ void hermite_pade::random_solution_mod_p(Vec<zz_pX> & pol){
     ex1[rank+i] = -add1[i];
 	
   ex1 = flip_on_type(mul_Y_right(ex1));
-  //cout << "ex1: " << ex1 << endl;
   Vec<zz_p> v = conv<Vec<zz_p>>(conv<Vec<ZZ>>(ex1));
 
   zz_p denom = to_zz_p(0);
@@ -418,26 +470,26 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   Vec<ZZ> x_ZZ, b_ZZ;
   b_ZZ = conv<Vec<ZZ>> (b);
   if (mode == 0)
-  	DAC(x_ZZ, b_ZZ, n); // solution mod p
+    DAC(x_ZZ, b_ZZ, n); // solution mod p
   else if (mode == 1)
-		Dixon(x_ZZ, b_ZZ, n);
+    Dixon(x_ZZ, b_ZZ, n);
 
   Vec<ZZ_p> x = conv<Vec<ZZ_p>> (x_ZZ);
   x.SetLength(sizeY, ZZ_p(0));
   x[rank] = -1;
   Vec<ZZ_p> soln = mul_Y_right(x);
 	
-	/* do we not need to normalize?
-	ZZ_p first;
-  for (long i = 0; i < soln.length(); i++)
-    if (soln[i]._ZZ_p__rep % p_powers[0] != ZZ(0)){
-      first = 1/soln[i];
-      //cout << "first: " << first << endl;
-      cout << "soln[i]: " << soln[i] << endl;
-      break;
-    }
-  soln *= first;
-  cout << "soln: " << soln << endl;
+  /* do we not need to normalize?
+     ZZ_p first;
+     for (long i = 0; i < soln.length(); i++)
+     if (soln[i]._ZZ_p__rep % p_powers[0] != ZZ(0)){
+     first = 1/soln[i];
+     //cout << "first: " << first << endl;
+     cout << "soln[i]: " << soln[i] << endl;
+     break;
+     }
+     soln *= first;
+     cout << "soln: " << soln << endl;
   */
 
   // loop until we get enough prec
@@ -457,7 +509,7 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
     soln.kill();
     soln = mul_Y_right(x);
 
-		//cout << "soln: " << soln << endl;	
+    //cout << "soln: " << soln << endl;	
     ZZ_p first;
     for (long i = 0; i < soln.length(); i++)
       if (soln[i]._ZZ_p__rep % p_powers[0] != ZZ(0)){
@@ -468,7 +520,6 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
       }
     soln *= first;
     //cout << "soln: " << soln << endl;	
-    
     //cout << "mult: " << mul_M_right(soln) << endl;
   }
   cout << "mul time: " << time_mulA << endl;
@@ -510,6 +561,9 @@ hermite_pade::hermite_pade(long fft_index) {
 }
 
 
+/*----------------------------------------------------------------*/
+/* mode switch. 0-DAC, 1-Dixon, 2-Newton                          */
+/*----------------------------------------------------------------*/
 void hermite_pade::switch_mode(long i){
   if (i < 0 || i > 2) throw "mode not supported";
   mode = 1;
