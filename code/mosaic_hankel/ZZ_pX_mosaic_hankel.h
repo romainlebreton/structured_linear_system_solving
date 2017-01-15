@@ -1,8 +1,8 @@
-#ifndef __LZZ_PX_MOSAIC_HANKEL_H
-#define __LZZ_PX_MOSAIC_HANKEL_H
+#ifndef __ZZ_PX_MOSAIC_HANKEL_H
+#define __ZZ_PX_MOSAIC_HANKEL_H
 
-#include <NTL/lzz_pX.h>
-#include <NTL/mat_lzz_p.h>
+#include <NTL/ZZ_pX.h>
+#include <NTL/matrix.h>
 
 #include "lzz_pX_CRT.h"
 #include "lzz_p_cauchy_geometric.h" 
@@ -18,18 +18,16 @@ NTL_CLIENT
 /*       a3 a2 a1 a0                                  */
 /*----------------------------------------------------*/
 /*----------------------------------------------------*/
-class hankel{
+class ZZ_p_hankel{
 
   // n rows, m columns
   long n, m;
-  Vec<zz_p> data;
+  Vec<ZZ_p> data;
 
  public:
+  Vec<ZZ_p> data_rev;
 
-  Vec<zz_p> data_rev;
-  fftRep fft_data;
-
-  hankel(){
+  ZZ_p_hankel(){
     data.SetLength(0);
     n = m = 0;
   }
@@ -37,12 +35,12 @@ class hankel{
   /*----------------------------------------------------*/
   /* input vector is as showed above                    */
   /*----------------------------------------------------*/
-  hankel(Vec<zz_p>& input, long rows, long cols){
+  ZZ_p_hankel(Vec<ZZ_p>& input, long rows, long cols){
     n = rows;
     m = cols;
     data = input;
     data_rev.SetLength(n+m-1);
-    zz_pX data_X;
+    ZZ_pX data_X;
     data_X.rep.SetLength(n+m-1);
 
     for (long i = 0;i < n+m-1; i++){
@@ -50,14 +48,10 @@ class hankel{
       data_X.rep[i] = data_rev[i];
     }
     data_X.normalize();
-
-    long K = NextPowerOfTwo(n+m-1);
-    fft_data = fftRep(INIT_SIZE, K);
-    TofftRep(fft_data, data_X, K);
   }
 
   /*----------------------------------------------------*/
-  /* getters                                            */
+  /* dimensions                                         */
   /*----------------------------------------------------*/
   long NumCols() const{
     return m;
@@ -65,7 +59,7 @@ class hankel{
   long NumRows() const{
     return n;
   }
-  const zz_p& operator ()(long i, long j) const{
+  const ZZ_p& operator ()(long i, long j) const{
     return data[m+n-2-i-j];
   }
 
@@ -74,22 +68,7 @@ class hankel{
 /*----------------------------------------------------*/
 /* turns M into a dense matrix                        */
 /*----------------------------------------------------*/
-void to_dense(Mat<zz_p>& Mdense, const hankel& M);
-
-/*----------------------------------------------------*/
-/* low-level right multiplication                     */
-/* assumes input and res have the right size          */
-/*----------------------------------------------------*/
-void mul_right(Vec<zz_p>& res, const hankel& M, const Vec<zz_p>& input);
-
-/*----------------------------------------------------*/
-/* low-level left multiplication                      */
-/* assumes input and res have the right size          */
-/*----------------------------------------------------*/
-void mul_left(Vec<zz_p>& res, const hankel& M, const Vec<zz_p>& input);
-
-
-
+void to_dense(Mat<ZZ_p>& Mdense, const ZZ_p_hankel& M);
 
 /*----------------------------------------------------*/
 /*----------------------------------------------------*/
@@ -97,19 +76,19 @@ void mul_left(Vec<zz_p>& res, const hankel& M, const Vec<zz_p>& input);
 /* block matrix where each block is Hankel            */
 /*----------------------------------------------------*/
 /*----------------------------------------------------*/
-class mosaic_hankel{
+class ZZ_p_mosaic_hankel{
   long n, m; // numbers of rows / colums
   long nb, mb; // number of blocks in rows / columns
 
  public:
 
   // data[i][j] is the block at i-th row, j-th column
-  Vec< Vec<hankel> > data;
+  Vec<Vec<ZZ_p_hankel>> data;
 
   /*----------------------------------------------------*/
   /* dummy constructor                                  */
   /*----------------------------------------------------*/
-  mosaic_hankel(){
+  ZZ_p_mosaic_hankel(){
     data.SetLength(0);
     n = m = nb = mb = 0;
   }
@@ -117,7 +96,7 @@ class mosaic_hankel{
   /*----------------------------------------------------*/
   /* copies all data                                    */
   /*----------------------------------------------------*/
-  mosaic_hankel(Vec< Vec<hankel> > init){
+  ZZ_p_mosaic_hankel(Vec<Vec<ZZ_p_hankel>> init){
     data = init;
     nb = init.length();
     mb = init[0].length();
@@ -153,7 +132,7 @@ class mosaic_hankel{
     return data[0][i].NumCols();
   }
 
-  const zz_p& operator ()(long i, long j) const{
+  const ZZ_p& operator ()(long i, long j) const{
 
     if (i >= n || j >= m)
       Error("matrix indices out of bounds\n");
@@ -178,42 +157,19 @@ class mosaic_hankel{
 /*----------------------------------------------------*/
 /* turns M into a dense matrix                        */
 /*----------------------------------------------------*/
-void to_dense(Mat<zz_p>& Mdense, const mosaic_hankel& M);
-
-/*----------------------------------------------------*/
-/* right multiplication                               */
-/*----------------------------------------------------*/
-void mul_right(Vec<zz_p>& res, const mosaic_hankel& M, const Vec<zz_p>& input);
-
-/*----------------------------------------------------*/
-/* left multiplication                                */
-/*----------------------------------------------------*/
-void mul_left(Vec<zz_p>& res, const mosaic_hankel& M, const Vec<zz_p>& input);
+void to_dense(Mat<ZZ_p>& Mdense, const ZZ_p_mosaic_hankel& M);
 
 /*----------------------------------------------------*/
 /* access to particular rows and columns              */
 /*----------------------------------------------------*/
-void first_column_of_block(Vec<zz_p>& res, long i, const mosaic_hankel& M);
-void last_column_of_block(Vec<zz_p>& res, long i, const mosaic_hankel& M);
-void first_row_of_block(Vec<zz_p>& res, long i, const mosaic_hankel& M);
-void last_row_of_block(Vec<zz_p>& res, long i, const mosaic_hankel& M);
+void first_column_of_block(Vec<ZZ_p>& res, long i, const ZZ_p_mosaic_hankel& M);
+void last_column_of_block(Vec<ZZ_p>& res, long i, const ZZ_p_mosaic_hankel& M);
+void first_row_of_block(Vec<ZZ_p>& res, long i, const ZZ_p_mosaic_hankel& M);
+void last_row_of_block(Vec<ZZ_p>& res, long i, const ZZ_p_mosaic_hankel& M);
 
 /*----------------------------------------------------*/
 /* G, H such that Z1 M - Z0^t M = G H^t               */
 /*----------------------------------------------------*/
-void generators(Mat<zz_p>& G, Mat<zz_p>& H, const mosaic_hankel& M);
-
-/*------------------------------------------------------------------*/
-/* preconditions M                                                  */
-/* builds the matrix CL = (D_e X_int) M (D_f Y_int)^t, where:       */
-/* - X_int, Y_int are geometric interpolation                       */
-/* - D_e, D_f are diagonal matrix built on vectors e and f          */
-/* - CL is cauchy-like                                              */
-/* - CL is expected to have generic rank profile                    */
-/*------------------------------------------------------------------*/
-void to_cauchy_grp(lzz_p_cauchy_like_geometric& CL,
-		   zz_pX_Multipoint_Geometric& X_int, zz_pX_Multipoint_Geometric& Y_int,
-		   Vec<zz_p> &e, Vec<zz_p> &f,
-		   const mosaic_hankel& M);
+void generators(Mat<ZZ_p>& G, Mat<ZZ_p>& H, const ZZ_p_mosaic_hankel& M);
 
 #endif
