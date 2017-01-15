@@ -60,6 +60,54 @@ Vec<ZZ_p> ZZ_p_bivariate_modular_composition::mul_right_Horners(const Vec<ZZ_p> 
 /*----------------------------------------------------*/
 /* mult using the baby steps / giant steps algorithm  */
 /*----------------------------------------------------*/
+Vec<ZZ_p> ZZ_p_bivariate_modular_composition::mul_left(const Vec<ZZ_p> &lhs){
+
+  if (!initialized) 
+    throw "must init first";
+
+  Mat<ZZ_p> lhs_mat;
+  lhs_mat.SetDims(prec, ceil((type.length()*1.0) / sqrtP));
+  
+  ZZ_pX tmp;
+  tmp.rep.SetLength(prec);
+  for (long j = 0; j < prec; j++){
+    lhs_mat[j][0] = lhs[j];
+    tmp.rep[j] = lhs[prec - 1 - j];
+  }
+  tmp.normalize();
+
+  for (long i = 1; i < lhs_mat.NumCols(); i++){
+    tmp = trunc(F_field * tmp, prec);
+    for (long j = 0; j < prec; j++)
+      lhs_mat[j][i] = coeff(tmp, prec - 1 - j);
+  }
+
+  Mat<ZZ_p> prod = S.mul_left(lhs_mat);
+
+  Vec<ZZ_p> result;
+  result.SetLength(num_cols);
+  long idx = 0;
+  long nb = 0;
+  for (long u = 0; u < prod.NumCols(); u++){
+    long acc = 0;
+    for (long v = 0; v < sqrtP; v++)
+      if (idx < type.length()){
+	for (long j = 0; j < type[idx] + 1; j++)
+	  if (nb < num_cols){
+	    result[nb] = prod[acc + j][u];
+	    nb++;
+	  }
+	idx++;
+	acc += max_of_type + 1;
+      }
+  }
+
+  return result;
+}
+
+/*----------------------------------------------------*/
+/* mult using the baby steps / giant steps algorithm  */
+/*----------------------------------------------------*/
 Vec<ZZ_p> ZZ_p_bivariate_modular_composition::mul_right_comp(const Vec<ZZ_p> &rhs){
 
   if (!initialized) 
@@ -120,6 +168,26 @@ Vec<ZZ_p> ZZ_p_bivariate_modular_composition::mul_right_comp(const Vec<ZZ_p> &rh
 Vec<ZZ_p> ZZ_p_bivariate_modular_composition::mul_right(const Vec<ZZ_p> &rhs){
   return mul_right_comp(rhs);
 }
+
+/*----------------------------------------------------*/
+/* makes a dense matrix                               */
+/*----------------------------------------------------*/
+void ZZ_p_bivariate_modular_composition::to_dense(Mat<ZZ_p> & dense){
+  dense.SetDims(prec, num_cols);
+
+  long idx = 0;
+  ZZ_pX tmp;
+  SetCoeff(tmp, 0, to_ZZ_p(1));
+  for (long i = 0; i < type.length(); i++){
+    for (long k = 0; k < type[i] + 1; k++){
+      for (long j = k; j < prec; j++)
+	dense[j][idx] = coeff(tmp, j - k);
+      idx++;
+    }
+    tmp = trunc(tmp * f_field, prec);
+  }
+}
+
 
 /*----------------------------------------------------*/
 /* default constructor; does nothing                  */

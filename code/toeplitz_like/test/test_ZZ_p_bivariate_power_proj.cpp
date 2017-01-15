@@ -3,6 +3,7 @@
 #include <NTL/vector.h>
 #include <assert.h>
 
+#include "vec_ZZ_p_extra.h"
 #include "ZZ_p_block_sylvester.h"
 
 NTL_CLIENT
@@ -27,20 +28,16 @@ void check(int opt, long k, long n, long m){
   for (long i = 0; i <= m; i++)
     type[i] = n;
 
-  Vec<ZZ_p> input, output1, output2;
-  input.SetLength((m+1)*(n+1));
-  for (long i = 0; i < (m+1)*(n+1); i++)
-    input[i] = random_ZZ_p();
+  Vec<ZZ_p> input, output1, output3;
+  random(input, prec);
 
   if (opt == 1){
     ZZ_p_bivariate_modular_composition c(f, type, prec);
-    output1 = c.mul_right(input);
-    output2 = c.mul_right_Horners(input);
-    cout << n << " " << m << " " << (output1 == output2) << " ";
+    output1 = c.mul_left(input);
     Mat<ZZ_p> dense;
     c.to_dense(dense);
     Vec<ZZ_p> output3;
-    mul(output3, dense, input);;
+    mul(output3, transpose(dense), input);
     cout << (output1 == output3) << endl;
   }
   else{
@@ -57,12 +54,12 @@ void check(int opt, long k, long n, long m){
 
     t = GetTime();
     for (long i = 0; i < NB; i++)
-      output1 = c.mul_right(input);
+      output1 = c.mul_left(input);
     cout << GetTime()-t << " ";
 
     t = GetTime();
     for (long i = 0; i < NB; i++)
-      output2 = c.mul_right_Horners(input);
+      input = c.mul_right(output1);
     cout << GetTime()-t << " ";
 
     cout << endl;

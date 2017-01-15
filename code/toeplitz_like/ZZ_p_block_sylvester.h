@@ -164,9 +164,15 @@ public:
   Vec<ZZ_p> mul_right (const Vec<ZZ_p> &rhs);  //TODO: void version
 
   /*----------------------------------------------------*/
-  /* header for multiplying left                        */
+  /* multiplying left                                   */
   /*----------------------------------------------------*/
   Vec<ZZ_p> mul_left (const Vec<ZZ_p> &rhs);  //TODO: void version
+
+  /*----------------------------------------------------*/
+  /* makes a dense matrix                               */
+  /*----------------------------------------------------*/
+  void to_dense(Mat<ZZ_p> & dense);
+
 };
 
 
