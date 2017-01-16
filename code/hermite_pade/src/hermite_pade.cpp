@@ -538,7 +538,7 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   double t = GetTime();
   Vec<Vec<ZZ>> sol;
   sol.SetLength(0);
-
+  
   ZZ bound;
   if (n == 0)
     bound = SqrRoot(ZZ(p));
@@ -556,7 +556,9 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   for (long i = 0; i < v.length(); i++){
     ZZ a,b;
     try{
+    	double t2 = GetTime();
       long result = ReconstructRational(a, b, conv<ZZ>(v[i] * i_den), p_powers[n], bound, bound);
+      time_recon += GetTime() - t2;
       if (result == 0){
         time_recon_all += GetTime()-t; 
 				return false;
@@ -571,8 +573,7 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
       return false;
     }
   }
-
-  time_recon += GetTime()-t;
+  
   sol = flip_on_type(sol);
 
   Vec<ZZ> sol_ZZ;
