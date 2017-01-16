@@ -747,7 +747,7 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   cout << "mul time: " << time_mulA << endl;
   cout << "total reconstruction time: " << time_recon_all << endl;
   cout << "reconstruction only: " << time_recon << endl;
-  cout << "divisions in recon: " << check1 << endl; 
+  cout << "divisions in recon: " << div_in_recon << endl; 
   cout << "checking p2: " << time_check_p2 << endl;
 }
 
