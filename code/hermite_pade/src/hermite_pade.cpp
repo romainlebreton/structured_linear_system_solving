@@ -355,33 +355,57 @@ Mat<ZZ_p> hermite_pade::mulA_left(const Mat<ZZ_p> &b){
   return output;
 }
 
-
-
-
-
-
 /*----------------------------------------------------------------*/
 /* if Mx = b mod p^(2^{n-1}), updates x so that Mx = b mod p^(2^n)*/
 /*----------------------------------------------------------------*/
 void hermite_pade::update_solution(Vec<ZZ>& x, const Vec<ZZ_p> &b, long n){
+
   Vec<ZZ_p> r = mulA_right(conv<Vec<ZZ_p>>(x)) - b; // mod p^(2^n)
   Vec<ZZ> r_ZZ = conv<Vec<ZZ>>(r);
-  for (long i = 0; i < r.length(); i++){
-    if(r_ZZ[i] % p_powers[n-1] != ZZ(0)) throw "not zero";
+  for (long i = 0; i < r.length(); i++)
     r_ZZ[i] = r_ZZ[i] / p_powers[n-1];
-  }
+
   Vec<ZZ> x_1;
-  if (mode == 0)
+  switch(mode){
+  case 0:
     DAC(x_1, r_ZZ, n-1);
-  else if(mode == 1)
+    break;
+  case 1:
     Dixon(x_1, r_ZZ, n-1);
+    break;
+  case 2:
+    solve_newton(x_1, r_ZZ, n-1);
+    break;
+  default:
+    throw "solving mode not implemented\n";
+  }
+
   x = x - p_powers[n-1] * x_1;
 }
 
 /*----------------------------------------------------------------*/
 /* solves Mx = b mod p^(2^n) by Newton iteration                  */
 /*----------------------------------------------------------------*/
+void hermite_pade::solve_newton(Vec<ZZ>& x, const Vec<ZZ> &b, long n){
+  while (lift_invA.length() <= n)
+    Newton(lift_invA.length());
+
+  long old_n = level;
+  switch_context(n);
+
+  Vec<ZZ_p> x_ZZ_p;
+
+  lift_invA[n].mul_right(x_ZZ_p, conv<Vec<ZZ_p>>(b));
+  x = conv<Vec<ZZ>>(x_ZZ_p);
+  switch_context(old_n);
+}
+
+/*----------------------------------------------------------------*/
+/* computes the inverse of A (cauchy matrix) mod p^(2^n)          */
+/* assumes the inverse mod p^(2^(n-1)) is known                   */
+/*----------------------------------------------------------------*/
 void hermite_pade::Newton(long n){
+
   if (n == 0){
     zz_pContext push;
     ctx.restore();
@@ -395,8 +419,6 @@ void hermite_pade::Newton(long n){
     return;
   }
   // set up the first inverse mod p
-  zz_pContext push;
-  ctx.restore();
   long old_n = level;
   switch_context(n);
 
@@ -608,10 +630,8 @@ void hermite_pade::random_solution_mod_p(Vec<zz_pX> & pol){
   ex1 = mulA_right(ex1);
 
   Vec<ZZ> tmp_in = conv<Vec<ZZ>>(ex1);
-  if (mode == 0)
-    DAC(sol1, tmp_in, 0);
-  else if (mode == 1)
-    Dixon(sol1, tmp_in, 0);
+
+  DAC(sol1, tmp_in, 0);
 
   conv(ex1, sol1);
   ex1.SetLength(sizeY, ZZ_p(0));
@@ -658,10 +678,8 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   Vec<ZZ_p> b = mulA_right(extractor); // b is the last column of A
   Vec<ZZ> x_ZZ, b_ZZ;
   b_ZZ = conv<Vec<ZZ>> (b);
-  if (mode == 0)
-    DAC(x_ZZ, b_ZZ, n); // solution mod p
-  else if (mode == 1)
-    Dixon(x_ZZ, b_ZZ, n);
+
+  DAC(x_ZZ, b_ZZ, n); // solution mod p
 
   Vec<ZZ_p> x = conv<Vec<ZZ_p>> (x_ZZ);
   x.SetLength(sizeY, ZZ_p(0));
@@ -749,6 +767,7 @@ hermite_pade::hermite_pade(long fft_index) {
 /* mode switch. 0-DAC, 1-Dixon, 2-Newton                          */
 /*----------------------------------------------------------------*/
 void hermite_pade::switch_mode(long i){
-  if (i < 0 || i > 2) throw "mode not supported";
-  mode = 1;
+  if (i < 0 || i > 2) 
+    throw "mode not supported";
+  mode = i;
 }

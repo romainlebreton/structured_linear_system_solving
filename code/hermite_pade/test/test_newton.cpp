@@ -59,7 +59,7 @@ int main(int argc, char **argv){
 
   long n = 3;
   long m = 3;
-  long b = 10;
+  long b = 40;
 
   long prec = n*(m+1)-1;
 
@@ -73,8 +73,13 @@ int main(int argc, char **argv){
   }
 
   hermite_pade_general hp(f, type, prec);
+  Vec<ZZX> sol;
 
-  hp.Newton(0);
-  hp.Newton(1);
-  hp.Newton(2);
+  hp.switch_mode(0);
+  hp.random_solution(sol);
+  cout << sol << endl;
+
+  hp.switch_mode(2);
+  hp.random_solution(sol);
+  cout << sol << endl;
 }

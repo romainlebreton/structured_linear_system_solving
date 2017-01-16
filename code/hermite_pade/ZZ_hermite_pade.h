@@ -158,9 +158,15 @@ class hermite_pade {
   void update_solution(Vec<ZZ>& x, const Vec<ZZ_p> &b, long n);
 
   /*----------------------------------------------------------------*/
-  /* solves Mx = b mod p^(2^n) by Newton iteration                  */
+  /* computes the inverse of A (cauchy matrix) mod p^(2^n)          */
+  /* assumes the inverse mod p^(2^(n-1)) is known                   */
   /*----------------------------------------------------------------*/
   void Newton(long n);
+
+  /*----------------------------------------------------------------*/
+  /* solves Mx = b mod p^(2^n) by Newton iteration                  */
+  /*----------------------------------------------------------------*/
+  void solve_newton(Vec<ZZ>& x, const Vec<ZZ> &b, long n);
   
   /*----------------------------------------------------------------*/
   /* solves for Mx = b mod p^(2^n) using DAC                        */
