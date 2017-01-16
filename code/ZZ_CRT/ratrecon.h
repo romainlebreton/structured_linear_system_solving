@@ -240,4 +240,95 @@ template <class T, class U>
   return ReconstructRational_and_check(a, b, u, m, half, most, witness, prime, 1L);
 }
 
+
+
+
+
+
+
+
+
+/*-----------------------------------------------------------*/
+/* rational reconstruction                                   */
+/*   x is a Vec^i<ZZ> with entries in [0..m-1]               */
+/*   half = m^(1/2), most=m^(3/4)                            */
+/* checks whether                                            */
+/*    x reconstructs to a/b and                              */
+/* base case (i=0); uses NTL's rational reconstruction       */
+/*    most=m^(3/4) is not used here                          */
+/*-----------------------------------------------------------*/
+static inline
+long ReconstructRational_plain(ZZ& a, ZZ& b, const ZZ& x, const ZZ& m, const ZZ& half, const ZZ& most){
+  return ReconstructRational(a, b, x, m, half, half);
+}
+
+/*-----------------------------------------------------------*/
+/* rational reconstruction                                   */
+/*   x is a Vec^i<ZZ> with entries in [0..m-1]               */
+/*   half = m^(1/2), most=m^(3/4)                            */
+/* checks whether                                            */
+/*    x reconstructs to a/b and                              */
+/* template (i > 0) uses previous denominators:              */
+/*    we pre-multiply u[i] by the denoms found before        */
+/*    if the result is "small" (less than m^(3/4) in abs)    */
+/*    we keep it; otherwise we do a rational reconstruction  */
+/*-----------------------------------------------------------*/
+template <class T>
+long ReconstructRational_plain(Vec<T>& a, ZZ& b, const Vec<T>& u, const ZZ& m, const ZZ& half_prec, const ZZ& most_prec){
+  long n = u.length();
+  a.SetLength(n);
+  
+  Vec<ZZ> dens, prod, inv_prod;
+  prod.SetLength(n+1); // product of all denominators found so far
+  prod[n] = to_ZZ(1);
+  dens.SetLength(n); // the new denominator found at step i
+  
+  Vec<T> tmp_a1, tmp_a1_center, tmp_a2;
+  tmp_a1.SetLength(n);  // tmp_a1[i] = u[i] * (all denominators seen so far)
+  tmp_a1_center.SetLength(n); // the same, after re-centering the entries
+  tmp_a2.SetLength(n);  // tmp_a2[i] = numerators of rat-recon of tmp_a1[i]
+
+  for (long i = n-1; i >= 0; i--){
+    mulmod(tmp_a1[i], u[i], prod[i+1], m);
+    center(tmp_a1_center[i], tmp_a1[i], m);
+
+    if (less_than(tmp_a1_center[i], most_prec)){ // if all entries of tmp_a1_centered are < m^(3/4) in absolute value
+                                                 // looks like we have found an integer
+      tmp_a2[i] = tmp_a1_center[i];              // -> no need to rat-recon anything here
+      dens[i] = to_ZZ(1);           // if OK, no new denominator
+      prod[i] = prod[i+1];          // product stays the same
+    }
+    else{
+      long s = ReconstructRational_plain(tmp_a2[i], dens[i], tmp_a1[i], m, half_prec, most_prec);
+      if (s == 0)
+	return 0;
+      prod[i] = dens[i]*prod[i+1];
+    }
+  }
+
+  // now use the last denominator (=prod[0]) as a common denominator for every entry
+  ZZ fac = to_ZZ(1);
+  a[0] = tmp_a2[0];
+  for (long i = 1; i < n; i++){
+    fac = fac*dens[i-1];
+    mul(a[i], tmp_a2[i], fac);
+  }
+  b = prod[0];
+  return 1;
+}
+
+
+/*-----------------------------------------------------------*/
+/* rational reconstruction                                   */
+/*   x is a Vec^i<ZZ> with entries in [0..m-1]               */
+/* checks whether                                            */
+/*    x reconstructs to a/b and                              */
+/*-----------------------------------------------------------*/
+template <class T>
+long ReconstructRational_plain(Vec<T>& a, ZZ& b, const Vec<T>& u, const ZZ& m){
+  ZZ half = SqrRoot(m/2);
+  ZZ most = half*SqrRoot(half);
+  return ReconstructRational_plain(a, b, u, m, half, most);
+}
+
 #endif
