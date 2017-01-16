@@ -535,6 +535,7 @@ void hermite_pade::Dixon (Vec<ZZ> &x, Vec<ZZ> &b_in, long n){
 /* if so, check whether the solution cancels the system mod p2    */
 /*----------------------------------------------------------------*/
 bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v, long n){
+  double t = GetTime();
   Vec<Vec<ZZ>> sol;
   sol.SetLength(0);
 
@@ -556,18 +557,22 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
     ZZ a,b;
     try{
       long result = ReconstructRational(a, b, conv<ZZ>(v[i] * i_den), p_powers[n], bound, bound);
-      if (result == 0) 
-	return false;
+      if (result == 0){
+        time_recon_all += GetTime()-t; 
+				return false;
+			}
       Vec<ZZ> temp;
       temp.append(a);
       temp.append(b);
       sol.append(temp);
     }
     catch(...){
+      time_recon_all += GetTime()-t;
       return false;
     }
   }
 
+  time_recon += GetTime()-t;
   sol = flip_on_type(sol);
 
   Vec<ZZ> sol_ZZ;
@@ -584,9 +589,11 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   static Vec<ZZ> sol_ZZ_old;
   if (sol_ZZ != sol_ZZ_old){
     sol_ZZ_old = sol_ZZ;
+    time_recon_all += GetTime()-t;
     return false;
   }
 #else
+  double t2 = GetTime();
   ZZ_pContext push;
   ctx2.restore();
   
@@ -597,15 +604,17 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
 
   auto bmc = create_bmc();
   auto x = bmc->mul_right(sol_ZZ_p);
+  time_check_p2 += GetTime() - t2;
   for (long int i = 0; i < x.length(); i++)
     if (x[i] != ZZ_p(0)){
       cout << "failed p2" << endl;
+      time_recon_all += GetTime()-t;
       return false;
     }
 #endif
 
   sol_poly = split_on_type(sol_ZZ);
-
+  time_recon_all += GetTime()-t;
   return true;
 }
 
@@ -660,6 +669,7 @@ void hermite_pade::random_solution_mod_p(Vec<zz_pX> & pol){
 /* assumes that the nullity is one                                */
 /*----------------------------------------------------------------*/
 void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
+	double time_all = GetTime();
   if ((NumCols() - Rank()) != 1)
     throw "lifting works only in case of nullity 1";
 
@@ -698,7 +708,8 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
      soln *= first;
      cout << "soln: " << soln << endl;
   */
-
+	
+	double time_loop = GetTime();
   // loop until we get enough prec
   while (!reconstruct_and_check(sol_poly, soln, n)){
     switch_context(++n);
@@ -724,7 +735,12 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
       }
     soln *= first;
   }
+  cout << "everything: " << GetTime() - time_all << endl;
+  cout << "loop: " << GetTime() - time_loop << endl;
   cout << "mul time: " << time_mulA << endl;
+  cout << "total reconstruction time: " << time_recon_all << endl;
+  cout << "reconstruction only: " << time_recon << endl;
+  cout << "checking p2: " << time_check_p2 << endl;
 }
 
 

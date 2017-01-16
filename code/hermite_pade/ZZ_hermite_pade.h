@@ -58,6 +58,9 @@ class hermite_pade {
   long mode = 0; // determines the subroutine to solve Mx = b mod p^2^n, 0-DAC, 1-Dixon, 2-Newton
   
   double time_mulA = 0; // time spent on just multiplications
+  double time_recon_all = 0; // time spent on the whole recon
+  double time_recon = 0; // time spent on just reconstructing entries
+  double time_check_p2 = 0; // time spent checking p2
   
   /*----------------------------------------------------------------*/
   /* applies a block reversal to v                                  */
