@@ -302,7 +302,7 @@ Vec<ZZ_p> hermite_pade::mulA_right(const Vec<ZZ_p>& b){
   Vec<ZZ_p> x = mul_Y_right(b_loc);
   x = mul_M_right(x);
   x = mul_X_right(x);
-  time_mulA = GetTime() - t;
+  time_mulA += GetTime() - t;
   return x;
 }
 /*----------------------------------------------------------------*/
@@ -577,19 +577,6 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   
   time_recon += GetTime() - t;
   sol = flip_on_type(sol);
-  
-  double time = GetTime();
-
-  Vec<ZZ> sol_ZZ;
-  sol_ZZ.SetLength(sol.length());
-
-  ZZ ell{1};
-  for (long i = 0; i < sol.length(); i++)
-    ell = (sol[i][1] * ell) / GCD(sol[i][1], ell);
-  for (long i = 0; i < sol.length(); i++)
-    sol_ZZ[i] = (sol[i][0] * ell) / sol[i][1];
-    
-  div_in_recon += GetTime()-time;
 
   // alternative test: check if we compute twice the same solution
 #if false  
@@ -605,9 +592,14 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   ctx2.restore();
   
   Vec<ZZ_p> sol_ZZ_p;
-  for (long int i = 0; i < sol.length(); i++)
-    sol_ZZ_p.append(conv<ZZ_p>(sol_ZZ[i]));
-  // sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
+  for (long int i = 0; i < sol.length(); i++){
+    if (conv<ZZ_p>(sol[i][1]) == ZZ_p{0}){
+      cout << "zero? " << conv<ZZ_p>(sol[i][1]) << endl;
+      cout << "zero? " << sol[i][1] << endl;
+    }
+    sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
+    //    sol_ZZ_p.append(conv<ZZ_p>(sol_ZZ[i]));
+  }
 
   auto bmc = create_bmc();
   auto x = bmc->mul_right(sol_ZZ_p);
@@ -619,6 +611,16 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
       return false;
     }
 #endif
+
+  double time = GetTime();
+  Vec<ZZ> sol_ZZ;
+  sol_ZZ.SetLength(sol.length());
+  ZZ ell{1};
+  for (long i = 0; i < sol.length(); i++)
+    ell = (sol[i][1] * ell) / GCD(sol[i][1], ell);
+  for (long i = 0; i < sol.length(); i++)
+    sol_ZZ[i] = (sol[i][0] * ell) / sol[i][1]; 
+  div_in_recon += GetTime()-time;   
 
   sol_poly = split_on_type(sol_ZZ);
   time_recon_all += GetTime()-t;
@@ -778,13 +780,29 @@ long hermite_pade::NumCols() const {
 /*----------------------------------------------------------------*/
 hermite_pade::hermite_pade(long fft_index) {
   level = 0;
-  ctx2 = ZZ_pContext(ZZ(9001));
+  zz_pContext push;
+  ctx2 = ZZ_pContext(ZZ(576460752303423619));
   zz_p::FFTInit(fft_index);
   ctx = zz_pContext(INIT_FFT, fft_index);
   p = zz_p::modulus();
   ZZ_p::init(ZZ(p));
   p_powers.append(ZZ(p));
 }
+// /*----------------------------------------------------------------*/
+// /* sets up the field, contexts, ..                                */
+// /*----------------------------------------------------------------*/
+// hermite_pade::hermite_pade(long fft_index) {
+//   level = 0;
+//   zz_p::FFTInit(fft_index);
+//   ctx = zz_pContext(INIT_FFT, fft_index);
+//   p = zz_p::modulus();
+//   ZZ_p::init(ZZ(p));
+//   p_powers.append(ZZ(p));
+
+//   zz_pContext push;
+//   ctx2 = ZZ_pContext(ZZ(NextPrime(zz_p::modulus())));
+
+// }
 
 
 /*----------------------------------------------------------------*/
