@@ -11,7 +11,7 @@ NTL_CLIENT
 /*----------------------------------------------------------------*/
 /* applies a block reversal to v                                  */
 /* e.g., type = [1,2] v = [v1,v2,v3,v4,v5]                        */
-/* returns [v2,v1,v4,v3,v2] (blocks have length type[i]+1)        */                                    
+/* returns [v2,v1,v5,v4,v3] (blocks have length type[i]+1)        */                                    
 /*----------------------------------------------------------------*/
 Vec<ZZ_p> hermite_pade::flip_on_type (const Vec<ZZ_p> &v){
   Vec<ZZ_p> r;
@@ -27,8 +27,6 @@ Vec<ZZ_p> hermite_pade::flip_on_type (const Vec<ZZ_p> &v){
 
 /*----------------------------------------------------------------*/
 /* applies a block reversal to v                                  */
-/* e.g., type = [1,2] v = [v1,v2,v3,v4,v5]                        */
-/* returns [v2,v1,v4,v3,v2] (blocks have length type[i]+1)        */                                    
 /*----------------------------------------------------------------*/
 Vec<Vec<ZZ>> hermite_pade::flip_on_type (const Vec<Vec<ZZ>> &v){
   Vec<Vec<ZZ>> r;
@@ -118,6 +116,7 @@ void hermite_pade::switch_context(long n){
     // computing w mod p^(2^n)
     ZZ new_w;
     lift_root_of_unity(new_w, this->w, order, p, pow2);
+    vec_w.append(new_w);
     ZZ_p w_p, c_p, d_p;
     conv(w_p, new_w);
     conv(c_p, c);
@@ -131,6 +130,97 @@ void hermite_pade::switch_context(long n){
     level = n;
   }
 }
+
+
+/*------------------------------------------------------------------*/
+/*------------------------------------------------------------------*/
+void hermite_pade::generators_cauchy(Mat<ZZ_p> & X, Mat<ZZ_p> & Y){
+
+  long n = G.NumRows();
+  long m = H.NumRows();
+  long alpha = G.NumCols();
+
+  Mat<ZZ_p> G_ZZ_p, H_ZZ_p;
+  G_ZZ_p = conv<Mat<ZZ_p>>(G);
+  H_ZZ_p = conv<Mat<ZZ_p>>(H);
+
+  Vec<ZZ_p> f_ZZ_p = conv<Vec<ZZ_p>>(this->f);
+  Vec<ZZ_p> e_ZZ_p = conv<Vec<ZZ_p>>(this->e);
+
+  ZZ_p w_ZZ_p, d_ZZ_p;
+  w_ZZ_p = conv<ZZ_p>(vec_w[level]);
+  d_ZZ_p = conv<ZZ_p>(d);
+
+  X.SetDims(NumRows(), alpha+2);
+  Y.SetDims(NumCols(), alpha+2);
+
+
+  Vec<ZZ_p> tmp_v;
+  for (long j = 0; j < alpha; j++){
+    ZZ_pX tmp_p;
+    tmp_p.rep.SetLength(n);
+    ZZ_p* coef_p = tmp_p.rep.elts();
+    for (long i = 0; i < n; i++)
+      coef_p[i] = G_ZZ_p[i][j];
+    tmp_p.normalize();
+    vec_X_int[level].evaluate(tmp_v, tmp_p);
+    for (long i = 0; i < n; i++)
+      X[i][j] = tmp_v[i] * e_ZZ_p[i];
+  }
+
+  ZZ_p tmp_z = to_ZZ_p(1);
+  for (long i = 0; i < n; i++){
+    X[i][alpha] = e_ZZ_p[i] * (power(tmp_z, n)-1);
+    tmp_z = tmp_z * w_ZZ_p;
+  }
+
+  Vec<ZZ> col_ZZ;
+  last_column_of_block(col_ZZ, MH_ZZ.NumBlockCols()-1, MH_ZZ);
+  tmp_v = conv<Vec<ZZ_p>>(col_ZZ);
+  ZZ_pX tmp_p;
+  tmp_p.rep.SetLength(n);
+  ZZ_p* coef_p = tmp_p.rep.elts();
+  for (long i = 0; i < n; i++)
+    coef_p[i] = tmp_v[i];
+  tmp_p.normalize();
+  vec_X_int[level].evaluate(tmp_v, tmp_p);
+  for (long i = 0; i < n; i++)
+    X[i][alpha+1] = tmp_v[i] * e_ZZ_p[i];
+
+  vec_ZZ_p tmp_w;
+  for (long j = 0; j < alpha; j++){
+    ZZ_pX tmp_q;
+    tmp_q.rep.SetLength(m);
+    ZZ_p* coef_q = tmp_q.rep.elts();
+    for (long i = 0; i < m; i++)
+      coef_q[i] = H_ZZ_p[i][j];
+    tmp_q.normalize();
+    vec_Y_int[level].evaluate(tmp_w, tmp_q);
+    for (long i = 0; i < m; i++)
+      Y[i][j] = tmp_w[i] * f_ZZ_p[i];
+  }
+
+  Vec<ZZ> row_ZZ;
+  last_row_of_block(row_ZZ, MH_ZZ.NumBlockRows()-1, MH_ZZ);
+  tmp_w = conv<Vec<ZZ_p>>(row_ZZ);
+  ZZ_pX tmp_q;
+  tmp_q.rep.SetLength(m);
+  ZZ_p* coef_q = tmp_q.rep.elts();
+  for (long i = 0; i < m; i++)
+    coef_q[i] = tmp_w[i];
+  tmp_q.normalize();
+  vec_Y_int[level].evaluate(tmp_w, tmp_q);
+  for (long i = 0; i < m; i++)
+    Y[i][alpha] = tmp_w[i] * f_ZZ_p[i];
+
+  tmp_z = d_ZZ_p;
+  for (long i = 0; i < m; i++){
+    Y[i][alpha+1] = -f_ZZ_p[i]*power(tmp_z, m);
+    tmp_z = tmp_z * w_ZZ_p;
+  }
+
+}
+
 
 /*----------------------------------------------------------------*/
 /* calls create_bmc and appends the result to vec_M               */
@@ -149,15 +239,38 @@ Vec<ZZ_p> hermite_pade::mul_Y_right(const Vec<ZZ_p> &b){
   vec_Y_int[level].mul_left(x, x);
   return x;
 }
+/*----------------------------------------------------------------*/
+/* multiplies b by the matrix D_f Y_int                           */
+/*----------------------------------------------------------------*/
+Vec<ZZ_p> hermite_pade::mul_Y_left(const Vec<ZZ_p> &b){
+  Vec<ZZ_p> b1;
+  vec_Y_int[level].mul_right(b1, b);
+  Vec<ZZ_p> f = conv<Vec<ZZ_p>>(this->f);
+  Vec<ZZ_p> x;
+  mul_diagonal(x, f, b1);
+  return x;
+}
+
 
 /*----------------------------------------------------------------*/
 /* multiplies b by the matrix D_e X_int                           */
 /*----------------------------------------------------------------*/
-Vec<ZZ_p> hermite_pade::mul_X_right(Vec<ZZ_p> b){
-  vec_X_int[level].mul_right(b, b);
+Vec<ZZ_p> hermite_pade::mul_X_right(const Vec<ZZ_p> &b){
+  Vec<ZZ_p> b1;
+  vec_X_int[level].mul_right(b1, b);
   Vec<ZZ_p> e = conv<Vec<ZZ_p>>(this->e);
   Vec<ZZ_p> x;
+  mul_diagonal(x, e, b1);
+  return x;
+}
+/*----------------------------------------------------------------*/
+/* multiplies b by the matrix X_int^t D_e                         */
+/*----------------------------------------------------------------*/
+Vec<ZZ_p> hermite_pade::mul_X_left(const Vec<ZZ_p> &b){
+  Vec<ZZ_p> x;
+  Vec<ZZ_p> e = conv<Vec<ZZ_p>>(this->e); // TODO: e and f should be called e_ZZ and f_ZZ?
   mul_diagonal(x, e, b);
+  vec_X_int[level].mul_left(x, x);
   return x;
 }
 
@@ -168,6 +281,14 @@ Vec<ZZ_p> hermite_pade::mul_M_right(const Vec<ZZ_p> &b){
   Vec<ZZ_p> flipped = flip_on_type(b);
   return vec_M[level]->mul_right(flipped);
 }
+/*----------------------------------------------------------------*/
+/* left-multiplies b by the matrix M                              */
+/*----------------------------------------------------------------*/
+Vec<ZZ_p> hermite_pade::mul_M_left(const Vec<ZZ_p> &b){
+  Vec<ZZ_p> flipped = vec_M[level]->mul_left(b);
+  return flip_on_type(flipped);
+}
+
 
 /*----------------------------------------------------------------*/
 /* multiplies b by the matrix CL =  D_e X_int M Y_int^t D_f       */
@@ -175,15 +296,69 @@ Vec<ZZ_p> hermite_pade::mul_M_right(const Vec<ZZ_p> &b){
 /* b need not have size CL.NumCols()                              */
 /*----------------------------------------------------------------*/
 Vec<ZZ_p> hermite_pade::mulA_right(const Vec<ZZ_p>& b){
-	double t = GetTime();
+  double t = GetTime();
   Vec<ZZ_p> b_loc = b;
   b_loc.SetLength(sizeY, ZZ_p(0)); // pad it
   Vec<ZZ_p> x = mul_Y_right(b_loc);
   x = mul_M_right(x);
-  x= mul_X_right(x);
+  x = mul_X_right(x);
   time_mulA = GetTime() - t;
   return x;
 }
+/*----------------------------------------------------------------*/
+/* multiplies b by the matrix M                                   */
+/*----------------------------------------------------------------*/
+Mat<ZZ_p> hermite_pade::mulA_right(const Mat<ZZ_p> &b){
+  Mat<ZZ_p> output;
+  output.SetDims(NumRows(), b.NumCols());
+  Vec<ZZ_p> inv, outv;
+  inv.SetLength(b.NumRows());
+  for(long i = 0; i < b.NumCols(); i++){
+    for (long j = 0; j < b.NumRows(); j++)
+      inv[j] = b[j][i];
+    outv = mulA_right(inv);
+    for (long j = 0; j < NumRows(); j++)
+      output[j][i] = outv[j];
+  }
+  return output;
+}
+
+
+
+
+/*----------------------------------------------------------------*/
+/* left-multiplies b by the matrix CL =  D_e X_int M Y_int^t D_f  */
+/* (CL is cauchy-geometric-like)                                  */
+/*----------------------------------------------------------------*/
+Vec<ZZ_p> hermite_pade::mulA_left(const Vec<ZZ_p>& b){
+  Vec<ZZ_p> x = mul_X_left(b);
+  x = mul_M_left(x);
+  x = mul_Y_left(x);
+  //  time_mulA = GetTime() - t;
+  return x;
+}
+/*----------------------------------------------------------------*/
+/* left-multiplies b by the matrix M                              */
+/*----------------------------------------------------------------*/
+Mat<ZZ_p> hermite_pade::mulA_left(const Mat<ZZ_p> &b){
+  Mat<ZZ_p> output;
+  output.SetDims(NumCols(), b.NumCols());
+  Vec<ZZ_p> inv, outv;
+  inv.SetLength(b.NumRows());
+  for(long i = 0; i < b.NumCols(); i++){
+    for (long j = 0; j < b.NumRows(); j++)
+      inv[j] = b[j][i];
+    outv = mulA_left(inv);
+    for (long j = 0; j < NumCols(); j++)
+      output[j][i] = outv[j];
+  }
+  return output;
+}
+
+
+
+
+
 
 /*----------------------------------------------------------------*/
 /* if Mx = b mod p^(2^{n-1}), updates x so that Mx = b mod p^(2^n)*/
@@ -206,44 +381,60 @@ void hermite_pade::update_solution(Vec<ZZ>& x, const Vec<ZZ_p> &b, long n){
 /*----------------------------------------------------------------*/
 /* solves Mx = b mod p^(2^n) by Newton iteration                  */
 /*----------------------------------------------------------------*/
-void hermite_pade::Newton(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n){
+void hermite_pade::Newton(long n){
   if (n == 0){
-    zz_pContext push;
-    ctx.restore();
-    Vec<zz_p> x_zz_p;
-    Vec<zz_p> b_zz_p = conv<Vec<zz_p>>(b_in);
-    b_zz_p.SetLength(rank); // TODO: why do we need this?
-    invA.mul_right(x_zz_p, b_zz_p);
-    x = conv<Vec<ZZ>>(x_zz_p);
-    return;
-  }
-  // set up the first inverse mod p
-  if (n == 1){
     zz_pContext push;
     ctx.restore();
     long old_n = level;
     switch_context(0);
     lift_invA.SetLength(0);
-
     ZZ_p_cauchy_like_geometric C(conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(invA.G)), conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(invA.H)), 
 				 conv<ZZ_p>(conv<ZZ>(invA.C.u1)), conv<ZZ_p>(conv<ZZ>(invA.C.v1)), conv<ZZ_p>(conv<ZZ>(invA.C.rho)) );
     lift_invA.append(C);
     switch_context(old_n);
+    return;
   }
-
+  // set up the first inverse mod p
   zz_pContext push;
   ctx.restore();
   long old_n = level;
   switch_context(n);
 
+  // gens of cauchy matrix taken mod p^(2^n)
+  Mat<ZZ_p> X, Y, X1, Y1, X2, Y2, X3, Y3;
+  generators_cauchy(X, Y);
+
   ZZ_p_cauchy_like_geometric C_n(conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(lift_invA[n-1].G)), 
-				 conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(lift_invA[n-1].H)), 
-				 conv<ZZ_p>(conv<ZZ>(lift_invA[n-1].C.u1)), 
-				 conv<ZZ_p>(conv<ZZ>(lift_invA[n-1].C.v1)), 
-				 conv<ZZ_p>(conv<ZZ>(lift_invA[n-1].C.rho)) );
+  				 conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(lift_invA[n-1].H)), 
+				 conv<ZZ_p>(d), conv<ZZ_p>(c), conv<ZZ_p>(vec_w[n]) );
 
+  C_n.mul_right(X1, X);
+  X2 = mulA_right(X1);
+  C_n.mul_right(X3, X2);
+  C_n.mul_left(Y1, Y);
+  Y2 = mulA_left(Y1);
+  C_n.mul_left(Y3, Y2);
 
-  
+  lift_invA.append(  ZZ_p_cauchy_like_geometric(-(2*X1-X3), (2*Y1-Y3), conv<ZZ_p>(d), conv<ZZ_p>(c), conv<ZZ_p>(vec_w[n])) );
+
+#if false 
+  Mat<ZZ> Hd;
+  to_dense(Hd, MH_ZZ);
+  Mat<ZZ_p> Xi, Yi, De, Df, H, C, invC;
+  vec_X_int[n].to_dense(Xi);
+  vec_Y_int[n].to_dense(Yi);
+  De.SetDims(e.length(), e.length());
+  for (long i = 0; i < e.length(); i++)
+    De[i][i] = conv<ZZ_p>(e[i]);
+  Df.SetDims(f.length(), f.length());
+  for (long i = 0; i < f.length(); i++)
+    Df[i][i] = conv<ZZ_p>(f[i]);
+  H = conv<Mat<ZZ_p>>(Hd);
+  C = De*Xi * H * transpose(Df*Yi);
+  lift_invA[n].to_dense(invC);
+  cout << invC*C << endl;
+#endif
+
   switch_context(old_n);
 }
 
@@ -251,7 +442,6 @@ void hermite_pade::Newton(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n){
 /* solves for Mx = b mod p^(2^n)                                  */
 /*----------------------------------------------------------------*/
 void hermite_pade::DAC(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n){
-  //cout << "DAC" << endl;
   if (n == 0){ // we are mod p
     zz_pContext push;
     ctx.restore();
@@ -277,8 +467,7 @@ void hermite_pade::DAC(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n){
 /*----------------------------------------------------------------*/
 /* solves for Mx = b mod p^(2^n) using Dixon's algorithm          */
 /*----------------------------------------------------------------*/
-void hermite_pade::Dixon (Vec<ZZ> &x, Vec<ZZ> b_in, long n){
-  //cout << "DIXON" << endl;
+void hermite_pade::Dixon (Vec<ZZ> &x, Vec<ZZ> &b_in, long n){
   // Vector of the x's
   Vec<Vec<ZZ>> vec_x;
   
@@ -346,7 +535,7 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
     try{
       long result = ReconstructRational(a, b, conv<ZZ>(v[i] * i_den), p_powers[n], bound, bound);
       if (result == 0) 
-				return false;
+	return false;
       Vec<ZZ> temp;
       temp.append(a);
       temp.append(b);
@@ -418,10 +607,11 @@ void hermite_pade::random_solution_mod_p(Vec<zz_pX> & pol){
   }
   ex1 = mulA_right(ex1);
 
+  Vec<ZZ> tmp_in = conv<Vec<ZZ>>(ex1);
   if (mode == 0)
-    DAC(sol1, conv<Vec<ZZ>>(ex1), 0);
+    DAC(sol1, tmp_in, 0);
   else if (mode == 1)
-    Dixon(sol1, conv<Vec<ZZ>>(ex1),0);
+    Dixon(sol1, tmp_in, 0);
 
   conv(ex1, sol1);
   ex1.SetLength(sizeY, ZZ_p(0));
@@ -466,7 +656,6 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   extractor[rank] = 1; // just for now, take the last column
 
   Vec<ZZ_p> b = mulA_right(extractor); // b is the last column of A
-  //cout << "b: " << b << endl;
   Vec<ZZ> x_ZZ, b_ZZ;
   b_ZZ = conv<Vec<ZZ>> (b);
   if (mode == 0)
@@ -509,18 +698,13 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
     soln.kill();
     soln = mul_Y_right(x);
 
-    //cout << "soln: " << soln << endl;	
     ZZ_p first;
     for (long i = 0; i < soln.length(); i++)
       if (soln[i]._ZZ_p__rep % p_powers[0] != ZZ(0)){
         first = 1/soln[i];
-        //cout << "first: " << first << endl;
-        //cout << "soln[i]: " << soln[i] << endl;
         break;
       }
     soln *= first;
-    //cout << "soln: " << soln << endl;	
-    //cout << "mult: " << mul_M_right(soln) << endl;
   }
   cout << "mul time: " << time_mulA << endl;
 }

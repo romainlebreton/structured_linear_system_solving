@@ -15,10 +15,12 @@ NTL_CLIENT
 /*---------------------------------------------------------*/
 /* tries to increase the rank of M by adding random blocks */
 /*---------------------------------------------------------*/
-Vec<hankel> hermite_pade_general::increase_rank(long add){
+void hermite_pade_general::increase_rank(Vec<hankel> & vh_zz_p, Vec<ZZ_hankel> & vh_ZZ, long add){
   // cout << "adding " << add << endl;
   rows_added = add;
-  Vec<hankel> result;
+  vh_zz_p.SetLength(0);
+  vh_ZZ.SetLength(0);
+  
   for (long i = 0; i < type.length(); i++){
     Vec<long> adding;
     Vec<long> values;
@@ -28,12 +30,15 @@ Vec<hankel> hermite_pade_general::increase_rank(long add){
       values.append(rand() % 100);
       adding[j+add-to_add] = values[j];
     }
-    Vec<zz_p> add_p = conv<Vec<zz_p>>(adding);
-    hankel h{add_p, add, type[i]+1};
     vec_added.append(values);
-    result.append(h);
+
+    Vec<zz_p> add_p = conv<Vec<zz_p>>(adding);
+    Vec<ZZ> add_ZZ = conv<Vec<ZZ>>(adding);
+    hankel h_zz_p{add_p, add, type[i]+1};
+    ZZ_hankel h_ZZ{add_ZZ, add, type[i]+1};
+    vh_zz_p.append(h_zz_p);
+    vh_ZZ.append(h_ZZ);
   }
-  return result;
 }
 
 /*----------------------------------------------------------------*/
@@ -56,16 +61,12 @@ Vec<ZZ_p> hermite_pade_general::mul_M_right(const Vec<ZZ_p> &b){
     for (long i = 0; i < type.length(); i++){
       Vec<ZZ_p> values;
       for (long j = vec_added[i].length()-1; j >= 0; j--)
-				values.append(ZZ_p(vec_added[i][j]));
+	values.append(ZZ_p(vec_added[i][j]));
       lower += conv<ZZ_pX>(values) * conv<ZZ_pX>(b_split[i]);
     }
     upper.SetLength(original_sizeX);
-    //cout << "upper: " << upper << endl;
-    //cout << "lower: " << lower << endl;
     for (long i = 0; i < deg(lower)+1; i++){
-    	//cout << "i: " << i << endl;
       upper.append(lower[i]);
-      //cout << "upper: " << upper[i+original_sizeX] << endl;
     }
   }
   return upper;
@@ -79,54 +80,68 @@ Vec<ZZ_p> hermite_pade_general::mul_M_right(const Vec<ZZ_p> &b){
 hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &type, long sigma, long fft_init): 
   hermite_pade(fft_init){
 
+  prec = sigma;
   this->type = type;
   vec_fs = fs;
   
-  // setting up the mosaic Hankel Matrix
+  // setting up the mosaic Hankel Matrix over zz_p and ZZ
   Vec<hankel> vec_H;
+  Vec<ZZ_hankel> vec_H_ZZ;
   for (long i = 0; i < fs.length(); i++){
     Vec<ZZ> v_ZZ = conv<Vec<ZZ>>(fs[i]);
     Vec<zz_p> v = conv<Vec<zz_p>>(v_ZZ);
     v.SetLength(sigma);
-    Vec<zz_p> inp;
-    for (long j = 0; j < v.length(); j++)
-      inp.append(v[v.length() - 1 - j]);
-    for (long j = 0; j< type[i]; j++)
-      inp.append(zz_p{0});
-    vec_H.append(hankel(inp, sigma, type[i]+1)); 
+    v_ZZ.SetLength(sigma);
+    Vec<zz_p> inp_zz_p;
+    Vec<ZZ> inp_ZZ;
+    for (long j = 0; j < v.length(); j++){
+      inp_zz_p.append(v[v.length() - 1 - j]);
+      inp_ZZ.append(v_ZZ[v_ZZ.length() - 1 - j]);
+    }
+    for (long j = 0; j < type[i]; j++){
+      inp_zz_p.append(zz_p{0});
+      inp_ZZ.append(ZZ{0});
+    }
+    vec_H.append(hankel(inp_zz_p, sigma, type[i]+1)); 
+    vec_H_ZZ.append(ZZ_hankel(inp_ZZ, sigma, type[i]+1)); 
   }
-  Vec<Vec<hankel>> hankel_matrices;
-  hankel_matrices.append(vec_H);
-  mosaic_hankel MH(hankel_matrices);
+  Vec<Vec<hankel>> hankel_matrices_zz_p;
+  hankel_matrices_zz_p.append(vec_H);
+  mosaic_hankel MH(hankel_matrices_zz_p);
+
+  Vec<Vec<ZZ_hankel>> hankel_matrices_ZZ;
+  hankel_matrices_ZZ.append(vec_H_ZZ);
   
-  lzz_p_cauchy_like_geometric CL; // the cauchy matrix
-  zz_pX_Multipoint_Geometric X_int, Y_int; // preconditioners
-  Vec<zz_p> e_zz_p, f_zz_p; // the diagonal matrices
-  to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
-  rank = invert(invA, CL); // inverting M mod p
-  cout << "original rank: " << rank << endl;
-  sizeX = X_int.length();
-  sizeY = Y_int.length();
-  original_sizeX = sizeX;
-  
-  //Mat<zz_p> mat;
-  
-  if (sizeY -rank != 1){
-    hankel_matrices.append(increase_rank(sizeY-rank-1));
-    MH = mosaic_hankel(hankel_matrices);
-    //to_dense(mat, MH);
-    //cout << "new mat: " << mat << endl;
-  }
-  else
-    rows_added = 0;
+  lzz_p_cauchy_like_geometric CL;                      // the cauchy matrix
+  zz_pX_Multipoint_Geometric X_int, Y_int;             // preconditioners
+  Vec<zz_p> e_zz_p, f_zz_p;                            // the diagonal matrices
 
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
   rank = invert(invA, CL); // inverting M mod p
-  cout << "new rank: " << rank << endl;
+  //  cout << "original rank: " << rank << endl;
+
   sizeX = X_int.length();
   sizeY = Y_int.length();
-  //CL.to_dense(mat);
-  //cout << "CL: " << mat << endl;
+  original_sizeX = sizeX;
+
+  if (sizeY -rank != 1){
+    Vec<hankel> new_zz_p;
+    Vec<ZZ_hankel> new_ZZ;
+    increase_rank(new_zz_p, new_ZZ, sizeY-rank-1);
+    hankel_matrices_zz_p.append(new_zz_p);
+    hankel_matrices_ZZ.append(new_ZZ);
+    MH = mosaic_hankel(hankel_matrices_zz_p);
+  }
+  else{
+    rows_added = 0;
+  }
+  MH_ZZ = ZZ_mosaic_hankel(hankel_matrices_ZZ);
+  generators(G, H, MH_ZZ);
+
+  to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
+  rank = invert(invA, CL); // inverting M mod p
+  sizeX = X_int.length();
+  sizeY = Y_int.length();
 
   // converting the preconditioners that do not change
   this->e = conv<Vec<ZZ>>(e_zz_p);
@@ -150,12 +165,16 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
   ZZ_pX_Multipoint_FFT X_int_ZZ_p(w_p, conv<ZZ_p>(this->c), sizeX);
   ZZ_pX_Multipoint_FFT Y_int_ZZ_p(w_p, conv<ZZ_p>(this->d), sizeY);
 
+  vec_w.SetLength(1);
   vec_M.SetLength(0);
   vec_X_int.SetLength(1);
   vec_Y_int.SetLength(1);
+
+  vec_w[0] = ZZ(w);
+  set_up_bmc();
   vec_X_int[0] = X_int_ZZ_p;
   vec_Y_int[0] = Y_int_ZZ_p;
-  set_up_bmc();
+
 }
 
 

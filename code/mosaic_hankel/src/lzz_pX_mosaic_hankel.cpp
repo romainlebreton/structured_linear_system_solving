@@ -265,8 +265,9 @@ void find_c(zz_p& c, const zz_p& a, long n, long m){
     pow_inva[i] = inva*pow_inva[i-1];
 
   bool done;
+  c = to_zz_p(1); 
   do{
-    c = random_zz_p();
+    c++; // was: c = random_zz_p();
     done = true;
     if (c == 0)
       done = false;

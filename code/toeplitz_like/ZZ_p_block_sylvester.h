@@ -34,6 +34,7 @@ protected:
 
 public:
   virtual Vec<ZZ_p> mul_right(const Vec<ZZ_p> &rhs) = 0;
+  virtual Vec<ZZ_p> mul_left(const Vec<ZZ_p> &rhs) = 0;
   virtual ~ZZ_p_block_sylvester(){}
 };
 

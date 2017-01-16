@@ -15,6 +15,8 @@
 #include "lzz_p_cauchy_geometric.h"
 #include "ZZ_p_cauchy_geometric.h"
 #include "lzz_pX_mosaic_hankel.h"
+#include "ZZ_pX_mosaic_hankel.h"
+#include "ZZX_mosaic_hankel.h"
 #include "ZZ_pX_CRT.h"
 
 NTL_CLIENT
@@ -26,7 +28,8 @@ NTL_CLIENT
 /*----------------------------------------------------------------*/
 
 class hermite_pade {
- protected:
+  // protected:
+ public:
   Vec<long> type;  // the type of the approximant
   long rank;       // the rank of M
   long p, p2;      // our main prime, and the prime for checking
@@ -40,11 +43,14 @@ class hermite_pade {
   zz_pContext ctx; // zz_p
   ZZ_pContext ctx2;// zz_p2
 
-  Vec<SmartPtr<ZZ_p_block_sylvester>> vec_M;      // stores the block-sylvesterm matrices mod powers of p
+  ZZ_mosaic_hankel MH_ZZ;                         // the mosaic hankel matrix over ZZ
+  Mat<ZZ> G, H;                                   // the generators of the mosaic hankel matrix over ZZ
+  Vec<SmartPtr<ZZ_p_block_sylvester>> vec_M;      // stores the block-sylvester matrices mod powers of p
   Vec<ZZ_pX_Multipoint_FFT> vec_X_int, vec_Y_int; // stores regularization matrices mod powers of p
   Vec<ZZ> p_powers;                               // p_powers[i] = p^(2^i)
   Vec<ZZ> e, f;                                   // diagonal preconditioners for the Cauchy matrix
   ZZ c, d;                                        // constants for the preconditioners
+  Vec<ZZ> vec_w;                                  // the lifts of the root of 1 for X, Y
   lzz_p_cauchy_like_geometric invA;
   Vec<ZZ_p_cauchy_like_geometric> lift_invA;      // for Newton
 
@@ -75,7 +81,7 @@ class hermite_pade {
   /*----------------------------------------------------------------*/
   /* splits v according to the current type                         */
   /*----------------------------------------------------------------*/
-  Vec<zz_pX> split_on_type(const Vec<zz_p> &v);
+   Vec<zz_pX> split_on_type(const Vec<zz_p> &v);
 
   /*----------------------------------------------------------------*/
   /* splits v according to the current type                         */
@@ -98,27 +104,53 @@ class hermite_pade {
   /*----------------------------------------------------------------*/
   virtual SmartPtr<ZZ_p_block_sylvester> create_bmc() = 0;
 
+  /*------------------------------------------------------------------*/
+  /*------------------------------------------------------------------*/
+  void generators_cauchy(Mat<ZZ_p> & X, Mat<ZZ_p> & Y);
+
+
   /*----------------------------------------------------------------*/
   /* multiplies b by the matrix Y_int^t D_f                         */
   /*----------------------------------------------------------------*/
   Vec<ZZ_p> mul_Y_right(const Vec<ZZ_p> &b);
+  /*----------------------------------------------------------------*/
+  /* multiplies b by the matrix D_f Y_int                           */
+  /*----------------------------------------------------------------*/
+  Vec<ZZ_p> mul_Y_left(const Vec<ZZ_p> &b);
   
+
   /*----------------------------------------------------------------*/
   /* multiplies b by the matrix D_e X_int                           */
   /*----------------------------------------------------------------*/
-  Vec<ZZ_p> mul_X_right(Vec<ZZ_p> b);
+  Vec<ZZ_p> mul_X_right(const Vec<ZZ_p> &b);
+  /*----------------------------------------------------------------*/
+  /* multiplies b by the matrix X_int^t D_e                         */
+  /*----------------------------------------------------------------*/
+  Vec<ZZ_p> mul_X_left(const Vec<ZZ_p> &b);
+
 
   /*----------------------------------------------------------------*/
   /* multiplies b by the matrix M                                   */
   /*----------------------------------------------------------------*/
   virtual Vec<ZZ_p> mul_M_right(const Vec<ZZ_p> &b);
+  /*----------------------------------------------------------------*/
+  /* left-multiplies b by the matrix M                              */
+  /*----------------------------------------------------------------*/
+  virtual Vec<ZZ_p> mul_M_left(const Vec<ZZ_p> &b);
 
   /*----------------------------------------------------------------*/
   /* multiplies b by the matrix CL =  D_e X_int M Y_int^t D_f       */
   /* (CL is cauchy-geometric-like)                                  */
   /* b need not have size CL.NumCols()                              */
   /*----------------------------------------------------------------*/
-  Vec<ZZ_p> mulA_right (const Vec<ZZ_p> &b);
+  Vec<ZZ_p> mulA_right(const Vec<ZZ_p> &b);
+  Mat<ZZ_p> mulA_right(const Mat<ZZ_p> &b);
+  /*----------------------------------------------------------------*/
+  /* left-multiplies b by the matrix CL =  D_e X_int M Y_int^t D_f  */
+  /* (CL is cauchy-geometric-like)                                  */
+  /*----------------------------------------------------------------*/
+  Vec<ZZ_p> mulA_left(const Vec<ZZ_p> &b);
+  Mat<ZZ_p> mulA_left(const Mat<ZZ_p> &b);
 
   /*----------------------------------------------------------------*/
   /* if Mx = b mod p^(2^{n-1}), updates x so that Mx = b mod p^(2^n)*/
@@ -128,7 +160,7 @@ class hermite_pade {
   /*----------------------------------------------------------------*/
   /* solves Mx = b mod p^(2^n) by Newton iteration                  */
   /*----------------------------------------------------------------*/
-  void Newton(Vec<ZZ> &x, const Vec<ZZ>& b_in, long n);
+  void Newton(long n);
   
   /*----------------------------------------------------------------*/
   /* solves for Mx = b mod p^(2^n) using DAC                        */
@@ -138,7 +170,7 @@ class hermite_pade {
   /*----------------------------------------------------------------*/
   /* solves for Mx = b mod p^(2^n) using Dixon's algorithm          */
   /*----------------------------------------------------------------*/
-  void Dixon (Vec<ZZ> &x, Vec<ZZ> b_in, long n);
+  void Dixon (Vec<ZZ> &x, Vec<ZZ> & b_in, long n);
   
   /*----------------------------------------------------------------*/
   /* checks if every entry can be reconstructed                     */
@@ -197,7 +229,7 @@ class hermite_pade_general : public hermite_pade{
   /*---------------------------------------------------------*/
   /* tries to increase the rank of M by adding random blocks */
   /*---------------------------------------------------------*/
-  Vec<hankel> increase_rank(long add);
+  void increase_rank(Vec<hankel> & vh_zz_p, Vec<ZZ_hankel> & vh_ZZ, long add);
   
   /*----------------------------------------------------------------*/
   /* creates a new block Sylvester matrix                           */

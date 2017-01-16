@@ -68,6 +68,11 @@ class ZZ_pX_Multipoint_FFT : public ZZ_pX_Multipoint{
   void mul_right(Vec<ZZ_p>& output, const Vec<ZZ_p>& input) const;
   void mul_left(Vec<ZZ_p>& output, const Vec<ZZ_p>& input) const;
 
+  /*------------------------------------------------------------*/
+  /* a naive conversion to a dense matrix                       */
+  /*------------------------------------------------------------*/
+  void to_dense(Mat<ZZ_p>& M);
+
   void interpolate(ZZ_pX& f, const Vec<ZZ_p>& val) const{
     LogicError("inverse TFT not implemented");
   }

@@ -263,3 +263,21 @@ void lift_root_of_unity(ZZ& Omega, long omega, long s, long p, long k){
 
   Omega = Omega % power(to_ZZ(p), k);
 }
+
+/*------------------------------------------------------------*/
+/* a naive conversion to a dense matrix                       */
+/*------------------------------------------------------------*/
+void ZZ_pX_Multipoint_FFT::to_dense(Mat<ZZ_p>& M){
+   ZZ_pX f;
+   set(f);
+   Vec<ZZ_p> v;
+   v.SetLength(n);
+   M.SetDims(n, n);
+   
+   for (long i = 0; i < n; i++){
+     evaluate(v, f);
+     for (long j = 0; j < n; j++)
+       M[j][i] = v[j];
+     f <<= 1;
+  }
+}
