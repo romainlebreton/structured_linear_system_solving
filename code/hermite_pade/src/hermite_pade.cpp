@@ -577,6 +577,8 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   
   time_recon += GetTime() - t;
   sol = flip_on_type(sol);
+  
+  double time = GetTime();
 
   Vec<ZZ> sol_ZZ;
   sol_ZZ.SetLength(sol.length());
@@ -587,7 +589,7 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   for (long i = 0; i < sol.length(); i++)
     sol_ZZ[i] = (sol[i][0] * ell) / sol[i][1];
     
-  check1 += GetTime()-t;
+  div_in_recon += GetTime()-time;
 
   // alternative test: check if we compute twice the same solution
 #if false  
@@ -745,8 +747,8 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   cout << "mul time: " << time_mulA << endl;
   cout << "total reconstruction time: " << time_recon_all << endl;
   cout << "reconstruction only: " << time_recon << endl;
+  cout << "divisions in recon: " << check1 << endl; 
   cout << "checking p2: " << time_check_p2 << endl;
-  cout << "check1: " << check1 << endl;
 }
 
 
