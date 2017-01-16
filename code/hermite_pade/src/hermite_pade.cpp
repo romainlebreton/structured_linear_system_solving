@@ -331,10 +331,11 @@ Mat<ZZ_p> hermite_pade::mulA_right(const Mat<ZZ_p> &b){
 /* (CL is cauchy-geometric-like)                                  */
 /*----------------------------------------------------------------*/
 Vec<ZZ_p> hermite_pade::mulA_left(const Vec<ZZ_p>& b){
+  double t = GetTime();
   Vec<ZZ_p> x = mul_X_left(b);
   x = mul_M_left(x);
   x = mul_Y_left(x);
-  //  time_mulA = GetTime() - t;
+  time_mulA += GetTime() - t;
   return x;
 }
 /*----------------------------------------------------------------*/
@@ -556,10 +557,9 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   for (long i = 0; i < v.length(); i++){
     ZZ a,b;
     try{
-    	double t2 = GetTime();
       long result = ReconstructRational(a, b, conv<ZZ>(v[i] * i_den), p_powers[n], bound, bound);
-      time_recon += GetTime() - t2;
       if (result == 0){
+        time_recon += GetTime() - t;
         time_recon_all += GetTime()-t; 
 				return false;
 			}
@@ -569,11 +569,13 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
       sol.append(temp);
     }
     catch(...){
+    	time_recon += GetTime() - t;
       time_recon_all += GetTime()-t;
       return false;
     }
   }
   
+  time_recon += GetTime() - t;
   sol = flip_on_type(sol);
 
   Vec<ZZ> sol_ZZ;
