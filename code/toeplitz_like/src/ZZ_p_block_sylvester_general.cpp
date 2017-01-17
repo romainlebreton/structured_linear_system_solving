@@ -10,42 +10,42 @@ NTL_CLIENT
 void ZZ_p_block_sylvester_general::init(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
   this->type = type;
   this->prec = prec;
-  f = fs;
+  f_ZZ = conv<Vec<ZZX>>(fs);
   
-  f_rev.SetLength(type.length());
+  f_rev_ZZ.SetLength(type.length());
   for (long i = 0; i < type.length(); i++){
-    f_rev[i].rep.SetLength(prec);
+    f_rev_ZZ[i].rep.SetLength(prec);
     for (long j = 0; j < prec; j++)
-      f_rev[i].rep[j] = coeff(fs[i], prec-1-j);
-    f_rev[i].normalize();
+      f_rev_ZZ[i].rep[j] = conv<ZZ>(coeff(fs[i], prec-1-j));
+    f_rev_ZZ[i].normalize();
   }
 
   // this matrix holds chunks of the fs for right-mul
   long rows = ceil( (1.0*prec) / (1.0*(max_of_type+1)));
-  matF.SetDims(rows, type.length());
+  matF_ZZ.SetDims(rows, type.length());
   
-  for (long j = 0; j < matF.NumCols(); j++){
+  for (long j = 0; j < matF_ZZ.NumCols(); j++){
     long acc = 0;
-    for (long i = 0; i < matF.NumRows(); i++){
-      ZZ_pX p;
+    for (long i = 0; i < matF_ZZ.NumRows(); i++){
+      ZZX p;
       for (long s = 0; s < max_of_type + 1; s++)
-	SetCoeff(p, s, coeff(fs[j], acc + s));
-      matF.put(i, j, p);
+	      SetCoeff(p, s, conv<ZZ>(coeff(fs[j], acc + s)));
+      matF_ZZ.put(i, j, p);
       acc += max_of_type + 1;
     }
   }
 
   // this matrix holds chunks of the fs for left-mul
-  matF_left.SetDims(rows, type.length());
+  matF_left_ZZ.SetDims(rows, type.length());
 
-  for (long j = 0; j < matF.NumCols(); j++){
+  for (long j = 0; j < matF_ZZ.NumCols(); j++){
     long acc = 0;
-    for (long i = 0; i < matF.NumRows(); i++){
-      ZZ_pX p;
+    for (long i = 0; i < matF_ZZ.NumRows(); i++){
+      ZZX p;
       for (long s = 0; s < 2*(max_of_type + 1)-1; s++)
-	if (acc + max_of_type - s >= 0)
-	  SetCoeff(p, s, coeff(fs[j], acc + max_of_type - s));
-      matF_left.put(i, j, p);
+	    if (acc + max_of_type - s >= 0)
+	      SetCoeff(p, s, conv<ZZ>(coeff(fs[j], acc + max_of_type - s)));
+      matF_left_ZZ.put(i, j, p);
       acc += max_of_type + 1;
     }
   }
@@ -57,6 +57,7 @@ void ZZ_p_block_sylvester_general::init(const Vec<ZZ_pX>& fs, const Vec<long> &t
 /* right multiplication                               */
 /*----------------------------------------------------*/
 Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_right(const Vec<ZZ_p> &rhs){
+  Vec<ZZ_pX> f = conv<Vec<ZZ_pX>>(f_ZZ);
   if (!initialized) 
     throw "must call init first";
   Vec<ZZ_pX> rhs_poly;
@@ -75,6 +76,7 @@ Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_right(const Vec<ZZ_p> &rhs){
 /* right multiplication                               */
 /*----------------------------------------------------*/
 Mat<ZZ_p> ZZ_p_block_sylvester_general::mul_right(const Mat<ZZ_p> &rhs){
+  Mat<ZZ_pX> matF = conv<Mat<ZZ_pX>>(matF_ZZ);
   Mat<ZZ_pX> rhs_poly_mat;
   rhs_poly_mat.SetDims(type.length(), rhs.NumCols());
   Vec<ZZ_p> column;
@@ -109,9 +111,9 @@ Mat<ZZ_p> ZZ_p_block_sylvester_general::mul_right(const Mat<ZZ_p> &rhs){
       long b1 = min(min(old_len-(max_of_type+1), new_len), prec-idx);
       long b2 = min(new_len, prec-idx);
       for (long j = 0; j < b1; j++)
-	result[j+idx][i] += cC[j];
+	      result[j+idx][i] += cC[j];
       for (long j = max(0, old_len-(max_of_type+1)); j < b2; j++)
-	result[j+idx][i] = cC[j];
+	      result[j+idx][i] = cC[j];
       old_len = new_len;
       idx += max_of_type + 1;
     }
@@ -129,6 +131,8 @@ Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Vec<ZZ_p> &in){
   ZZ_pX in_poly;
   in_poly.rep = in;
   in_poly.normalize();
+  Vec<ZZ_pX> f = conv<Vec<ZZ_pX>>(f_ZZ);
+  Vec<ZZ_pX> f_rev = conv<Vec<ZZ_pX>>(f_rev_ZZ);
 
   Vec<ZZ_p> out;
   out.SetLength(num_cols);
@@ -145,7 +149,7 @@ Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Vec<ZZ_p> &in){
 /* left multiplication                                */
 /*----------------------------------------------------*/
 Mat<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Mat<ZZ_p> &in){
-
+  Mat<ZZ_pX> matF_left = conv<Mat<ZZ_pX>>(matF_left_ZZ);
   Mat<ZZ_pX> poly_in;
   poly_in.SetDims(in.NumCols(), matF_left.NumRows());
   for (long i = 0; i < in.NumCols(); i++){
@@ -179,6 +183,7 @@ Mat<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Mat<ZZ_p> &in){
 void ZZ_p_block_sylvester_general::to_dense(Mat<ZZ_p> & dense){
   dense.SetDims(prec, num_cols);
   long acc = 0;
+  Vec<ZZ_pX> f = conv<Vec<ZZ_pX>>(f_ZZ);
   for (long i = 0; i < type.length(); i++){
     for (long k = 0; k < type[i]+1; k++){
       for (long ell = 0; ell < prec - k; ell++)
