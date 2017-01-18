@@ -122,6 +122,7 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
     vec_H.append(hankel(inp_zz_p, sigma, type[i]+1)); 
     vec_H_ZZ.append(ZZ_hankel(inp_ZZ, sigma, type[i]+1)); 
   }
+
   Vec<Vec<hankel>> hankel_matrices_zz_p;
   hankel_matrices_zz_p.append(vec_H);
   mosaic_hankel MH(hankel_matrices_zz_p);
@@ -134,7 +135,7 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
   Vec<zz_p> e_zz_p, f_zz_p;                            // the diagonal matrices
 
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
-  rank = invert(invA, CL); // inverting M mod p
+  rank = invert_fast(invA, CL); // inverting M mod p
   //  cout << "original rank: " << rank << endl;
 
   sizeX = X_int.length();
@@ -156,7 +157,7 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
   generators(G, H, MH_ZZ);
 
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
-  rank = invert(invA, CL); // inverting M mod p
+  rank = invert_fast(invA, CL); // inverting M mod p
   sizeX = X_int.length();
   sizeY = Y_int.length();
 

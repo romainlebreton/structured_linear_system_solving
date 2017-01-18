@@ -68,19 +68,33 @@ void ZZ_p_block_sylvester_general::init(const Vec<ZZ_pX>& fs, const Vec<long> &t
 /* right multiplication                               */
 /*----------------------------------------------------*/
 Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_right(const Vec<ZZ_p> &rhs){
-  Vec<ZZ_pX> f = conv<Vec<ZZ_pX>>(f_ZZ);
+  // maybe better?
   if (!initialized) 
     throw "must call init first";
   Vec<ZZ_pX> rhs_poly;
   create_lhs_list(rhs_poly, rhs);
-  ZZ_pX result;
-  for (long i = 0; i < f.length(); i++)
-    result += trunc(f[i] * rhs_poly[i], prec);
+  Vec<ZZX> rhs_ZZ = conv<Vec<ZZX>>(rhs_poly);
+  ZZX result_ZZ;
+  for (long i = 0; i < f_ZZ.length(); i++)
+    result_ZZ += trunc(f_ZZ[i] * rhs_ZZ[i], prec);
   Vec<ZZ_p> v;
   v.SetLength(prec);
   for (long i = 0; i < prec; i++)
-    v[i] = coeff(result, i);
+    v[i] = conv<ZZ_p>(coeff(result_ZZ, i));
   return v;
+  // Vec<ZZ_pX> f = conv<Vec<ZZ_pX>>(f_ZZ);
+  // if (!initialized) 
+  //   throw "must call init first";
+  // Vec<ZZ_pX> rhs_poly;
+  // create_lhs_list(rhs_poly, rhs);
+  // ZZ_pX result;
+  // for (long i = 0; i < f.length(); i++)
+  //   result += trunc(f[i] * rhs_poly[i], prec);
+  // Vec<ZZ_p> v;
+  // v.SetLength(prec);
+  // for (long i = 0; i < prec; i++)
+  //   v[i] = coeff(result, i);
+  // return v;
 }
 
 /*----------------------------------------------------*/
