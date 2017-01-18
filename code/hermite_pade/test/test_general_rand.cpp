@@ -47,10 +47,10 @@ void run_DAC(const Vec<ZZX> &f, const Vec<long> &type, long prec){
   cout << "Running DAC" << endl;
   double t = GetTime();
   hermite_pade_general hp(f, type, prec);
+  hp.switch_mode(0);
   Vec<ZZX> sol;
   hp.random_solution(sol);
   cout << "Took : " << GetTime() - t << endl;
-  //cout << "sol ZZ: " << sol << endl;
   ZZX resZZ;
   for (long i = 0; i < type.length(); i++)
     resZZ += f[i] * sol[i];
@@ -63,7 +63,18 @@ void run_Dixon(const Vec<ZZX> &f, const Vec<long> &type, long prec){
   hp.switch_mode(1);
   Vec<ZZX> sol;
   hp.random_solution(sol);
-  //cout << "sol ZZ: " << sol << endl;
+  ZZX resZZ;
+  for (long i = 0; i < type.length(); i++)
+    resZZ += f[i] * sol[i];
+  cout << "check ZZ: " << trunc(resZZ, prec) << endl;
+}
+
+void run_Newton(const Vec<ZZX> &f, const Vec<long> &type, long prec){
+  cout << "Running Newton" << endl;
+  hermite_pade_general hp(f, type, prec);
+  hp.switch_mode(2);
+  Vec<ZZX> sol;
+  hp.random_solution(sol);
   ZZX resZZ;
   for (long i = 0; i < type.length(); i++)
     resZZ += f[i] * sol[i];
@@ -104,21 +115,28 @@ int main(int argc, char **argv){
   for (long i = 0; i < f.length(); i++)
     s = max(s, deg(f[i]));
     
-  double t;
-  if (mode == 0){
+  switch (mode){
+  case 0:
     //t = GetTime();
     run_CRT(f, type, s+1, nbits);
     //cout << "Took: " << GetTime()-t << endl;
-  }else if(mode == 1){
+    break;
+  case 1:
     //t = GetTime();
     run_DAC(f,type,s+1);
     //cout << "Took: " << GetTime()-t << endl;
-  }else{
+    break;
+  case 2:
     //t = GetTime();
     run_Dixon(f,type,s+1);
     //cout << "Took: " << GetTime()-t << endl;
+    break;
+  case 3:
+    //t = GetTime();
+    run_Newton(f,type,s+1);
+    //cout << "Took: " << GetTime()-t << endl;
+    break;
   }
   
-
  
 }
