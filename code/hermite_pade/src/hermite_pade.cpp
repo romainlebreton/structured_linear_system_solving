@@ -110,14 +110,12 @@ void hermite_pade::switch_context(long n){
     p_powers.append(p_new);
     ZZ_p::init(p_new);
 
-    // cout << "before create with=" << n << "\n";
-    // string nana;
-    // getline(cin, nana);
+    // cout << "before making bmc" << endl;
+    // string s;
+    // getline(cin,s);
     // creating the new bivariate modular comp
     set_up_bmc();
-    // cout << "after create\n";
-    // getline(cin, nana);
-    // cout << "go\n";
+    // cout << "after making bmc" << endl;
 
     // computing w mod p^(2^n)
     ZZ new_w;

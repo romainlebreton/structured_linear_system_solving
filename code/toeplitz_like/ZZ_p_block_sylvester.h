@@ -46,9 +46,9 @@ public:
 /*----------------------------------------------------*/
 class ZZ_p_block_sylvester_general: public ZZ_p_block_sylvester {
 
-  Vec<ZZ_pX> f, f_rev;
-  Mat<ZZ_pX> matF;
-  Mat<ZZ_pX> matF_left;
+  Vec<ZZX> f_ZZ, f_rev_ZZ;
+  Mat<ZZX> matF_ZZ;
+  Mat<ZZX> matF_left_ZZ;
 
 
 public:
