@@ -22,6 +22,7 @@ protected:
   long num_cols;
   long prec; // precision of the returned vector
   bool initialized = false; 
+  bool mat_init = false; 
   
   ZZ_p_block_sylvester();
   ZZ_p_block_sylvester(const Vec<long> &t, long prec);
@@ -54,9 +55,14 @@ class ZZ_p_block_sylvester_general: public ZZ_p_block_sylvester {
 public:
 
   /*----------------------------------------------------*/
-  /* sets up the matrix                                 */
+  /* sets up the polys                                 */
   /*----------------------------------------------------*/
   void init (const Vec<ZZ_pX> &fs, const Vec<long> &type, long prec);
+
+  /*----------------------------------------------------*/
+  /* sets up the matrices                               */
+  /*----------------------------------------------------*/
+  void init_mat();
 
   /*----------------------------------------------------*/
   /* input: Vec of polynomials fs                       */

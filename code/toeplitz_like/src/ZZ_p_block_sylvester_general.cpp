@@ -5,20 +5,9 @@
 NTL_CLIENT
 
 /*----------------------------------------------------*/
-/* is this useful?                                    */
+/* sets up the matrices                               */
 /*----------------------------------------------------*/
-void ZZ_p_block_sylvester_general::init(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
-  this->type = type;
-  this->prec = prec;
-  f_ZZ = conv<Vec<ZZX>>(fs);
-  
-  f_rev_ZZ.SetLength(type.length());
-  for (long i = 0; i < type.length(); i++){
-    f_rev_ZZ[i].rep.SetLength(prec);
-    for (long j = 0; j < prec; j++)
-      f_rev_ZZ[i].rep[j] = conv<ZZ>(coeff(fs[i], prec-1-j));
-    f_rev_ZZ[i].normalize();
-  }
+void ZZ_p_block_sylvester_general::init_mat(){
 
   // this matrix holds chunks of the fs for right-mul
   long rows = ceil( (1.0*prec) / (1.0*(max_of_type+1)));
@@ -29,7 +18,8 @@ void ZZ_p_block_sylvester_general::init(const Vec<ZZ_pX>& fs, const Vec<long> &t
     for (long i = 0; i < matF_ZZ.NumRows(); i++){
       ZZX p;
       for (long s = 0; s < max_of_type + 1; s++)
-	      SetCoeff(p, s, conv<ZZ>(coeff(fs[j], acc + s)));
+	SetCoeff(p, s, coeff(f_ZZ[j], acc + s));
+	// SetCoeff(p, s, conv<ZZ>(coeff(fs[j], acc + s)));
       matF_ZZ.put(i, j, p);
       acc += max_of_type + 1;
     }
@@ -43,11 +33,32 @@ void ZZ_p_block_sylvester_general::init(const Vec<ZZ_pX>& fs, const Vec<long> &t
     for (long i = 0; i < matF_ZZ.NumRows(); i++){
       ZZX p;
       for (long s = 0; s < 2*(max_of_type + 1)-1; s++)
-	    if (acc + max_of_type - s >= 0)
-	      SetCoeff(p, s, conv<ZZ>(coeff(fs[j], acc + max_of_type - s)));
+	if (acc + max_of_type - s >= 0)
+	  SetCoeff(p, s, coeff(f_ZZ[j], acc + max_of_type - s));
+	  // SetCoeff(p, s, conv<ZZ>(coeff(fs[j], acc + max_of_type - s)));
       matF_left_ZZ.put(i, j, p);
       acc += max_of_type + 1;
     }
+  }
+  mat_init = true;
+}
+
+
+
+/*----------------------------------------------------*/
+/* is this useful?                                    */
+/*----------------------------------------------------*/
+void ZZ_p_block_sylvester_general::init(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
+  this->type = type;
+  this->prec = prec;
+  f_ZZ = conv<Vec<ZZX>>(fs);
+  
+  f_rev_ZZ.SetLength(type.length());
+  for (long i = 0; i < type.length(); i++){
+    f_rev_ZZ[i].rep.SetLength(prec);
+    for (long j = 0; j < prec; j++)
+      f_rev_ZZ[i].rep[j] = conv<ZZ>(coeff(fs[i], prec-1-j));
+    f_rev_ZZ[i].normalize();
   }
 
   initialized = true;
@@ -76,6 +87,10 @@ Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_right(const Vec<ZZ_p> &rhs){
 /* right multiplication                               */
 /*----------------------------------------------------*/
 Mat<ZZ_p> ZZ_p_block_sylvester_general::mul_right(const Mat<ZZ_p> &rhs){
+
+  if (!mat_init)
+    init_mat();
+
   Mat<ZZ_pX> matF = conv<Mat<ZZ_pX>>(matF_ZZ);
   Mat<ZZ_pX> rhs_poly_mat;
   rhs_poly_mat.SetDims(type.length(), rhs.NumCols());
@@ -131,13 +146,13 @@ Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Vec<ZZ_p> &in){
   ZZ_pX in_poly;
   in_poly.rep = in;
   in_poly.normalize();
-  Vec<ZZ_pX> f = conv<Vec<ZZ_pX>>(f_ZZ);
+  // Vec<ZZ_pX> f = conv<Vec<ZZ_pX>>(f_ZZ);
   Vec<ZZ_pX> f_rev = conv<Vec<ZZ_pX>>(f_rev_ZZ);
 
   Vec<ZZ_p> out;
   out.SetLength(num_cols);
   long acc = 0;
-  for (long i = 0; i < f.length(); i++){
+  for (long i = 0; i < f_ZZ.length(); i++){
     ZZ_pX result = in_poly * f_rev[i];
     for (long j = 0; j < type[i] + 1; j++)
       out[acc++] = coeff(result, prec - 1 + j);
@@ -149,6 +164,9 @@ Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Vec<ZZ_p> &in){
 /* left multiplication                                */
 /*----------------------------------------------------*/
 Mat<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Mat<ZZ_p> &in){
+  if (!mat_init)
+    init_mat();
+
   Mat<ZZ_pX> matF_left = conv<Mat<ZZ_pX>>(matF_left_ZZ);
   Mat<ZZ_pX> poly_in;
   poly_in.SetDims(in.NumCols(), matF_left.NumRows());
@@ -204,21 +222,21 @@ ZZ_p_block_sylvester_general::ZZ_p_block_sylvester_general(const Vec<ZZ_pX>& fs,
   ZZ_p_block_sylvester(type, prec) {
   init(fs, type, prec);
 
-  long m;
-  cout << "f: length " << f.length() << endl;
-  m = 0;
-  for (long i = 0; i < f.length(); i++)
-    m = max(m, deg(f[i]));
-  cout << "f: degree " << m << endl;
-  cout << "f_rev: length " << f_rev.length() << endl;
-  m = 0;
-  for (long i = 0; i < f_rev.length(); i++)
-    m = max(m, deg(f_rev[i]));
-  cout << "f_rev: degree " << m << endl;
-  cout << "matF: dimensions " << matF.NumRows() << " " << matF.NumCols() << endl;
-  cout << "matF: degree " << deg(matF) << endl;
-  cout << "matF_left: dimensions " << matF_left.NumRows() << " " << matF_left.NumCols() << endl;
-  cout << "matF_left: degree " << deg(matF_left) << endl;
+  // long m;
+  // cout << "f: length " << f.length() << endl;
+  // m = 0;
+  // for (long i = 0; i < f.length(); i++)
+  //   m = max(m, deg(f[i]));
+  // cout << "f: degree " << m << endl;
+  // cout << "f_rev: length " << f_rev.length() << endl;
+  // m = 0;
+  // for (long i = 0; i < f_rev.length(); i++)
+  //   m = max(m, deg(f_rev[i]));
+  // cout << "f_rev: degree " << m << endl;
+  // cout << "matF: dimensions " << matF.NumRows() << " " << matF.NumCols() << endl;
+  // cout << "matF: degree " << deg(matF) << endl;
+  // cout << "matF_left: dimensions " << matF_left.NumRows() << " " << matF_left.NumCols() << endl;
+  // cout << "matF_left: degree " << deg(matF_left) << endl;
 
 }
 
