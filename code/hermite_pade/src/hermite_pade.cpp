@@ -109,10 +109,16 @@ void hermite_pade::switch_context(long n){
     power(p_new, p_new, pow2); // 2^n isn't going to be very large
     p_powers.append(p_new);
     ZZ_p::init(p_new);
-    
+
+    // cout << "before create with=" << n << "\n";
+    // string nana;
+    // getline(cin, nana);
     // creating the new bivariate modular comp
     set_up_bmc();
-    
+    // cout << "after create\n";
+    // getline(cin, nana);
+    // cout << "go\n";
+
     // computing w mod p^(2^n)
     ZZ new_w;
     lift_root_of_unity(new_w, this->w, order, p, pow2);
@@ -121,6 +127,8 @@ void hermite_pade::switch_context(long n){
     conv(w_p, new_w);
     conv(c_p, c);
     conv(d_p, d);
+
+
     ZZ_pX_Multipoint_FFT X_new (w_p, c_p, sizeX);
     ZZ_pX_Multipoint_FFT Y_new (w_p, d_p, sizeY);
     // update
@@ -128,6 +136,7 @@ void hermite_pade::switch_context(long n){
     vec_X_int.append(X_new);
     vec_Y_int.append(Y_new);
     level = n;
+
   }
 }
 
@@ -136,13 +145,13 @@ void hermite_pade::switch_context(long n){
 /*------------------------------------------------------------------*/
 void hermite_pade::generators_cauchy(Mat<ZZ_p> & X, Mat<ZZ_p> & Y){
 
-  long n = G.NumRows();
-  long m = H.NumRows();
-  long alpha = G.NumCols();
-
   Mat<ZZ_p> G_ZZ_p, H_ZZ_p;
-  G_ZZ_p = conv<Mat<ZZ_p>>(G);
-  H_ZZ_p = conv<Mat<ZZ_p>>(H);
+  Vec<ZZ_p> tmp_v, tmp_w;
+  generators_hankel_last_row_last_column(G_ZZ_p, H_ZZ_p, tmp_w, tmp_v);
+
+  long n = G_ZZ_p.NumRows();
+  long m = H_ZZ_p.NumRows();
+  long alpha = G_ZZ_p.NumCols();
 
   Vec<ZZ_p> f_ZZ_p = conv<Vec<ZZ_p>>(this->f);
   Vec<ZZ_p> e_ZZ_p = conv<Vec<ZZ_p>>(this->e);
@@ -155,7 +164,7 @@ void hermite_pade::generators_cauchy(Mat<ZZ_p> & X, Mat<ZZ_p> & Y){
   Y.SetDims(NumCols(), alpha+2);
 
 
-  Vec<ZZ_p> tmp_v;
+  Vec<ZZ_p> tmp_v2;
   for (long j = 0; j < alpha; j++){
     ZZ_pX tmp_p;
     tmp_p.rep.SetLength(n);
@@ -163,9 +172,9 @@ void hermite_pade::generators_cauchy(Mat<ZZ_p> & X, Mat<ZZ_p> & Y){
     for (long i = 0; i < n; i++)
       coef_p[i] = G_ZZ_p[i][j];
     tmp_p.normalize();
-    vec_X_int[level].evaluate(tmp_v, tmp_p);
+    vec_X_int[level].evaluate(tmp_v2, tmp_p);
     for (long i = 0; i < n; i++)
-      X[i][j] = tmp_v[i] * e_ZZ_p[i];
+      X[i][j] = tmp_v2[i] * e_ZZ_p[i];
   }
 
   ZZ_p tmp_z = to_ZZ_p(1);
@@ -174,20 +183,18 @@ void hermite_pade::generators_cauchy(Mat<ZZ_p> & X, Mat<ZZ_p> & Y){
     tmp_z = tmp_z * w_ZZ_p;
   }
 
-  Vec<ZZ> col_ZZ;
-  last_column_of_block(col_ZZ, MH_ZZ.NumBlockCols()-1, MH_ZZ);
-  tmp_v = conv<Vec<ZZ_p>>(col_ZZ);
+
   ZZ_pX tmp_p;
   tmp_p.rep.SetLength(n);
   ZZ_p* coef_p = tmp_p.rep.elts();
   for (long i = 0; i < n; i++)
     coef_p[i] = tmp_v[i];
   tmp_p.normalize();
-  vec_X_int[level].evaluate(tmp_v, tmp_p);
+  vec_X_int[level].evaluate(tmp_v2, tmp_p);
   for (long i = 0; i < n; i++)
-    X[i][alpha+1] = tmp_v[i] * e_ZZ_p[i];
+    X[i][alpha+1] = tmp_v2[i] * e_ZZ_p[i];
 
-  vec_ZZ_p tmp_w;
+  Vec<ZZ_p> tmp_w2;
   for (long j = 0; j < alpha; j++){
     ZZ_pX tmp_q;
     tmp_q.rep.SetLength(m);
@@ -195,14 +202,11 @@ void hermite_pade::generators_cauchy(Mat<ZZ_p> & X, Mat<ZZ_p> & Y){
     for (long i = 0; i < m; i++)
       coef_q[i] = H_ZZ_p[i][j];
     tmp_q.normalize();
-    vec_Y_int[level].evaluate(tmp_w, tmp_q);
+    vec_Y_int[level].evaluate(tmp_w2, tmp_q);
     for (long i = 0; i < m; i++)
-      Y[i][j] = tmp_w[i] * f_ZZ_p[i];
+      Y[i][j] = tmp_w2[i] * f_ZZ_p[i];
   }
-
-  Vec<ZZ> row_ZZ;
-  last_row_of_block(row_ZZ, MH_ZZ.NumBlockRows()-1, MH_ZZ);
-  tmp_w = conv<Vec<ZZ_p>>(row_ZZ);
+  
   ZZ_pX tmp_q;
   tmp_q.rep.SetLength(m);
   ZZ_p* coef_q = tmp_q.rep.elts();
@@ -561,8 +565,8 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
       if (result == 0){
         time_recon += GetTime() - t;
         time_recon_all += GetTime()-t; 
-				return false;
-			}
+	return false;
+      }
       Vec<ZZ> temp;
       temp.append(a);
       temp.append(b);
@@ -578,39 +582,41 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   time_recon += GetTime() - t;
   sol = flip_on_type(sol);
 
-  // alternative test: check if we compute twice the same solution
-#if false  
-  static Vec<ZZ> sol_ZZ_old;
-  if (sol_ZZ != sol_ZZ_old){
-    sol_ZZ_old = sol_ZZ;
-    time_recon_all += GetTime()-t;
-    return false;
-  }
-#else
-  double t2 = GetTime();
-  ZZ_pContext push;
-  ctx2.restore();
-  
-  Vec<ZZ_p> sol_ZZ_p;
-  for (long int i = 0; i < sol.length(); i++){
-    if (conv<ZZ_p>(sol[i][1]) == ZZ_p{0}){
-      cout << "zero? " << conv<ZZ_p>(sol[i][1]) << endl;
-      cout << "zero? " << sol[i][1] << endl;
-    }
-    sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
-    //    sol_ZZ_p.append(conv<ZZ_p>(sol_ZZ[i]));
-  }
+  // for the alternative test: check if we compute twice the same solution
+  static Vec<Vec<ZZ>> sol_old;
 
-  auto bmc = create_bmc();
-  auto x = bmc->mul_right(sol_ZZ_p);
-  time_check_p2 += GetTime() - t2;
-  for (long int i = 0; i < x.length(); i++)
-    if (x[i] != ZZ_p(0)){
-      cout << "failed p2" << endl;
-      time_recon_all += GetTime()-t;
-      return false;
+  switch (stop_criterion){
+  case 0:
+    {
+      double t2 = GetTime();
+      ZZ_pContext push;
+      ctx2.restore();
+      
+      Vec<ZZ_p> sol_ZZ_p;
+      for (long int i = 0; i < sol.length(); i++)
+	sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
+      
+      auto bmc = create_bmc();
+      auto x = bmc->mul_right(sol_ZZ_p);
+      time_check_p2 += GetTime() - t2;
+      for (long int i = 0; i < x.length(); i++)
+	if (x[i] != ZZ_p(0)){
+	  cout << "failed p2" << endl;
+	  time_recon_all += GetTime()-t;
+	  return false;
+	}
     }
-#endif
+    break;
+  case 1:
+    {
+      if (sol != sol_old){
+	sol_old = sol;
+	time_recon_all += GetTime()-t;
+	return false;
+      }
+    }
+    break;
+  }
 
   double time = GetTime();
   Vec<ZZ> sol_ZZ;

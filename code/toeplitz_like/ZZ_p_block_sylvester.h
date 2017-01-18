@@ -88,11 +88,6 @@ public:
   void to_dense(Mat<ZZ_p> & dense);
 };
 
-
-
-
-
-
 /*----------------------------------------------------*/
 /*----------------------------------------------------*/
 /* the case with fi = f^i                             */
@@ -102,8 +97,6 @@ class ZZ_p_bivariate_modular_composition : public ZZ_p_block_sylvester {
 
   ZZ_pX f_field;
   ZZ_pX F_field;
-  /* Mat<ZZ_pX> B; // the right side of the matrix multiplication for mul-right */
-  /* Mat<ZZ_pX> C; // the right side of the matrix multiplication for mul-left */
   long sqrtP; // ceiling of the sqrt of the number of blocks
 
   ZZ_p_block_sylvester_general S;

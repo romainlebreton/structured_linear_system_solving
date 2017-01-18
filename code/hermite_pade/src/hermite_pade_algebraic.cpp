@@ -55,6 +55,40 @@ Vec<long> hermite_pade_algebraic::find_new_type(){
   return t;
 }
 
+
+/*----------------------------------------------------------------*/
+/*----------------------------------------------------------------*/
+void hermite_pade_algebraic::generators_hankel_last_row_last_column(Mat<ZZ_p> & X, Mat<ZZ_p> & Y, Vec<ZZ_p> & r, Vec<ZZ_p> & c){
+  
+  // setting up the mosaic Hankel matrix
+  Vec<ZZ_p_hankel> vec_H;
+  ZZ_pX running {1};
+  ZZ_p denom_p = conv<ZZ_p>(denom);
+  ZZ_pX f = conv<ZZ_pX>(f_full_prec);
+
+  for (long i = 0; i < type.length(); i++){
+    Vec<ZZ_p> v;
+    Vec<ZZ_p> inp_vec;
+    conv(v, running);
+    v.SetLength(prec, ZZ_p{0});
+    for (int j = 0; j < v.length(); j++)
+      inp_vec.append(v[v.length() - 1 - j]);
+    for (int j = 0; j < type[i]; j++)
+      inp_vec.append(ZZ_p{0});
+    vec_H.append(ZZ_p_hankel(inp_vec, prec, type[i] + 1));
+    running = trunc(running * f, prec);
+    running /= denom_p;
+  }
+  Vec<Vec<ZZ_p_hankel>> hankel_matrices;
+  hankel_matrices.append(vec_H);
+  ZZ_p_mosaic_hankel MH(hankel_matrices);
+  generators(X, Y, MH);
+  last_row_of_block(r, MH.NumBlockRows()-1, MH);
+  last_column_of_block(c, MH.NumBlockCols()-1, MH);
+}
+
+
+
 /*----------------------------------------------------------------*/
 /* initializes everything                                         */
 /*----------------------------------------------------------------*/
@@ -79,12 +113,15 @@ void hermite_pade_algebraic::init(const Vec<long> &type_in){
     for (int j = 0; j < type[i]; j++)
       inp_vec.append(zz_p{0});
     vec_H.append(hankel(inp_vec, prec, type[i] + 1));
-    running = running * f_field;
+    running = trunc(running * f_field, prec);
     running /= denom_p;
   }
   Vec<Vec<hankel>> hankel_matrices;
   hankel_matrices.append(vec_H);
   mosaic_hankel MH(hankel_matrices);
+
+
+
 
   lzz_p_cauchy_like_geometric CL; // the cauchy matrix
   zz_pX_Multipoint_Geometric X_int, Y_int; // preconditioners
@@ -143,6 +180,7 @@ void hermite_pade_algebraic::init(const Vec<long> &type_in){
 /*----------------------------------------------------------------*/
 hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long sigma, long fft_index):
   hermite_pade(fft_index) {
+  stop_criterion = 1;
   f_full_prec = f;
   prec = sigma;
   init(type);
@@ -156,6 +194,7 @@ hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& ty
 /*----------------------------------------------------------------*/
 hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const ZZ &denom_in, const Vec<long>& type, long sigma, long fft_index):
   hermite_pade(fft_index) {
+  stop_criterion = 1;
   f_full_prec = f;
   prec = sigma;
   denom = denom_in;

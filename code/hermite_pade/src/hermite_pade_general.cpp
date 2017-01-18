@@ -47,6 +47,7 @@ void hermite_pade_general::increase_rank(Vec<hankel> & vh_zz_p, Vec<ZZ_hankel> &
 SmartPtr<ZZ_p_block_sylvester> hermite_pade_general::create_bmc(){
   Vec<ZZ_pX> fs_p;
   conv(fs_p, vec_fs);
+  cout << "here!!!\n";
   return MakeSmart<ZZ_p_block_sylvester_general>(ZZ_p_block_sylvester_general(fs_p, type, original_sizeX));
 }
 
@@ -71,6 +72,23 @@ Vec<ZZ_p> hermite_pade_general::mul_M_right(const Vec<ZZ_p> &b){
   }
   return upper;
 }
+
+/*----------------------------------------------------------------*/
+/*----------------------------------------------------------------*/
+void hermite_pade_general::generators_hankel_last_row_last_column(Mat<ZZ_p> & X, Mat<ZZ_p> & Y, Vec<ZZ_p> & r, Vec<ZZ_p> & c){
+  X = conv<Mat<ZZ_p>>(G);
+  Y = conv<Mat<ZZ_p>>(H);
+
+  Vec<ZZ> row_ZZ;
+  last_row_of_block(row_ZZ, MH_ZZ.NumBlockRows()-1, MH_ZZ);
+  r = conv<Vec<ZZ_p>>(row_ZZ);
+
+  Vec<ZZ> col_ZZ;
+  last_column_of_block(col_ZZ, MH_ZZ.NumBlockCols()-1, MH_ZZ);
+  c = conv<Vec<ZZ_p>>(col_ZZ);
+}
+
+
 
 /*----------------------------------------------------------------*/
 /* fs: the power series                                           */

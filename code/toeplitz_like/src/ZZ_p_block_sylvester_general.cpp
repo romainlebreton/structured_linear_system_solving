@@ -198,6 +198,23 @@ void ZZ_p_block_sylvester_general::to_dense(Mat<ZZ_p> & dense){
 ZZ_p_block_sylvester_general::ZZ_p_block_sylvester_general(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec):
   ZZ_p_block_sylvester(type, prec) {
   init(fs, type, prec);
+
+  long m;
+  cout << "f: length " << f.length() << endl;
+  m = 0;
+  for (long i = 0; i < f.length(); i++)
+    m = max(m, deg(f[i]));
+  cout << "f: degree " << m << endl;
+  cout << "f_rev: length " << f_rev.length() << endl;
+  m = 0;
+  for (long i = 0; i < f_rev.length(); i++)
+    m = max(m, deg(f_rev[i]));
+  cout << "f_rev: degree " << m << endl;
+  cout << "matF: dimensions " << matF.NumRows() << " " << matF.NumCols() << endl;
+  cout << "matF: degree " << deg(matF) << endl;
+  cout << "matF_left: dimensions " << matF_left.NumRows() << " " << matF_left.NumCols() << endl;
+  cout << "matF_left: degree " << deg(matF_left) << endl;
+
 }
 
 /*----------------------------------------------------*/
@@ -205,4 +222,5 @@ ZZ_p_block_sylvester_general::ZZ_p_block_sylvester_general(const Vec<ZZ_pX>& fs,
 /*----------------------------------------------------*/
 ZZ_p_block_sylvester_general::ZZ_p_block_sylvester_general():
   ZZ_p_block_sylvester() {
+
 }

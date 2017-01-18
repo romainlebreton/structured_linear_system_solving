@@ -28,8 +28,8 @@ NTL_CLIENT
 /*----------------------------------------------------------------*/
 
 class hermite_pade {
-  // protected:
- public:
+ protected:
+  
   Vec<long> type;  // the type of the approximant
   long rank;       // the rank of M
   long p, p2;      // our main prime, and the prime for checking
@@ -43,8 +43,6 @@ class hermite_pade {
   zz_pContext ctx; // zz_p
   ZZ_pContext ctx2;// zz_p2
 
-  ZZ_mosaic_hankel MH_ZZ;                         // the mosaic hankel matrix over ZZ
-  Mat<ZZ> G, H;                                   // the generators of the mosaic hankel matrix over ZZ
   Vec<SmartPtr<ZZ_p_block_sylvester>> vec_M;      // stores the block-sylvester matrices mod powers of p
   Vec<ZZ_pX_Multipoint_FFT> vec_X_int, vec_Y_int; // stores regularization matrices mod powers of p
   Vec<ZZ> p_powers;                               // p_powers[i] = p^(2^i)
@@ -55,8 +53,9 @@ class hermite_pade {
   Vec<ZZ_p_cauchy_like_geometric> lift_invA;      // for Newton
 
   
-  long mode = 0; // determines the subroutine to solve Mx = b mod p^2^n, 0-DAC, 1-Dixon, 2-Newton
-  
+  long mode = 0;                                  // determines the subroutine to solve Mx = b mod p^2^n, 0-DAC, 1-Dixon, 2-Newton
+  long stop_criterion = 0;                        // how we stop the lifting. 0 = test another prime, 1 = twice the same result
+
   double time_mulA = 0; // time spent on just multiplications
   double time_recon_all = 0; // time spent on the whole recon
   double time_recon = 0; // time spent on just reconstructing entries
@@ -66,14 +65,14 @@ class hermite_pade {
   /*----------------------------------------------------------------*/
   /* applies a block reversal to v                                  */
   /* e.g., type = [1,2] v = [v1,v2,v3,v4,v5]                        */
-  /* returns [v2,v1,v4,v3,v2] (blocks have length type[i]+1)        */
+  /* returns [v2,v1,v5,v4,v3] (blocks have length type[i]+1)        */
   /*----------------------------------------------------------------*/
   Vec<ZZ_p> flip_on_type (const Vec<ZZ_p> &v);
 
   /*----------------------------------------------------------------*/
   /* applies a block reversal to v                                  */
   /* e.g., type = [1,2] v = [v1,v2,v3,v4,v5]                        */
-  /* returns [v2,v1,v4,v3,v2] (blocks have length type[i]+1)        */
+  /* returns [v2,v1,v5,v4,v3] (blocks have length type[i]+1)        */
   /*----------------------------------------------------------------*/
   Vec<Vec<ZZ>> flip_on_type(const Vec<Vec<ZZ>> &v);
 
@@ -110,8 +109,11 @@ class hermite_pade {
 
   /*------------------------------------------------------------------*/
   /*------------------------------------------------------------------*/
-  void generators_cauchy(Mat<ZZ_p> & X, Mat<ZZ_p> & Y);
+  virtual void generators_hankel_last_row_last_column(Mat<ZZ_p> & X, Mat<ZZ_p> & Y, Vec<ZZ_p> & r, Vec<ZZ_p> & c) = 0;
 
+  /*------------------------------------------------------------------*/
+  /*------------------------------------------------------------------*/
+  void generators_cauchy(Mat<ZZ_p> & X, Mat<ZZ_p> & Y);
 
   /*----------------------------------------------------------------*/
   /* multiplies b by the matrix Y_int^t D_f                         */
@@ -235,7 +237,10 @@ class hermite_pade_general : public hermite_pade{
   Vec<Vec<long>> vec_added;
   long rows_added;
   long original_sizeX;
-  
+
+  Mat<ZZ> G, H;                                   // the generators of the mosaic hankel matrix over ZZ
+  ZZ_mosaic_hankel MH_ZZ;                         // the mosaic hankel matrix over ZZ  
+
   /*---------------------------------------------------------*/
   /* tries to increase the rank of M by adding random blocks */
   /*---------------------------------------------------------*/
@@ -250,6 +255,10 @@ class hermite_pade_general : public hermite_pade{
   /* does the product by M and the extra rows                       */
   /*----------------------------------------------------------------*/
   Vec<ZZ_p> mul_M_right(const Vec<ZZ_p> &) override;
+
+  /*------------------------------------------------------------------*/
+  /*------------------------------------------------------------------*/
+  void generators_hankel_last_row_last_column(Mat<ZZ_p> & X, Mat<ZZ_p> & Y, Vec<ZZ_p> & r, Vec<ZZ_p> & c);
   
  public:
 
@@ -277,6 +286,10 @@ class hermite_pade_algebraic : public hermite_pade {
   /* creates a new bivariate modular composition                    */
   /*----------------------------------------------------------------*/
   SmartPtr<ZZ_p_block_sylvester> create_bmc() override;
+
+  /*------------------------------------------------------------------*/
+  /*------------------------------------------------------------------*/
+  void generators_hankel_last_row_last_column(Mat<ZZ_p> & X, Mat<ZZ_p> & Y, Vec<ZZ_p> & r, Vec<ZZ_p> & c);
   
   public:
   /*----------------------------------------------------------------*/
