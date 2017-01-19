@@ -581,21 +581,27 @@ $$\mY^{(i)}
 with $\mY^{(i,j)}_1$ and $\mZ^{(i,j)}_2$ of size $j \times \alpha$.
 
 \begin{lemma}\label{lemma:update}
+  Assume that $\mA^{(i)}_{0,0}$ is invertible and has generic rank
+  profile.
   $\mA^{(i+j)}_{0,0}$ has generic rank profile if and only if
-  $\mS^{(i,j)}_{1,1}$ does, and ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm
-    rank}(\mS^{(i,j)}_{1,1})$.  If these matrices are invertible, we
-  have the equalities
-$$\mY^{(i+j)} =\left [ \begin{matrix}
-\mY^{(i)}_0 -  \mS^{(i,j)}_{0,1} \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1\\[1mm]
-- \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1\\[1mm]
-\mY^{(i,j)}_2 - \mS^{(i,j)}_{2,1} \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1
-  \end{matrix}\right ]$$
-and
-$$
-\mZ^{(i+j)} =\left [ \begin{matrix} 
-\mZ^{(i)}_0 - \mS^{(i,j)}_{1,0}{}^t \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1\\[1mm]
- \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1\\[1mm]
-\mZ^{(i,j)}_2 - \mS^{(i,j)}_{1,2}{}^t \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1
+  $\mS^{(i,j)}_{1,1}$ does, and
+  ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm rank}(\mS^{(i,j)}_{1,1})$.  If
+  these matrices are invertible, we have the equalities
+  $$
+  \mY^{(i+j)} =\left [ \begin{matrix}
+      \mY^{(i)}_0 -  \mS^{(i,j)}_{0,1} \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1\\[1mm]
+      - \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1\\[1mm]
+      \mY^{(i,j)}_2 - \mS^{(i,j)}_{2,1} \mS^{(i,j)}_{1,1}{}^{-1}
+      \mY^{(i,j)}_1
+    \end{matrix}\right ]
+  $$
+  and
+  $$
+  \mZ^{(i+j)} =\left [ \begin{matrix}
+      \mZ^{(i)}_0 - \mS^{(i,j)}_{1,0}{}^t \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1\\[1mm]
+      \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1\\[1mm]
+      \mZ^{(i,j)}_2 - \mS^{(i,j)}_{1,2}{}^t \mS^{(i,j)}_{1,1}{}^{-t}
+      \mZ^{(i,j)}_1
   \end{matrix}\right ].$$
 \end{lemma}
 \begin{proof}
