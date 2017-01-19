@@ -299,11 +299,18 @@ Vec<ZZ_p> hermite_pade::mul_M_left(const Vec<ZZ_p> &b){
 /*----------------------------------------------------------------*/
 Vec<ZZ_p> hermite_pade::mulA_right(const Vec<ZZ_p>& b){
   double t = GetTime();
+  double t2;
   Vec<ZZ_p> b_loc = b;
   b_loc.SetLength(sizeY, ZZ_p(0)); // pad it
+  t2 = GetTime();
   Vec<ZZ_p> x = mul_Y_right(b_loc);
+  time_mul_y_right += GetTime() - t2;
+  t2 = GetTime();
   x = mul_M_right(x);
+  time_mul_m_right += GetTime() - t2;
+  t2 = GetTime();
   x = mul_X_right(x);
+  time_mul_x_right += GetTime() - t2;
   time_mulA += GetTime() - t;
   return x;
 }
@@ -751,6 +758,9 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   cout << "everything: " << GetTime() - time_all << endl;
   cout << "loop: " << GetTime() - time_loop << endl;
   cout << "mul time: " << time_mulA << endl;
+  cout << "mul M: " << time_mul_m_right << endl;
+  cout << "mul X: " << time_mul_x_right << endl;
+  cout << "mul Y: " << time_mul_y_right << endl;
   cout << "total reconstruction time: " << time_recon_all << endl;
   cout << "reconstruction only: " << time_recon << endl;
   cout << "divisions in recon: " << div_in_recon << endl; 
