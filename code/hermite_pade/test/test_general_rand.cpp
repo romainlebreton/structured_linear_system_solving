@@ -82,20 +82,27 @@ void run_Newton(const Vec<ZZX> &f, const Vec<long> &type, long prec){
 }
 
 void run_CRT(const Vec<ZZX> &f, const Vec<long> &type, long prec, long nbits){
-  long times = nbits / 62 + 1;
+  long ncols = 0;
+  for (long i = 0; i < type.length(); i++)
+    ncols += type[i] + 1;
+  long times = 2*(long)((nbits*ncols*log(2) + ncols*log(ncols))/(60*log(2)));
+  double time = 0;
   cout << "Running CRT " << times << " times" << endl;
   for (long i = 0; i < times; i++){
+    time = GetTime();
     hermite_pade_general hp(f, type, prec,i);
 
     Vec<zz_pX> sol_zz_p;
     hp.random_solution_mod_p(sol_zz_p);
-    cout << "sol zz_p: " << sol_zz_p << endl;
-    zz_pX res;
-    for (long i = 0; i < type.length(); i++)
-      res += conv<zz_pX>(f[i]) * sol_zz_p[i];
-    cout << "check_zz_p: " << trunc(res, prec) << endl;
-    cout << "k:=GF(" << zz_p::modulus() << ");\n";
+    time += GetTime() - time;
+    //cout << "sol zz_p: " << sol_zz_p << endl;
+    //zz_pX res;
+    //for (long i = 0; i < type.length(); i++)
+    //  res += conv<zz_pX>(f[i]) * sol_zz_p[i];
+    //cout << "check_zz_p: " << trunc(res, prec) << endl;
+    //cout << "k:=GF(" << zz_p::modulus() << ");\n";
   }
+  cout << "Took: " << time << endl;
 }
 
 int main(int argc, char **argv){
