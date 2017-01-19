@@ -61,6 +61,9 @@ class hermite_pade {
   double time_recon = 0; // time spent on just reconstructing entries
   double time_check_p2 = 0; // time spent checking p2
   double div_in_recon = 0;
+  double time_mul_m_right = 0;
+  double time_mul_x_right = 0;
+  double time_mul_y_right = 0;
   
   /*----------------------------------------------------------------*/
   /* applies a block reversal to v                                  */

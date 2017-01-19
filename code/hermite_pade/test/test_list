@@ -1,0 +1,6 @@
+TESTING LIST:
+- DAC for nxn -> fix bitsize, push n (a bit)
+- DAC vs Newton -> nxsmall, large bitsize
+- CRT -> change to average of (50) case, divide by 2
+- Dixon -> put more benchmarks
+- DAC -> try some huge matrice (possibly vs ZZ)
