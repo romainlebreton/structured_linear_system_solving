@@ -112,7 +112,7 @@ int main(int argc, char **argv){
   ZZ denom{1};
   Vec<long> type;
 
-  long b = 10;
+  long b = 2000;
   for (long dx = 5; dx < 40; dx += 5)
     for (long dy = 5; dy < 40; dy += 5){
       ZZXY F;
@@ -155,9 +155,9 @@ int main(int argc, char **argv){
       Vec<zz_pX> sol_zz_p;
       hp.random_solution_mod_p(sol_zz_p);
       cout << "sol zz_p: " << sol_zz_p.length() << endl;
+      Vec<ZZX> sol;
+      hp.random_solution(sol);
+      cout << "first coefficient of sol: " << coeff(sol[0], 0) << endl;
     }
   
-  Vec<ZZX> sol;
-  hp.random_solution(sol);
-  cout << "sol: " << sol << endl;
 }
