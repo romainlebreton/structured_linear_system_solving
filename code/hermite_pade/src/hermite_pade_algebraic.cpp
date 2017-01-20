@@ -97,7 +97,7 @@ void hermite_pade_algebraic::init(const Vec<long> &type_in){
   ZZ_p::init(p_powers[0]);
   zz_pX f_field = conv<zz_pX>(f_full_prec);
   type = type_in;
-  
+
   // setting up the mosaic Hankel matrix
   Vec<hankel> vec_H;
   zz_pX running {1};
@@ -119,8 +119,6 @@ void hermite_pade_algebraic::init(const Vec<long> &type_in){
   Vec<Vec<hankel>> hankel_matrices;
   hankel_matrices.append(vec_H);
   mosaic_hankel MH(hankel_matrices);
-
-
 
 
   lzz_p_cauchy_like_geometric CL; // the cauchy matrix
@@ -184,6 +182,22 @@ hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& ty
   f_full_prec = f;
   prec = sigma;
   init(type);
+}
+
+/*----------------------------------------------------------------*/
+/* f: the power series                                            */
+/* type: the type of the approximant                              */
+/* sigma: requested precision                                     */
+/* witness: solution modulo the next fft prime                    */
+/*----------------------------------------------------------------*/
+hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long sigma, Vec<long>& w, long fft_index):
+  hermite_pade(fft_index) {
+  stop_criterion = 1;
+  f_full_prec = f;
+  prec = sigma;
+  init(type);
+  witness = w;
+  stop_criterion = 2;
 }
 
 /*----------------------------------------------------------------*/

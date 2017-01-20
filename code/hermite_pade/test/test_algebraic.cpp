@@ -39,14 +39,14 @@ void random_F_and_solution(ZZXY & F, ZZX & g, ZZ& den_g, long d, long b){
 /*  deg(F,x)=deg(F,y)=d, ht(F)=b                              */
 /* returns the solution with d^2 terms                        */
 /*------------------------------------------------------------*/
-void random_F_and_solution_mod_p(ZZXY & F, ZZX & g, ZZ& den, long dx, long dy, long b){
+void random_F_and_solution_mod_p(ZZXY & F, ZZX & g, long dx, long dy, long b){
   zz_p::FFTInit(0);
   ZZ p{zz_p::modulus()};
-  cout << "original prime: " << p << endl;
+  // cout << "original prime: " << p << endl;
   while (p < (ZZ{1} << (2*b)))
     p = p*p;
   p = p*p;
-  cout << "original prime after power: " << p << endl;
+  // cout << "original prime after power: " << p << endl;
   ZZ_p::init(p);
 
   random(F, b, dx, dy);
@@ -69,7 +69,6 @@ void random_F_and_solution_mod_p(ZZXY & F, ZZX & g, ZZ& den, long dx, long dy, l
 
   Fp.series_solution(g_p, to_ZZ_p(root), 2*(dx+3)*(dy+3));
   conv(g, g_p);
-  den = 1;
 }
 
 /*------------------------------------------------------------*/
@@ -109,55 +108,52 @@ void read_f_type(ZZX &F, Vec<long>& type, const string& name){
 int main(int argc, char **argv){
 
   ZZX f;
-  ZZ denom{1};
-  Vec<long> type;
+
+  long p2;
+  zz_p::FFTInit(1);
+  p2 = zz_p::modulus();
+
 
   long b = 2000;
   for (long dx = 5; dx < 40; dx += 5)
     for (long dy = 5; dy < 40; dy += 5){
+      Vec<long> type;
       ZZXY F;
-      random_F_and_solution_mod_p(F, f, denom, dx, dy, b);
+      random_F_and_solution_mod_p(F, f, dx, dy, b);
       type.SetLength(dy+2);
       for (long i = 0; i < dy+2; i++)
 	type[i] = dx+2;
 
-  // if (argc == 1){
-  //   ZZXY F;
-  //   long d = 20;
-  //   long d = 20;
-  //   long b = 10;
-  //   random_F_and_solution_mod_p(F, f, denom, d, b);
-  //   type.SetLength(d+2);
-  //   for (long i = 0; i < d+2; i++)
-  //     type[i] = d+2;
-  // }
-  // else {
-  //   read_f_type(f, type, argv[1]);
-  //   denom = to_ZZ("4398573498573985749857348957349875349857348957349857349");
-  // }    
 
-      cout << "dx=" << dx << " dy=" << dy << endl;
-      hermite_pade_algebraic hp(f, denom, type, deg(f)+1);
-      cout << "old type:= " << type << "\n";
-      cout << "old dimensions:= " << hp.NumRows() << " " << hp.NumCols() << endl;
-      cout << "old rank:= " << hp.Rank() << "\n";
-      cout << "old nullity:= " << hp.NumCols() - hp.Rank() << "\n";
-      
+      hermite_pade_algebraic hp(f, type, deg(f)+1, 0);
       if (hp.NumCols() - hp.Rank() > 1){
-	Vec<long> new_type = hp.find_new_type();
-	hp.init(new_type);
-	cout << "new type " << new_type << endl;
-	cout << "new dimensions:= " << hp.NumRows() << " " << hp.NumCols() << endl;
-	cout << "new rank " << hp.Rank() << endl;
-	cout << "new nullity " << hp.NumCols() - hp.Rank() << endl;
+      	Vec<long> new_type = hp.find_new_type();
+      	hp.init(new_type);
+	type = new_type;
       }
-      
-      Vec<zz_pX> sol_zz_p;
-      hp.random_solution_mod_p(sol_zz_p);
-      cout << "sol zz_p: " << sol_zz_p.length() << endl;
+
+      Vec<long> witness;
+      zz_p::init(p2);
+      for (long i = 0; i < type.length(); i++)
+      	for (long j = 0; j < type[i]+1; j++)
+	  if (i <= F.degY())
+	    witness.append(conv<long>( conv<zz_p>(coeff(F.coeffX[i], j)) / conv<zz_p>(coeff(F.coeffX[0], deg(F.coeffX[0]))) ));
+	  else
+	    witness.append(0);
+
+      hp = hermite_pade_algebraic(f, type, deg(f)+1, witness, 0);
+
+      cout << witness << endl;
+      cout << "dx=" << dx << " dy=" << dy << endl;
+      cout << "type " << type << endl;
+      cout << "dimensions:= " << hp.NumRows() << " " << hp.NumCols() << endl;
+      cout << "nullity " << hp.NumCols() - hp.Rank() << endl;
+	
       Vec<ZZX> sol;
       hp.random_solution(sol);
       cout << "first coefficient of sol: " << coeff(sol[0], 0) << endl;
+      
+      exit(0);
     }
   
 }

@@ -51,6 +51,7 @@ class hermite_pade {
   Vec<ZZ> vec_w;                                  // the lifts of the root of 1 for X, Y
   lzz_p_cauchy_like_geometric invA;
   Vec<ZZ_p_cauchy_like_geometric> lift_invA;      // for Newton
+  Vec<long> witness;                              // for stop criterion mode 3
 
   
   long mode = 0;                                  // determines the subroutine to solve Mx = b mod p^2^n, 0-DAC, 1-Dixon, 2-Newton
@@ -154,6 +155,7 @@ class hermite_pade {
   /*----------------------------------------------------------------*/
   Vec<ZZ_p> mulA_right(const Vec<ZZ_p> &b);
   Mat<ZZ_p> mulA_right(const Mat<ZZ_p> &b);
+
   /*----------------------------------------------------------------*/
   /* left-multiplies b by the matrix CL =  D_e X_int M Y_int^t D_f  */
   /* (CL is cauchy-geometric-like)                                  */
@@ -311,6 +313,14 @@ class hermite_pade_algebraic : public hermite_pade {
   /* sigma: requested precision                                     */
   /*----------------------------------------------------------------*/
   hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long sigma, long fft_init = 0);
+
+  /*----------------------------------------------------------------*/
+  /* f: the power series                                            */
+  /* type: the type of the approximant                              */
+  /* sigma: requested precision                                     */
+  /* witness: solution modulo the next fft prime                    */
+  /*----------------------------------------------------------------*/
+  hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long sigma, Vec<long>& w, long fft_index);
 
   /*----------------------------------------------------------------*/
   /* f: numerators of the power series                              */

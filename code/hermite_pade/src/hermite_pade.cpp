@@ -587,7 +587,11 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   time_recon += GetTime() - t;
   sol = flip_on_type(sol);
 
-  // for the alternative test: check if we compute twice the same solution
+  // 0 = re-evaluate mod another prime
+  // 1 = twice the same result
+  // 2 = 
+
+  // for stop_criterion = 1
   static Vec<Vec<ZZ>> sol_old;
 
   switch (stop_criterion){
@@ -616,6 +620,23 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
     {
       if (sol != sol_old){
 	sol_old = sol;
+	time_recon_all += GetTime()-t;
+	return false;
+      }
+    }
+    break;
+  case 2:
+    {
+      cout << "----------------\n";
+      // cout << sol << endl;
+      ZZ_pContext push;
+      ctx2.restore();
+      Vec<ZZ_p> sol_ZZ_p;
+      for (long int i = 0; i < sol.length(); i++)
+	sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
+      cout << conv<Vec<long>>(conv<Vec<ZZ>>(sol_ZZ_p)) << endl;
+      cout << witness << endl;
+      if ( conv<Vec<long>>(conv<Vec<ZZ>>(sol_ZZ_p)) != witness ){
 	time_recon_all += GetTime()-t;
 	return false;
       }
@@ -694,7 +715,7 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
     throw "lifting works only in case of nullity 1";
 
   zz_pContext zz_p_push;
-  zz_pContext ZZ_p_push;
+  ZZ_pContext ZZ_p_push;
 
   ctx.restore();
   long n = 0; // start at p^2^n
@@ -715,19 +736,6 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   x.SetLength(sizeY, ZZ_p(0));
   x[rank] = -1;
   Vec<ZZ_p> soln = mul_Y_right(x);
-	
-  /* do we not need to normalize?
-     ZZ_p first;
-     for (long i = 0; i < soln.length(); i++)
-     if (soln[i]._ZZ_p__rep % p_powers[0] != ZZ(0)){
-     first = 1/soln[i];
-     //cout << "first: " << first << endl;
-     cout << "soln[i]: " << soln[i] << endl;
-     break;
-     }
-     soln *= first;
-     cout << "soln: " << soln << endl;
-  */
 	
 	double time_loop = GetTime();
   // loop until we get enough prec
@@ -795,28 +803,14 @@ long hermite_pade::NumCols() const {
 hermite_pade::hermite_pade(long fft_index) {
   level = 0;
   zz_pContext push;
-  ctx2 = ZZ_pContext(ZZ(576460752303423619));
+  zz_p::FFTInit(fft_index+1);
+  ctx2 = ZZ_pContext(ZZ(zz_p::modulus())); 
   zz_p::FFTInit(fft_index);
   ctx = zz_pContext(INIT_FFT, fft_index);
   p = zz_p::modulus();
   ZZ_p::init(ZZ(p));
   p_powers.append(ZZ(p));
 }
-// /*----------------------------------------------------------------*/
-// /* sets up the field, contexts, ..                                */
-// /*----------------------------------------------------------------*/
-// hermite_pade::hermite_pade(long fft_index) {
-//   level = 0;
-//   zz_p::FFTInit(fft_index);
-//   ctx = zz_pContext(INIT_FFT, fft_index);
-//   p = zz_p::modulus();
-//   ZZ_p::init(ZZ(p));
-//   p_powers.append(ZZ(p));
-
-//   zz_pContext push;
-//   ctx2 = ZZ_pContext(ZZ(NextPrime(zz_p::modulus())));
-
-// }
 
 
 /*----------------------------------------------------------------*/
