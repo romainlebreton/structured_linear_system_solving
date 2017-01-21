@@ -102,57 +102,72 @@ void read_f_type(ZZX &F, Vec<long>& type, const string& name){
 }
 
 /*------------------------------------------------------------*/
-/* usage:                                                     */
-/* to test a data file: prog_name filename                    */
+/* single test. mode_lifting is as in ZZ_hermite_pade.h       */
+/* mode_stop = 0 for a witness solution                       */
+/* otherwise, waits until we see twice the same result        */
 /*------------------------------------------------------------*/
-int main(int argc, char **argv){
-
-  ZZX f;
+void do_test(long b, long dx, long dy, long mode_lifting, long mode_stop){
 
   long p2;
   zz_p::FFTInit(1);
   p2 = zz_p::modulus();
 
+  Vec<long> type;
+  ZZXY F;
+  ZZX f;
+  random_F_and_solution_mod_p(F, f, dx, dy, b);
+  type.SetLength(dy+2);
+  for (long i = 0; i < dy+2; i++)
+    type[i] = dx+2;
+  
+  hermite_pade_algebraic hp(f, type, deg(f)+1, 0);
+  if (hp.NumCols() - hp.Rank() > 1){
+    Vec<long> new_type = hp.find_new_type();
+    hp.init(new_type);
+    type = new_type;
+  }
+
+  hermite_pade_algebraic hp2(f, type, hp.Rank()+1, 0);
+  long sigma = deg(f)+1;
+  cout << "rk=" << hp.Rank() << " rk2=" << hp2.Rank() << endl;
+  if (hp.Rank() == hp2.Rank())
+    sigma = hp2.Rank();
+  
+  Vec<long> witness;
+  zz_p::init(p2);
+  for (long i = 0; i < type.length(); i++)
+    for (long j = 0; j < type[i]+1; j++)
+      if (i <= F.degY())
+	witness.append(conv<long>( conv<zz_p>(coeff(F.coeffX[i], j)) / conv<zz_p>(coeff(F.coeffX[0], deg(F.coeffX[0]))) ));
+      else
+	witness.append(0);
+  
+  if (mode_stop == 0)
+    hp = hermite_pade_algebraic(f, type, sigma, witness, 0);
+  else 
+    hp = hermite_pade_algebraic(f, type, sigma, 0);
+  
+  hp.switch_mode(mode_lifting);
+
+  cout << "dx=" << dx << " dy=" << dy << endl;
+  cout << "type " << type << endl;
+  cout << "dimensions:= " << hp.NumRows() << " " << hp.NumCols() << endl;
+  cout << "nullity " << hp.NumCols() - hp.Rank() << endl;
+  
+  Vec<ZZX> sol;
+  hp.random_solution(sol);
+  cout << "first coefficient of sol: " << coeff(sol[0], 0) << endl;
+ }
+
+/*------------------------------------------------------------*/
+/* usage:                                                     */
+/*------------------------------------------------------------*/
+int main(int argc, char **argv){
 
   long b = 2000;
   for (long dx = 5; dx < 40; dx += 5)
     for (long dy = 5; dy < 40; dy += 5){
-      Vec<long> type;
-      ZZXY F;
-      random_F_and_solution_mod_p(F, f, dx, dy, b);
-      type.SetLength(dy+2);
-      for (long i = 0; i < dy+2; i++)
-	type[i] = dx+2;
-
-
-      hermite_pade_algebraic hp(f, type, deg(f)+1, 0);
-      if (hp.NumCols() - hp.Rank() > 1){
-      	Vec<long> new_type = hp.find_new_type();
-      	hp.init(new_type);
-	type = new_type;
-      }
-
-      Vec<long> witness;
-      zz_p::init(p2);
-      for (long i = 0; i < type.length(); i++)
-      	for (long j = 0; j < type[i]+1; j++)
-	  if (i <= F.degY())
-	    witness.append(conv<long>( conv<zz_p>(coeff(F.coeffX[i], j)) / conv<zz_p>(coeff(F.coeffX[0], deg(F.coeffX[0]))) ));
-	  else
-	    witness.append(0);
-
-      hp = hermite_pade_algebraic(f, type, deg(f)+1, witness, 0);
-
-      cout << witness << endl;
-      cout << "dx=" << dx << " dy=" << dy << endl;
-      cout << "type " << type << endl;
-      cout << "dimensions:= " << hp.NumRows() << " " << hp.NumCols() << endl;
-      cout << "nullity " << hp.NumCols() - hp.Rank() << endl;
-	
-      Vec<ZZX> sol;
-      hp.random_solution(sol);
-      cout << "first coefficient of sol: " << coeff(sol[0], 0) << endl;
-      
+      do_test(b, dx, dy, stoi(argv[1]), stoi(argv[2]));
       exit(0);
     }
   

@@ -120,19 +120,12 @@ void hermite_pade_algebraic::init(const Vec<long> &type_in){
   hankel_matrices.append(vec_H);
   mosaic_hankel MH(hankel_matrices);
 
-
   lzz_p_cauchy_like_geometric CL; // the cauchy matrix
   zz_pX_Multipoint_Geometric X_int, Y_int; // preconditioners
-
   
   // find the rank of the original matrix
   Vec<zz_p> e_zz_p, f_zz_p;                            // the diagonal matrices
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
-
-  // magma_init();
-  // Mat<zz_p> CL_dense;
-  // CL.to_dense(CL_dense);
-  // cout << CL_dense << endl;
 
   rank = invert(invA, CL);                             // inverting M mod p
 

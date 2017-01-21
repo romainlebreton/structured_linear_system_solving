@@ -157,6 +157,7 @@ Mat<ZZ_p> ZZ_p_block_sylvester_general::mul_right(const Mat<ZZ_p> &rhs){
 Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Vec<ZZ_p> &in){
   if (!initialized) 
     throw "must call init first";
+
   ZZ_pX in_poly;
   in_poly.rep = in;
   in_poly.normalize();
@@ -178,10 +179,13 @@ Vec<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Vec<ZZ_p> &in){
 /* left multiplication                                */
 /*----------------------------------------------------*/
 Mat<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Mat<ZZ_p> &in){
+
+  
   if (!mat_init)
     init_mat();
 
   Mat<ZZ_pX> matF_left = conv<Mat<ZZ_pX>>(matF_left_ZZ);
+
   Mat<ZZ_pX> poly_in;
   poly_in.SetDims(in.NumCols(), matF_left.NumRows());
   for (long i = 0; i < in.NumCols(); i++){
@@ -189,10 +193,12 @@ Mat<ZZ_p> ZZ_p_block_sylvester_general::mul_left(const Mat<ZZ_p> &in){
     for (long k = 0; k < matF_left.NumRows(); k++){
       ZZ_pX tmp;
       for (long j = 0; j < max_of_type + 1; j++)
-	SetCoeff(tmp, j, in[acc++][i]);
+	if (acc < in.NumRows())
+	  SetCoeff(tmp, j, in[acc++][i]);
       poly_in[i][k] = tmp;
     }
   }
+
   Mat<ZZ_pX> product;
   mul_CRT_CTFT(product, poly_in, matF_left);
 
@@ -235,23 +241,6 @@ void ZZ_p_block_sylvester_general::to_dense(Mat<ZZ_p> & dense){
 ZZ_p_block_sylvester_general::ZZ_p_block_sylvester_general(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec):
   ZZ_p_block_sylvester(type, prec) {
   init(fs, type, prec);
-
-  // long m;
-  // cout << "f: length " << f.length() << endl;
-  // m = 0;
-  // for (long i = 0; i < f.length(); i++)
-  //   m = max(m, deg(f[i]));
-  // cout << "f: degree " << m << endl;
-  // cout << "f_rev: length " << f_rev.length() << endl;
-  // m = 0;
-  // for (long i = 0; i < f_rev.length(); i++)
-  //   m = max(m, deg(f_rev[i]));
-  // cout << "f_rev: degree " << m << endl;
-  // cout << "matF: dimensions " << matF.NumRows() << " " << matF.NumCols() << endl;
-  // cout << "matF: degree " << deg(matF) << endl;
-  // cout << "matF_left: dimensions " << matF_left.NumRows() << " " << matF_left.NumCols() << endl;
-  // cout << "matF_left: degree " << deg(matF_left) << endl;
-
 }
 
 /*----------------------------------------------------*/

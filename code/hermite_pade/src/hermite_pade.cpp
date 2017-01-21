@@ -332,19 +332,19 @@ Mat<ZZ_p> hermite_pade::mulA_right(const Mat<ZZ_p> &b){
   return output;
 }
 
-
-
-
 /*----------------------------------------------------------------*/
 /* left-multiplies b by the matrix CL =  D_e X_int M Y_int^t D_f  */
 /* (CL is cauchy-geometric-like)                                  */
 /*----------------------------------------------------------------*/
 Vec<ZZ_p> hermite_pade::mulA_left(const Vec<ZZ_p>& b){
   double t = GetTime();
-  Vec<ZZ_p> x = mul_X_left(b);
+  Vec<ZZ_p> b1=b;
+  b1.SetLength(e.length());
+  Vec<ZZ_p> x = mul_X_left(b1);
   x = mul_M_left(x);
   x = mul_Y_left(x);
   time_mulA += GetTime() - t;
+
   return x;
 }
 /*----------------------------------------------------------------*/
@@ -355,6 +355,7 @@ Mat<ZZ_p> hermite_pade::mulA_left(const Mat<ZZ_p> &b){
   output.SetDims(NumCols(), b.NumCols());
   Vec<ZZ_p> inv, outv;
   inv.SetLength(b.NumRows());
+
   for(long i = 0; i < b.NumCols(); i++){
     for (long j = 0; j < b.NumRows(); j++)
       inv[j] = b[j][i];
@@ -430,11 +431,13 @@ void hermite_pade::Newton(long n){
   }
   // set up the first inverse mod p
   long old_n = level;
+
   switch_context(n);
 
   // gens of cauchy matrix taken mod p^(2^n)
   Mat<ZZ_p> X, Y, X1, Y1, X2, Y2, X3, Y3;
   generators_cauchy(X, Y);
+
 
   ZZ_p_cauchy_like_geometric C_n(conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(lift_invA[n-1].G)), 
   				 conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(lift_invA[n-1].H)), 
@@ -589,7 +592,7 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
 
   // 0 = re-evaluate mod another prime
   // 1 = twice the same result
-  // 2 = 
+  // 2 = compare to witness
 
   // for stop_criterion = 1
   static Vec<Vec<ZZ>> sol_old;
@@ -620,6 +623,7 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
     {
       if (sol != sol_old){
 	sol_old = sol;
+	cout << "failed ratrecon with n=" << n << endl;
 	time_recon_all += GetTime()-t;
 	return false;
       }
@@ -627,16 +631,13 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
     break;
   case 2:
     {
-      cout << "----------------\n";
-      // cout << sol << endl;
       ZZ_pContext push;
       ctx2.restore();
       Vec<ZZ_p> sol_ZZ_p;
       for (long int i = 0; i < sol.length(); i++)
 	sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
-      cout << conv<Vec<long>>(conv<Vec<ZZ>>(sol_ZZ_p)) << endl;
-      cout << witness << endl;
       if ( conv<Vec<long>>(conv<Vec<ZZ>>(sol_ZZ_p)) != witness ){
+	cout << "failed ratrecon with n=" << n << endl;
 	time_recon_all += GetTime()-t;
 	return false;
       }
