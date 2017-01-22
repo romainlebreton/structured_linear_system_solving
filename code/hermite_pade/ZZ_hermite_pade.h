@@ -200,6 +200,11 @@ class hermite_pade {
   /*----------------------------------------------------------------*/
   hermite_pade(long fft_index);
 
+  /*----------------------------------------------------------------*/
+  /* does nothing                                                   */
+  /*----------------------------------------------------------------*/
+  hermite_pade();
+
  public:
 
   /*----------------------------------------------------------------*/
@@ -264,8 +269,19 @@ class hermite_pade_general : public hermite_pade{
   /*------------------------------------------------------------------*/
   /*------------------------------------------------------------------*/
   void generators_hankel_last_row_last_column(Mat<ZZ_p> & X, Mat<ZZ_p> & Y, Vec<ZZ_p> & r, Vec<ZZ_p> & c);
+
+  /*----------------------------------------------------------------*/
+  /* initializes everything                                         */
+  /*----------------------------------------------------------------*/
+  void init();
   
  public:
+
+
+  /*----------------------------------------------------------------*/
+  /* does nothing                                                   */
+  /*----------------------------------------------------------------*/
+  hermite_pade_general();
 
   /*----------------------------------------------------------------*/
   /* fs: the power series                                           */
@@ -273,6 +289,15 @@ class hermite_pade_general : public hermite_pade{
   /* sigma: requested precision                                     */
   /*----------------------------------------------------------------*/
   hermite_pade_general(const Vec<ZZX> &fs, const Vec<long>& type, long sigma, long fft_init = 0);
+
+  /*----------------------------------------------------------------*/
+  /* fs: the power series                                           */
+  /* type: the type of the approximant                              */
+  /* sigma: requested precision                                     */
+  /* w: solution modulo the next fft prime                          */
+  /*----------------------------------------------------------------*/
+  hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &type, long sigma, Vec<long>& w, long fft_init = 0);
+
 };
 
 
@@ -308,6 +333,11 @@ class hermite_pade_algebraic : public hermite_pade {
   void init(const Vec<long>& type);
 
   /*----------------------------------------------------------------*/
+  /* does nothing                                                   */
+  /*----------------------------------------------------------------*/
+  hermite_pade_algebraic();
+
+  /*----------------------------------------------------------------*/
   /* f: the power series                                            */
   /* type: the type of the approximant                              */
   /* sigma: requested precision                                     */
@@ -318,9 +348,9 @@ class hermite_pade_algebraic : public hermite_pade {
   /* f: the power series                                            */
   /* type: the type of the approximant                              */
   /* sigma: requested precision                                     */
-  /* witness: solution modulo the next fft prime                    */
+  /* w: solution modulo the next fft prime                          */
   /*----------------------------------------------------------------*/
-  hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long sigma, Vec<long>& w, long fft_index);
+  hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long sigma, Vec<long>& w, long fft_index = 0);
 
   /*----------------------------------------------------------------*/
   /* f: numerators of the power series                              */

@@ -349,7 +349,6 @@ long threshold(long alpha){
 static long invert_block_raw(Mat<zz_p>& Yp_out, Mat<zz_p>& Zp_out, const Mat<zz_p>& Yp_in, const Mat<zz_p>& Zp_in,
 			     const zz_p& u1, const zz_p& v1, const zz_p& rho){
 
-
   Yp_out = Yp_in;
   Zp_out = Zp_in;
 
@@ -416,11 +415,14 @@ static long invert_block_raw(Mat<zz_p>& Yp_out, Mat<zz_p>& Zp_out, const Mat<zz_
 	B[i][j]._zz_p__rep = MulModPrecon(u, inverses_u1_u1[i-(k+j)+N-1]._zz_p__rep, p, inverses_u1_u1_pre[i-(k+j)+N-1]);  
       }
 
-    for (long i = k; i < N; i++)
+    for (long i = k; i < m; i++)
       for (long j = 0; j < step; j++){
     	// // (x[i]-y[k+j])
 	long ell = MulModPrecon(A[i][j]._zz_p__rep, inverses_rho[i]._zz_p__rep, p, inverses_rho_pre[i]);
 	A[i][j]._zz_p__rep = MulModPrecon(ell, inverses_u1_v1[k+j-i+m-1]._zz_p__rep, p, inverses_u1_v1_pre[k+j-i+m-1]);
+      }
+    for (long i = k; i < n; i++)
+      for (long j = 0; j < step; j++){
     	// // -(x[k+j]-y[i]);
 	long u = MulModPrecon((-B[i][j])._zz_p__rep, inverses_rho[k+j]._zz_p__rep, p, inverses_rho_pre[k+j]);
 	B[i][j]._zz_p__rep = MulModPrecon(u, inverses_u1_v1[-(k+j)+i+m-1]._zz_p__rep, p, inverses_u1_v1_pre[-(k+j)+i+m-1]);
@@ -469,6 +471,7 @@ static long invert_block_raw(Mat<zz_p>& Yp_out, Mat<zz_p>& Zp_out, const Mat<zz_
     }
     
     if (early_exit == true){
+      
       Mat<zz_p> Y2, Z2;
       Y2.SetDims(m-(k+step), alpha);
       Z2.SetDims(n-(k+step), alpha);
@@ -476,9 +479,11 @@ static long invert_block_raw(Mat<zz_p>& Yp_out, Mat<zz_p>& Zp_out, const Mat<zz_
 	Y2[i-(k+step)] = Yp_out[i];
       for (long i = k+step; i < n; i++)
 	Z2[i-(k+step)] = Zp_out[i];
-      if (IsZero(Y2*transpose(Z2)))
+
+      if (!IsZero(Y2*transpose(Z2))){
 	return -1;
-      
+      }
+
       Yp_out.SetDims(k+step, alpha);
       Zp_out.SetDims(k+step, alpha);
       return k+step;

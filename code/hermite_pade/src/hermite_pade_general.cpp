@@ -88,27 +88,19 @@ void hermite_pade_general::generators_hankel_last_row_last_column(Mat<ZZ_p> & X,
 }
 
 
-
 /*----------------------------------------------------------------*/
-/* fs: the power series                                           */
-/* type: the type of the approximant                              */
-/* sigma: requested precision                                     */
+/* initializes everything                                         */
 /*----------------------------------------------------------------*/
-hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &type, long sigma, long fft_init): 
-  hermite_pade(fft_init){
+void hermite_pade_general::init(){
 
-  prec = sigma;
-  this->type = type;
-  vec_fs = fs;
-  
   // setting up the mosaic Hankel Matrix over zz_p and ZZ
   Vec<hankel> vec_H;
   Vec<ZZ_hankel> vec_H_ZZ;
-  for (long i = 0; i < fs.length(); i++){
-    Vec<ZZ> v_ZZ = conv<Vec<ZZ>>(fs[i]);
+  for (long i = 0; i < vec_fs.length(); i++){
+    Vec<ZZ> v_ZZ = conv<Vec<ZZ>>(vec_fs[i]);
     Vec<zz_p> v = conv<Vec<zz_p>>(v_ZZ);
-    v.SetLength(sigma);
-    v_ZZ.SetLength(sigma);
+    v.SetLength(prec);
+    v_ZZ.SetLength(prec);
     Vec<zz_p> inp_zz_p;
     Vec<ZZ> inp_ZZ;
     for (long j = 0; j < v.length(); j++){
@@ -119,8 +111,8 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
       inp_zz_p.append(zz_p{0});
       inp_ZZ.append(ZZ{0});
     }
-    vec_H.append(hankel(inp_zz_p, sigma, type[i]+1)); 
-    vec_H_ZZ.append(ZZ_hankel(inp_ZZ, sigma, type[i]+1)); 
+    vec_H.append(hankel(inp_zz_p, prec, type[i]+1)); 
+    vec_H_ZZ.append(ZZ_hankel(inp_ZZ, prec, type[i]+1)); 
   }
 
   Vec<Vec<hankel>> hankel_matrices_zz_p;
@@ -195,6 +187,39 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
 
 }
 
+/*----------------------------------------------------------------*/
+/* fs: the power series                                           */
+/* type: the type of the approximant                              */
+/* sigma: requested precision                                     */
+/*----------------------------------------------------------------*/
+hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &type, long sigma, long fft_init): 
+  hermite_pade(fft_init){
 
+  prec = sigma;
+  this->type = type;
+  vec_fs = fs;
 
+  init();
+}
 
+/*----------------------------------------------------------------*/
+/* fs: the power series                                           */
+/* type: the type of the approximant                              */
+/* sigma: requested precision                                     */
+/* w: solution modulo the next fft prime                          */
+/*----------------------------------------------------------------*/
+hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &type, long sigma, Vec<long>& w, long fft_init): 
+  hermite_pade(fft_init){
+  prec = sigma;
+  this->type = type;
+  vec_fs = fs;
+  init();
+  witness = w;
+  stop_criterion = 2;
+}
+
+/*----------------------------------------------------------------*/
+/* does nothing                                                   */
+/*----------------------------------------------------------------*/
+hermite_pade_general::hermite_pade_general(){
+}
