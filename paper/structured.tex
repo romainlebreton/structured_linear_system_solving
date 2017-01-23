@@ -53,6 +53,8 @@ bla
 
 \newcommand{\M}{\ensuremath{\mathscr{M}}}
 
+\newcommand{\lm}{\ensuremath{\operatorname{lm}}}
+
 \DeclareBoldMathCommand{\bF}{F}
 \DeclareBoldMathCommand{\bh}{h}
 \DeclareBoldMathCommand{\bu}{u}
@@ -383,34 +385,36 @@ compute a pair of generators of length $p+q+4$ for $\mA''$, involving
 the multiplication of $\mG'$ and $\mH'$ by $\mC_{\va,\vu}$ and
 $\mC_{\vv,\vb}$.
 
-We now point out a simpler construction. Instead of the previous
-definition, let us take $\mA''= \mD_\vx \mA' \mD_\vy=\mD_\vx \mV_\vu\,
-\mA\, \mW_\vv \mD_\vy$, for $\vx$ and $\vy$ as above. Following the
-proof of~\cite[Theorem~5.6.2]{Pan01}, we can use the Cauchy-Binet
-formula to express the minors of $\mA''$ in terms of those of
-$\mV_\vu$, $\mA$ and $\mW_\vv$ as follows. Let $i \le {\rm rank}(\mA)$
-and let $I=\{1,\dots,i\}$. The determinant $\delta_i$ of the $i$th
-leading principal minor of $\mA''$ is the sum over all
-$J=\{j_1,\dots,j_i\} \subset \{1,\dots,m\}$ and $K=\{k_1,\dots,k_i\}
-\subset \{1,\dots,n\}$ of the terms $\alpha_{I,J}\, \beta_{J,K}\,
-\gamma_{K,I}\, x_{j_1}\cdots x_{j_i}\, y_{k_1}\cdots y_{k_i}$, where
-$\alpha_{I,J}$ is the determinant of $(\mV_\vu)_{I,J}$, $\beta_{J,K}$
-is the determinant of $\mA_{J,K}$, and $\gamma_{K,I}$ is the
-determinant of $(\mW_\vv)_{K,I}$.  In particular, $\delta_i$ is a
-non-zero polynomial in the entries of $\vu,\vv,\vx,\vy$, of degree at
-most $pm,pm,1,1$ in these respective blocks of variables.  Taking all
-$i\le {\rm rank}(\mA)\le p$ into account, we see that there exists a
-non-zero polynomial $\Delta'$ in variables as above, with degree at
-most $p^2m,p^2m,p,p$ in these variables, such that the non-vanishing
-of $\Delta'$ implies that $\mA''$ has generic rank profile.  (The
-original statement of~\cite[Theorem~5.6.2]{Pan01} uses Cauchy
-premultipliers of the form $\mC_{\va,\vu}$ and $\mC_{\vv,\vb}$ instead
-of our Vandermonde ones, for which all submatrice  are invertible).
+We now point out a simpler construction keeping $\mA' = \mV_\vu\, \mA\, \mW_\vv$
+as above. Following the proof of~\cite[Theorem~5.6.2]{Pan01}, we can use the
+Cauchy-Binet formula to express the minors of $\mA'$ in terms of those of
+$\mV_\vu$, $\mA$ and $\mW_\vv$ as follows. Let $i \le {\rm rank}(\mA)$ and let
+$I=\{1,\dots,i\}$. The determinant $\delta_i$ of the $i$th leading principal
+minor of $\mA'$ is the sum over all $J=\{j_1,\dots,j_i\} \subset \{1,\dots,m\}$
+and $K=\{k_1,\dots,k_i\} \subset \{1,\dots,n\}$ of the terms
+$\alpha_{I,J}\, \beta_{J,K}\, \gamma_{K,I}$, where $\alpha_{I,J}$ is the
+determinant of $(\mV_\vu)_{I,J}$, $\beta_{J,K}$ is the determinant of
+$\mA_{J,K}$, and $\gamma_{K,I}$ is the determinant of $(\mW_\vv)_{K,I}$.
 
-The advantage of this construction is that given generators
-$(\mG',\mH')$ of $\mA'$, we deduce those of $\mA''$ simply as
-$\mG''=\mD_\vx \mG'$ and $\mH''=\mD_\vy \mH'$; in particular, they
-still have length $p+q+2$.
+Let $<$ be the monomial ordering on the variables $u_1,\dots,u_i$,
+$v_1,\dots,v_i$ that first sorts monomials using the lexicographic order on
+$u_1,\dots,u_i$ with $u_1 < \dots < u_i$, and then breaks the ties using the
+lexicographic order on $v_1,\dots,v_i$ with $v_1 > \dots > v_i$. If
+$J=\{j_1,\dots,j_i\}$ with $j_1 < \dots < j_i$ then the leading monomial
+(denoted $\lm(\cdot)$) of $\alpha_{I,J}$ is
+$\vu^J := u_1^{j_1-1} \cdots u_i^{j_i-1}$.  Similarly if $K=\{k_1,\dots,k_i\}$
+with $k_1 < \cdots < k_i$, then
+$\vv^K := v_1^{n-k_1} \cdots v_i^{n-k_i}=\lm(\gamma_{K,I})$. Since $\mA$ is of
+rank greater of equal to $i$, at least one of its $i$th minor $\beta_{J,K}$ does
+not vanish. Let $J_{\max},K_{\max}$ be the pair of subsets that maximizes
+$\vu^J \vv^K$ amongst those for which $\beta_{J,K} \neq 0$. Then we must have
+$\lm(\det(\mA'_{I,I})) = \vu^{J_{\max}} \vv^{K_{\max}}$, which shows that
+$\det(\mA'_{I,I})$ is non-zero. Note that the partial degrees in all variables
+of $\det(\mA'_{I,I})$ is at most $\max(n,m)$. This construction is clearly
+favorable since it involves no extra computation on $\mA'$.
+
+\todo{See if we can derive anything for geometric sequences $\vu, \vv$ with the
+  same ratio}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
