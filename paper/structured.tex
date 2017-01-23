@@ -37,6 +37,7 @@ bla
 \newcommand{\mJ}{\ensuremath{\mathsf{J}}}
 \newcommand{\mM}{\ensuremath{\mathsf{M}}}
 \newcommand{\mN}{\ensuremath{\mathsf{N}}}
+\newcommand{\mP}{\ensuremath{\mathsf{P}}}
 \newcommand{\mR}{\ensuremath{\mathsf{R}}}
 \newcommand{\mS}{\ensuremath{\mathsf{S}}}
 \newcommand{\mT}{\ensuremath{\mathsf{T}}}
@@ -492,7 +493,7 @@ by choosing vectors $\vu$ and $\vv$ adequately.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{A faster quadratic algorithm}\label{ssec:quad}
+\subsection{Cauchy generators of the inverse}\label{ssec:genofinv}
 
 Let $(\mG,\mH) \in \K^{m\times \alpha} \times \K^{n\times \alpha}$ be
 $\nabla_{\vu,\vv}$-generators of a matrix $\mA$ with respect to the
@@ -532,54 +533,52 @@ understand where these matrices come from, let's introduce the matrix
 \]
 where $\mI_{p, n} \in \K^{p \times n}$ is the rectangular matrix with ones on
 the diagonal. If one performs column operations to reduce the first $i$th rows
-of $\mR^{(0)}$ to $\begin{bmatrix} \mI_{i,i} & 0 \end{bmatrix}$, we get
+$\begin{bmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{bmatrix}$ of $\mR^{(0)}$
+to $\begin{bmatrix} \mI_{i,i} & 0 \end{bmatrix}$, we get
 \[ 
-R^{(i)} = \begin{bmatrix}
+\mR^{(i)} = \begin{bmatrix}
      \mI_{i,i} & 0\\
      \mS^{(i)}_{0,0} & \mS^{(i)}_{0,1}\\
      \mS^{(i)}_{1,0} & \mS^{(i)}_{1,1}\\
      0 & \mI_{p - i, n - i}
    \end{bmatrix} = \mR^{(0)} \begin{bmatrix}
-     A_{0, 0}^{(i)} \phantom{}^{- 1} & - A_{0, 0}^{(i)} \phantom{}^{- 1} A_{0,
+     \mA_{0, 0}^{(i)} \phantom{}^{- 1} & - \mA_{0, 0}^{(i)} \phantom{}^{- 1} \mA_{0,
      1}^{(i)}\\
      0 & \mI_{n - i,n-i}
    \end{bmatrix}. 
 \]
-We next write the decompositions $\mG=\begin{bmatrix}
-    \mG^{(i)}_0 \\    \mG^{(i)}_1 
-  \end{bmatrix}$, $\mH=\begin{bmatrix} 
+A key result for the sequel is~\cite[Proposition~1]{Cardinal99} which states the
+Cauchy structure of $\mS^{(i)}$ and gives formulae for its generators. Given
+integers $a,b$, $\vu_{a:b}$ denotes the sequence $(u_a,\dots,u_b)$ (and
+similarly for $\vv_{a:b}$); we then define $\ve^{(i)}=(\vv_{1:i},\vu_{i+1:m})$
+and $\vf^{(i)}=(\vu_{1:i},\vv_{i+1:n})$. Then the matrix $\mS^{(i)}$ is
+Cauchy-like for the vectors $\ve^{(i)}, \vf^{(i)}$ ; remark that the operator
+$\nabla_{\ve^{(i)},\vf^{(i)}}$ is invertible, in view of our assumption on $\vu$
+and $\vv$. Define the $\nabla_{\ve^{(i)},\vf^{(i)}}$-generators
+$(\mY^{(i)}, \mZ^{(i)})$ of $\mS^{(i)}$ by decomposing
+\[
+ \mG=\begin{bmatrix} 
+   \mG^{(i)}_0 \\ \mG^{(i)}_1
+  \end{bmatrix},\ 
+  \mH=\begin{bmatrix} 
         \mH^{(i)}_0 \\    \mH^{(i)}_1 
-  \end{bmatrix},$
-with $\mG^{(i)}_0$ and $\mH^{(i)}_0$ of size $i \times \alpha$
-and
-we define
-\begin{equation}
-\mY^{(i)}
+  \end{bmatrix},\ 
+ \mY^{(i)}
  = \begin{bmatrix}
   \mY^{(i)}_0 \\    \mY^{(i)}_1 
-     \end{bmatrix},\quad
+     \end{bmatrix},\ 
 \mZ^{(i)}
  = \begin{bmatrix}
   \mZ^{(i)}_0 \\    \mZ^{(i)}_1 
      \end{bmatrix},
-\end{equation}
-with
+\]
+with $\mG^{(i)}_0, \mH^{(i)}_0, \mY^{(i)}_0, \mZ^{(i)}_0 \in \K^{i \times \alpha}$ such that
 \begin{align}
 \mY^{(i)}_0&= -{\mA^{(i)}_{0,0}}{}^{-1} \mG^{(i)}_0,\  
 &\mY^{(i)}_1&=-\mA^{(i)}_{1,0}{\mA^{(i)}_{0,0}}{}^{-1}\mG^{(i)}_0 + \mG^{(i)}_1,\label{eq:defYi}\\
 \mZ^{(i)}_0&= {\mA^{(i)}_{0,0}}^{-t} \mH^{(i)}_0,\  
 &\mZ^{(i)}_1&=-{\mA^{(i)}_{0,1}}{}^t{\mA^{(i)}_{0,0}}{}^{-t}\mH^{(i)}_0 + \mH^{(i)}_1\label{eq:defZi}.
 \end{align}
-Given integers $a,b$, $\vu_{a:b}$ denotes the sequence
-$(u_a,\dots,u_b)$ (and similarly for $\vv_{a:b}$); we then
-define $\ve^{(i)}=(\vv_{1:i},\vu_{i+1:m})$ and
-$\vf^{(i)}=(\vu_{1:i},\vv_{i+1:n})$.
-Then, a key result for the sequel is the following, which
-is~\cite[Proposition~1]{Cardinal99}; remark that the operator $\nabla_{\ve^{(i)},\vf^{(i)}}$
-is invertible, in view of our assumption on $\vu$ and $\vv$.
-\begin{lemma}\label{lemma:cpj-cm}
- $(\mY^{(i)},\mZ^{(i)})$ are $\nabla_{\ve^{(i)},\vf^{(i)}}$-generators for $\mS^{(i)}$.
-\end{lemma}
 For $i=0$, we simply have $\mS^{(0)}=\mA$ and
 $(\mY^{(0)},\mZ^{(0)})=(\mG,\mH)$.  If $\mA$ has generic rank profile,
 then the above lemma shows that for $i=r$, $(\mY^{(r)}_0,\mZ^{(r)}_0)$
@@ -590,86 +589,39 @@ that starts from $(\mY^{(0)},\mZ^{(0)})$ and computes
 $(\mY^{(i_1)},\mZ^{(i_1)})$, $(\mY^{(i_2)},\mZ^{(i_2)})$, \dots for
 some sequence of indices $0 < i_1 < i_2 < \dots$, until we finally
 reach $(\mY^{(r)},\mZ^{(r)})$, on which we read off our output; if
-$\mA$ does not have generic rank profile, we will detect it. The basis
-of the algorithm is Lemma~\ref{lemma:update} below, which uses the
-following notation.
+$\mA$ does not have generic rank profile, we will detect it. 
 
-Let $i,j$ be non-negative integers with $0
-\le i+j \le p$, and ${\mA^{(i)}_{0,0}}$ invertible. Write a block decomposition of $\mS^{(i)}$
-as
-\begin{equation}\label{eq:Siblock}
-\mS^{(i)} = \begin{bmatrix} 
-\mS^{(i,j)}_{0,0} & \mS^{(i,j)}_{0,1} & \mS^{(i,j)}_{0,2}\\
-\mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1} & \mS^{(i,j)}_{1,2}\\
-\mS^{(i,j)}_{2,0} & \mS^{(i,j)}_{2,1} & \mS^{(i,j)}_{2,2}
-    \end{bmatrix},  
-\end{equation}
-with $\mS^{(i,j)}_{0,0}={\mA^{(i)}_{0,0}}{}^{-1}$ of size $i \times i$ and $\mS^{(i,j)}_{1,1}$
-of size $j \times j$ (from this, the sizes of all blocks can
-be deduced).  Similarly, we can refine our decompositions of $\mY^{(i)}$ and $\mZ^{(i)}$ as
-$$\mY^{(i)}
- = \begin{bmatrix}
-\mY^{(i)}_0 \\\mY^{(i,j)}_1 \\\mY^{(i,j)}_2
-   \end{bmatrix}, \quad
-\mZ^{(i)}
- = \begin{bmatrix}
-\mZ^{(i)}_0 \\\mZ^{(i,j)}_1 \\\mZ^{(i,j)}_2
-   \end{bmatrix},$$
-with $\mY^{(i,j)}_1$ and $\mZ^{(i,j)}_2$ of size $j \times \alpha$.
+\todo{Say that the next point was used in Cardinal but not clearly stated, not
+  even for the particular case used in Cardinal's paper?}
 
-\begin{lemma}\label{lemma:update}
-  Assume that $\mA^{(i)}_{0,0}$ is invertible and has generic rank
-  profile.
-  $\mA^{(i+j)}_{0,0}$ has generic rank profile if and only if
-  $\mS^{(i,j)}_{1,1}$ does, and
-  ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm rank}(\mS^{(i,j)}_{1,1})$.  If
-  these matrices are invertible, we have the equalities
-  $$
-  \mY^{(i+j)} =\begin{bmatrix}
-      \mY^{(i)}_0 -  \mS^{(i,j)}_{0,1} \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1\\[1mm]
-      - \mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1\\[1mm]
-      \mY^{(i,j)}_2 - \mS^{(i,j)}_{2,1} \mS^{(i,j)}_{1,1}{}^{-1}
-      \mY^{(i,j)}_1
-    \end{bmatrix}
-  $$
-  and
-  $$
-  \mZ^{(i+j)} =\begin{bmatrix}
-      \mZ^{(i)}_0 - \mS^{(i,j)}_{1,0}{}^t \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1\\[1mm]
-      \mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1\\[1mm]
-      \mZ^{(i,j)}_2 - \mS^{(i,j)}_{1,2}{}^t \mS^{(i,j)}_{1,1}{}^{-t}
-      \mZ^{(i,j)}_1
-  \end{bmatrix}.$$
-\end{lemma}
-\begin{proof}
-  By construction, $\mS^{(i,j)}_{1,1}$ is the Schur complement of
-  ${\mA^{(i)}_{0,0}}$, seen as a submatrix of $\mA^{(i+j)}_{0,0}$; this proves
-  our first claim.
+An interesting point is that we can derive $R^{(i+j)}$ from $R^{(j)}$ similarly
+to the previous operation that computes $R^{(i)}$ from $R^{(0)}$. Let
+$\bar{\mA}$ be the matrix $\mS^{(i)}$ where the $i$ first rows are permuted with
+the next $j$ rows, and the same for the columns. If we write $\bar{\mS}^{(j)}$
+the sequence of matrices starting from $\bar{\mS}^{(0)}=\bar{\mA}$, a direct
+calculation shows the previous claim that $\mS^{(i+j)}$ is equal to
+$\bar{\mS}^{(j)}$ after permuting back its rows and columns. Another more
+intuitive way to prove this identity is to show that the column operations that
+reduce $\begin{bmatrix} \mA^{(i+j)}_{0,0} & \mA^{(i+j)}_{0,1} \end{bmatrix}$ to
+$\begin{bmatrix} \mI_{i+j,i+j} & 0 \end{bmatrix}$ can be decomposed in two
+operations that respectively reduce the first $i$th rows, then the next $j$th
+rows, and that these operations match with the transformations of $R^{(i)}$ from
+$R^{(0)}$ and of $R^{(i+j)}$ from $R^{(i)}$.
 
-  From the definition of $\mS^{(i)}$ in~\eqref{eq:Siblock}, a direct calculation
-  shows that $\mS^{(i+j)}$ is given by
-$$\mS^{(i+j)} = \begin{bmatrix} 
-\mJ^{(i,j)}_{0,0} &
-         \mS^{(i,j)}_{0,1}\mS^{(i,j)}_{1,1}{}^{-1} &
-         \mJ^{(i,j)}_{0,2} \\
--\mS^{(i,j)}_{1,1}{}^{-1}\mS^{(i,j)}_{1,0} & 
-         \mS^{(i,j)}_{1,1}{}^{-1} &
-        -\mS^{(i,j)}_{1,1}{}^{-1} \mS^{(i,j)}_{1,2}\\ 
-\mJ^{(i,j)}_{2,0} &
-         \mS^{(i,j)}_{2,1}\mS^{(i,j)}_{1,1}{}^{-1} & 
-\mJ^{(i,j)}_{2,0} 
-    \end{bmatrix},$$
-with $\mJ^{(i,j)}_{a,b}=\mS^{(i,j)}_{a,b} -\mS^{(i,j)}_{a,1} \mS^{(i,j)}_{1,1}{}^{-1}\mS^{(i,j)}_{1,b}$
-for all $a,b$.
-In other words, up to permuting the first two blocks of rows, and the
-first two blocks of columns, $\mS^{(i+j)}$ is derived from $\mS^{(j)}$ in
-the same manner that $\mS^{(i)}$ is derived from $S^{(0)}=\mA$. 
+\todo{Maybe improve this ``intuitive proof'' : could say the transformation of
+  $R^{(i+j)}$ from $R^{(i)}$ has the same result than the column reduction. And
+  that transformations like that are unique, so they coincide. }
 
-We may thus apply the rule that we used in Lemma~\ref{lemma:cpj-cm} to derive
-$(\mY^{(i)},\mZ^{(i)})$ from $(\mG,\mH)$ in order to derive
-$(\mY^{(i+j)},\mZ^{(i+j)})$ from $(\mY^{(i)},\mZ^{(i)})$.  Taking into account
-the permutations we applied, we obtain the formulas given above.
-\end{proof}
+Finally, we need to detect when $\mA$ has generic rank profile. By construction,
+the $j$th principal minor of $\mS^{(i)}_{1,1}$ is the Schur complement of
+${\mA^{(i)}_{0,0}}$, seen as a submatrix of $\mA^{(i+j)}_{0,0}$. Assume that
+$\mA^{(i)}_{0,0}$ is invertible and has generic rank profile, then
+$\mA^{(i+j)}_{0,0}$ has generic rank profile if and only if the $j$th principal
+minor of $\mS^{(i,j)}_{1,1}$ does.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{A faster quadratic algorithm}\label{ssec:quad}
 
 We can then describe the basic iterative step of our algorithm; we
 will use a step size $\beta \in \{1,\dots,\alpha\}$, given as a
