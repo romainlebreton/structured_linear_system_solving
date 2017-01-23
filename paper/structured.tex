@@ -21,6 +21,7 @@ bla
 \newcommand{\vf}{\ensuremath{\mathsf{f}}}
 \newcommand{\vg}{\ensuremath{\mathsf{g}}}
 \newcommand{\vh}{\ensuremath{\mathsf{h}}}
+\newcommand{\vi}{\ensuremath{\mathsf{i}}}
 \newcommand{\vr}{\ensuremath{\mathsf{r}}}
 \newcommand{\vu}{\ensuremath{\mathsf{u}}}
 \newcommand{\vv}{\ensuremath{\mathsf{v}}}
@@ -174,11 +175,14 @@ rank compared to its size; the rank of $\phi(\mA)$ is called the
 \textit{displacement rank} of $\mA$ with respect to $\phi$. A
 prominent example is the family of so-called {\em Toeplitz-like}
 matrices, which are structured for the Toeplitz displacement operator
-$$\phi^+: \mA \mapsto \mA - (\mA \text{~shifted down and right by one
-  place}).$$ The displacement rank of a Toeplitz matrix for this
-operator is at most two; if $\mA$ is a mosaic Toeplitz with a $p
-\times q$ block structure, its Toeplitz displacement rank is at most
-$p+q$.
+\begin{eqnarray*}
+  \phi: \mA & \mapsto & \left( \mZ_m \mA - \mA \mZ_n \right) = 
+                        (\mA \downarrow) - (\mA \leftarrow)
+\end{eqnarray*}
+where $\mZ_n \in \K^{n \times n}$ is the matrix with only ones below the
+diagonal.  The displacement rank of a Toeplitz matrix for this operator is at
+most two; if $\mA$ is a mosaic Toeplitz with a $p \times q$ block structure, its
+Toeplitz displacement rank is at most $p+q$.
 
 The key idea of most algorithms for structured matrices is summarized
 by Pan's motto~\cite{Pan01}: compress, operate, decompress. Indeed,
@@ -322,45 +326,94 @@ that one can reduce questions about Toeplitz-like matrices to ones
 about Cauchy-like matrices (and conversely, if one wishes to), for a
 moderate cost overhead.
 
-To a vector $\vu$ in $\K^m$, let us now associate the corresponding
-Vandermonde matrix $\mV_\vu \in \K^{m\times m}$, together with
-$\mW_\vu$, obtained by reversing the order of the rows in
-$\mV^t_\vu$. Given $\vu$ as above, $\vv$ in $\K^n$, and a mosaic
-Toeplitz $\mA=(\mA_{i,j})_{1 \le i \le p,1 \le j \le q}$ of size $m
-\times n$, with $\mA_{i,j}$ of size $m_i \times n_j$, we let
-$\mA' = \mV_\vu\, \mA\, \mW_\vv$, and we define the following.
+To a vector $\vu$ in $\K^m$, let us now associate the corresponding Vandermonde
+matrices $\mV_\vu, \mW_\vu \in \K^{m \times m}$
+$$
+\mV_\vu = 
+\begin{bmatrix}
+  1 & u_1 & \cdots & u_1^{m - 1}\\
+  \vdots & \vdots &  & \vdots\\
+  1 & u_m & \cdots & u_m^{m - 1}
+\end{bmatrix},
+\mW_\vu = 
+\begin{bmatrix}
+  u_1^{m - 1} & \cdots & u_m^{m - 1}\\
+  \vdots &  & \vdots\\
+  u_1 & \cdots & u_m\\
+  1 & \cdots & 1
+\end{bmatrix}.
+$$
+Given $\vu$ as above, $\vv$ in $\K^n$ and $\mA$ be a Toeplitz-like matrix, we
+let $\mA' = \mV_\vu\, \mA\, \mW_\vv$ that is Cauchy-like as we will see. The
+$\nabla_{\vu,\vv}$-generators of $\mA'$ depend on the $\phi$-generators of $\mA$
+so let's start with those. If $\mA=(\mA_{i,j})_{1 \le i \le p,1 \le j \le q}$ is
+mosaic Toeplitz of size $m \times n$, with $\mA_{i,j}$ of size $m_i \times n_j$,
+we define the following
 \begin{itemize}
 \item For $1 \le i \le p$, let $\mA_{i,*}$ be the block matrix
-  $[\mA_{i,1}~\cdots~\mA_{i,q}]$.  Let $\eta_i$ be the first row of
-  $\mA_{i,*}$, shifted left once, let $\eta'_i$ be the last row of
-  $\mA_{i,*}$, and finally let $\vh_i=(\eta_i-\eta'_{i-1})\mW_\vv$
-  (for $i=1$, $\eta'_0$ is the zero vector); this is a row-vector of
-  size $n$.  We also let $\vg_{i}$ be the column of $\mV_\vu$ of index $m_1 +
-  \cdots +m_{i-1}+1$.
+  $[\mA_{i,1}~\cdots~\mA_{i,q}]$.  Let $\eta_i$ be the first row of $\mA_{i,*}$,
+  shifted left once, let $\eta'_i$ be the last row of $\mA_{i,*}$, and finally
+  let $\vh_i=(\eta'_{i-1}-\eta_i)$ (for $i=1$, $\eta'_0$ is the zero vector);
+  this is a row-vector of size $n$. If $\vi_{i,n}$ denotes the row-vector of
+  dimension $n$ with only a one at index $i$, we also let $\vg_{i}$ be the
+  transpose of $\vi_{m_1 + \cdots +m_{i-1}+1,m}$.
   
-\item For $1 \le j \le q$, define $\mA_{*,j}$ similarly to $\mA_{i,*}$; $\gamma_j$
-  and $\gamma'_j$ are its first and last columns, with now a downward
-  shift for $\gamma'_j$; in addition, their entry of index $m_1 +
-  \cdots + m_j$ are to zero. Then, we define
-  $\vg_{p+j}=\mV_\vu(\gamma'_{j}-\gamma_{j+1})$ (as above, undefined
-  entries are set to zero).  We also let $\vh_{p+j}$ be 
-  the row of  index $n_1 + \cdots
-  +n_j$ in $\mW_\vv$.
-\item We define $\vg_{p+q+1}$ as the column vector with entries $u_i^m$,
-  $1 \le i \le m$, and $\vh_{p+q+1}$ as the last row of $\mA \mW_\vv$;
-  we also define $\vg_{p+q+2}$ as the first column of $-\mV_\vu \mA$,
-  and $\vh_{p+q+2}$ as the  column vector with entries $v_j^n$,  
-  $1\le j \le n$.
+\item For $1 \le j \le q$, define $\mA_{*,j}$ similarly to $\mA_{i,*}$;
+  $\gamma_j$ and $\gamma'_j$ are its first and last columns, with now a downward
+  shift for $\gamma'_j$; in addition, their entry of index $m_1 + \cdots + m_j$
+  are set to zero. Then, we define $\vg_{p+j}=(\gamma'_{j}-\gamma_{j+1})$ (as
+  above, undefined entries are set to zero).  We also let
+  $\vh_{p+j}=\vi_{n_1 + \cdots +n_j,n}$.
 \end{itemize}
-Then, a straightforward verification shows that the matrix $\mG'$ with
-columns $\vg_1,\dots,\vg_{p+q+2}$, and the matrix $\mH'$ with columns
-$\vh^t_1,\dots,\vh^t_{p+q+2}$, are $\nabla_{\vu,\vv}$-generators of
-$\mA'$.
+With these definitions, the matrices
+$\mG=\left< \vg_1 | \dots | \vg_{p+q} \right>$ and
+$\mH= \left<\vh^t_1 | \dots | \vh^t_{p+q} \right>$ are $\phi$-generators of
+$\mA$.
+
+Now we conjugate $\mA$ by Vandermonde matrices since those matrices transform
+diagonal matrices into displacement matrices; more precisely, we have the
+formulae
+\[
+  \mD_{\vu}  \mV_{\vu} = \mV_{\vu}  \mZ + (\vu^m)^t \, \vi_{m,m}, \quad
+  \mW_{\vv}  \mD_{\vv} = \mZ  \mW_{\vv} + (\vi_{1,n})^t \, \vv^n
+\]
+where $\vu^m = \begin{bmatrix} u_1^m & \cdots & u_n^m \end{bmatrix}$ and the
+same for $\vv^n$.
+
+As a
+consequence, if $\phi(\mA)=\mG \mH^t$ then
+\begin{eqnarray}
+  \nabla_{\vu, \vv} \left( \mathsf{A}' \right) & = & \mD_{\vu}  \mV_{\vu} 
+  \mathsf{A}  \mW_{\vv} - \mV_{\vu}  \mathsf{A}  \mW_{\vv}  \mD_{\vv} \nonumber \\
+  & = & \mV_{\vu}  \left( \mZ  \mathsf{A} - \mathsf{A}  \mZ \right) \mW_{\vv} 
+  \label{eq:gentoetogencau}\\
+  &   & + (\vu^m)^t \, \vi_{m,m}  \mathsf{A}  \mW_{\vv} 
+        - \mV_{\vu}  \mathsf{A}  (\vi_{1,n})^t \, \vv^n . \nonumber 
+\end{eqnarray}
+
+This motivates the following definitions
+
+\begin{itemize}
+\item For $1 \le i \le p$, let $\vh'_i=\vh_i \mW_\vv$ and also let $\vg'_{i}$ be
+  the column of $\mV_\vu$ of index $m_1 + \cdots +m_{i-1}+1$.
+  
+\item For $1 \le j \le q$, define $\vg'_{p+j} = \mV_\vu \vg_{p+j}$ and also let
+  $\vh'_{p+j}$ be the row of index $n_1 + \cdots +n_j$ in $\mW_\vv$.
+
+\item We define $\vg_{p+q+1} = (\vu^m)^t$, and $\vh_{p+q+1}$ as the last row of
+  $\mA \mW_\vv$; we also define $\vg_{p+q+2}$ as the first column of
+  $-\mV_\vu \mA$, and $\vh_{p+q+2} = \vv^n$.
+\end{itemize}
+
+Then it follows from Equation~(\ref{eq:gentoetogencau}) that the matrix $\mG'$
+with columns $\vg'_1,\dots,\vg'_{p+q+2}$, and the matrix $\mH'$ with columns
+that are the transpose of $\vh'_1,\dots,\vh'_{p+q+2}$, are
+$\nabla_{\vu,\vv}$-generators of $\mA'$.
 
 The bottleneck in the computation of $\mG'$ and $\mH'$ are $p$
 left-products by $\mW_\vv$ and $p$ products by $\mV_\vu$.  If all
 entries of $\vu$ and $\vv$ are in geometric progression this takes
-time $O(p \M(n) + q \M(m))$; whereas $\mA$ has $\phi^+$-generators of
+time $O(p \M(n) + q \M(m))$; whereas $\mA$ has $\phi$-generators of
 length $p+q$, the generators $(\mG',\mH')$ have length $p+q+2$.
 
 \smallskip\noindent{\bf \small Regularization.}  In our algorithms for

@@ -113,6 +113,13 @@
     <tformat|<table|<row|<cell|\<nabla\><rsub|<vu>,<vv>><around*|(|<mA><rprime|'>|)>>|<cell|=>|<cell|<mD><rsub|<vu>>*<wide|<mV>|\<bar\>><rsub|<vu>>*<mA>*<wide|<mW>|\<bar\>><rsub|<vv>>-<wide|<mV>|\<bar\>><rsub|<vu>>*<mA>*<wide|<mW>|\<bar\>><rsub|<vv>>*<mD><rsub|<vv>>>>|<row|<cell|>|<cell|=>|<cell|<wide|<mV>|\<bar\>><rsub|<vu>>*<around*|(|<mZ><rsup|t>*<mA>-<mA>*<mZ><rsup|t>|)>*<wide|<mW>|\<bar\>><rsub|<vv>>+<matrix|<tformat|<table|<row|<cell|u<rsub|1><rsup|n>>|<cell|0>|<cell|\<cdots\>>|<cell|0>>|<row|<cell|\<vdots\>>|<cell|\<vdots\>>|<cell|>|<cell|\<vdots\>>>|<row|<cell|u<rsub|n><rsup|n>>|<cell|0>|<cell|\<cdots\>>|<cell|0>>>>>*<mA>*<wide|<mW>|\<bar\>><rsub|<vv>>-<wide|<mV>|\<bar\>><rsub|<vu>>*<mA>*<matrix|<tformat|<table|<row|<cell|0>|<cell|\<cdots\>>|<cell|0>>|<row|<cell|\<vdots\>>|<cell|>|<cell|\<vdots\>>>|<row|<cell|0>|<cell|\<cdots\>>|<cell|0>>|<row|<cell|v<rsub|1><rsup|n>>|<cell|*\<cdots\>>|<cell|v<rsub|n><rsup|n>>>>>>.>>>>
   </eqnarray*>
 
+  Otherwise ff <math|<mA><rprime|'>=<mV><rsub|<vu>>*<mA>*<mW><rsub|<vv>>>
+  then
+
+  <\eqnarray*>
+    <tformat|<table|<row|<cell|\<nabla\><rsub|<vu>,<vv>><around*|(|<mA><rprime|'>|)>>|<cell|=>|<cell|<mD><rsub|<vu>>*<mV><rsub|<vu>>*<mA>*<mW><rsub|<vv>>-<mV><rsub|<vu>>*<mA>*<mW><rsub|<vv>>*<mD><rsub|<vv>>>>|<row|<cell|>|<cell|=>|<cell|<mV><rsub|<vu>>*<around*|(|<mZ>*<mA>-<mA>*<mZ>|)>*<mW><rsub|<vv>>+<matrix|<tformat|<table|<row|<cell|0>|<cell|\<cdots\>>|<cell|0>|<cell|u<rsub|1><rsup|n>>>|<row|<cell|\<vdots\>>|<cell|>|<cell|\<vdots\>>|<cell|\<vdots\>>>|<row|<cell|0>|<cell|\<cdots\>>|<cell|0>|<cell|u<rsub|n><rsup|n>>>>>>*<mA>*<mW><rsub|<vv>>-<mV><rsub|<vu>>*<mA><matrix|<tformat|<table|<row|<cell|u<rsub|1><rsup|n>>|<cell|*\<cdots\>>|<cell|u<rsub|n><rsup|n>>>|<row|<cell|0>|<cell|\<cdots\>>|<cell|0>>|<row|<cell|\<vdots\>>|<cell|>|<cell|\<vdots\>>>|<row|<cell|0>|<cell|\<cdots\>>|<cell|0>>>>>.>>>>
+  </eqnarray*>
+
   Or we can express it using the more common
   <math|<around*|(|<mA>-<mZ>*<mA>*<mZ><rsup|t>|)>> displacement operator
   using
@@ -173,6 +180,10 @@
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|From
       Toeplitz to Cauchy matrices> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-1><vspace|0.5fn>
+
+      <vspace*|2fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-size|<quote|1.19>|Old
+      stuff> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-2><vspace|1fn>
     </associate>
   </collection>
 </auxiliary>
