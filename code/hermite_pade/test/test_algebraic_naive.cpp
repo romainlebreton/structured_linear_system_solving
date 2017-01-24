@@ -20,32 +20,12 @@ NTL_CLIENT
 /*  deg(F,x)=deg(F,y)=d, ht(F)=b                              */
 /* returns the solution with d^2 terms                        */
 /*------------------------------------------------------------*/
-void random_F_and_solution(ZZXY & F, ZZX & g, ZZ& den_g, long d, long b){
-  random(F, b, d, d);
-  ZZX F0;
-  random(F0, b, F.degY()-1);
-  ZZX factor;
-  ZZ root{22};
-  SetCoeff(factor, 1, 1);
-  SetCoeff(factor, 0, -root);
-  F0 = F0 * factor;
-  for (long i = 0; i <= F.degY(); i++)
-    F.coeffX[i] = (F.coeffX[i] << 1) + coeff(F0, i);
-  F.series_solution(g, den_g, root, 4*d*d);
-}
-
-/*------------------------------------------------------------*/
-/* creates a polynomial F                                     */
-/*  deg(F,x)=deg(F,y)=d, ht(F)=b                              */
-/* returns the solution with d^2 terms                        */
-/*------------------------------------------------------------*/
 void random_F_and_solution_mod_p(ZZXY & F, ZZX & g, long dx, long dy, long b){
   zz_p::FFTInit(0);
   ZZ p{zz_p::modulus()};
   while (p < (ZZ{1} << (2*b)))
     p = p*p;
   p = p*p;
-  cout << "ZZ_p: " << p << endl;
   ZZ_p::init(p);
 
   random(F, b, dx, dy);
@@ -68,37 +48,6 @@ void random_F_and_solution_mod_p(ZZXY & F, ZZX & g, long dx, long dy, long b){
 
   Fp.series_solution(g_p, to_ZZ_p(root), 2*(dx+3)*(dy+3));
   conv(g, g_p);
-  cout << "done finding the solution\n";
-}
-
-/*------------------------------------------------------------*/
-/* reads a polynomial f and an integer vector                 */
-/*------------------------------------------------------------*/
-void read_f_type(ZZX &F, Vec<long>& type, const string& name){
-  string line_f, line_type;
-  ifstream file;
-  file.open(name);
-  long inp;
-  Vec<ZZ> f;
-
-  if (! getline(file, line_f)){
-    cout << "first line of file should be coefficients of f\n";
-    exit(-1);
-  }
-  istringstream iss_f{line_f};
-  while(iss_f >> inp)
-    f.append(ZZ(inp));
-  F = conv<ZZX>(f);
-    
-  if (! getline(file, line_type)){
-    cout << "first line of file should be type\n";
-    exit(-1);
-  }
-  istringstream iss_type = istringstream(line_type);
-  while (iss_type >> inp)
-    type.append(inp);
-
-  file.close();
 }
 
 /*------------------------------------------------------------*/
@@ -117,6 +66,7 @@ void do_test(long b, long dx, long dy, long mode_lifting){
   type.SetLength(dy+2);
   for (long i = 0; i < dy+2; i++)
     type[i] = dx+2;
+  ZZ p_back = ZZ_p::modulus();
   
   hermite_pade_algebraic hp(f, type, deg(f)+1, 0);
   if (hp.NumCols() - hp.Rank() > 1){
@@ -139,18 +89,27 @@ void do_test(long b, long dx, long dy, long mode_lifting){
 	witness.append(conv<long>( conv<zz_p>(coeff(F.coeffX[i], j)) / conv<zz_p>(coeff(F.coeffX[0], deg(F.coeffX[0]))) ));
       else
 	witness.append(0);
-  
-  hp = hermite_pade_algebraic(f, type, sigma, witness, 0);
 
-  hp.switch_mode(mode_lifting);
+  ZZ_p::init(p_back);
+  Vec<ZZX> vecF;
+  ZZX tmp;
+  SetCoeff(tmp, 0, ZZ{1});
+  for (long i = 0; i < type.length(); i++){
+    vecF.append(tmp);
+    tmp = conv<ZZX>(conv<ZZ_pX>(trunc(tmp * f, sigma)));
+  }
+
+  hermite_pade_general hpg = hermite_pade_general(vecF, type, sigma, witness, 0);
+  
+  hpg.switch_mode(mode_lifting);
 
   cout << "dx=" << dx << " dy=" << dy << endl;
   cout << "type " << type << endl;
-  cout << "dimensions:= " << hp.NumRows() << " " << hp.NumCols() << endl;
-  cout << "nullity " << hp.NumCols() - hp.Rank() << endl;
-  
+  cout << "dimensions:= " << hpg.NumRows() << " " << hpg.NumCols() << endl;
+  cout << "nullity " << hpg.NumCols() - hpg.Rank() << endl;
+
   Vec<ZZX> sol;
-  hp.random_solution(sol);
+  hpg.random_solution(sol);
   cout << "first coefficient of sol: " << coeff(sol[0], 0) << endl;
   cout << "first coefficient of F: " << coeff(F.coeffX[0], 0) << endl;
  }

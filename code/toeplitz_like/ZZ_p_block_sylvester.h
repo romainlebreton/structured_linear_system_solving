@@ -60,6 +60,11 @@ public:
   void init (const Vec<ZZ_pX> &fs, const Vec<long> &type, long prec);
 
   /*----------------------------------------------------*/
+  /* sets up the polys                                 */
+  /*----------------------------------------------------*/
+  void init (const Vec<ZZX> &fs, const Vec<long> &type, long prec);
+
+  /*----------------------------------------------------*/
   /* sets up the matrices                               */
   /*----------------------------------------------------*/
   void init_mat();
@@ -70,6 +75,13 @@ public:
   /*        output precision                            */
   /*----------------------------------------------------*/
   ZZ_p_block_sylvester_general(const Vec<ZZ_pX> &fs, const Vec<long> &type, long prec);
+
+  /*----------------------------------------------------*/
+  /* input: Vec of polynomials fs                       */
+  /*        type                                        */
+  /*        output precision                            */
+  /*----------------------------------------------------*/
+  ZZ_p_block_sylvester_general(const Vec<ZZX> &fs, const Vec<long> &type, long prec);
 
   /*----------------------------------------------------*/
   /* does nothing                                       */  

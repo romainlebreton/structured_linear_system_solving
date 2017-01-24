@@ -44,9 +44,7 @@ void ZZ_p_block_sylvester_general::init_mat(){
 }
 
 
-
 /*----------------------------------------------------*/
-/* is this useful?                                    */
 /*----------------------------------------------------*/
 void ZZ_p_block_sylvester_general::init(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec){
   this->type = type;
@@ -58,6 +56,25 @@ void ZZ_p_block_sylvester_general::init(const Vec<ZZ_pX>& fs, const Vec<long> &t
     f_rev_ZZ[i].rep.SetLength(prec);
     for (long j = 0; j < prec; j++)
       f_rev_ZZ[i].rep[j] = conv<ZZ>(coeff(fs[i], prec-1-j));
+    f_rev_ZZ[i].normalize();
+  }
+
+  initialized = true;
+}
+
+
+/*----------------------------------------------------*/
+/*----------------------------------------------------*/
+void ZZ_p_block_sylvester_general::init(const Vec<ZZX>& fs, const Vec<long> &type, long prec){
+  this->type = type;
+  this->prec = prec;
+  f_ZZ = fs;
+  
+  f_rev_ZZ.SetLength(type.length());
+  for (long i = 0; i < type.length(); i++){
+    f_rev_ZZ[i].rep.SetLength(prec);
+    for (long j = 0; j < prec; j++)
+      f_rev_ZZ[i].rep[j] = coeff(fs[i], prec-1-j);
     f_rev_ZZ[i].normalize();
   }
 
@@ -239,6 +256,17 @@ void ZZ_p_block_sylvester_general::to_dense(Mat<ZZ_p> & dense){
 /*        output precision                            */
 /*----------------------------------------------------*/
 ZZ_p_block_sylvester_general::ZZ_p_block_sylvester_general(const Vec<ZZ_pX>& fs, const Vec<long> &type, long prec):
+  ZZ_p_block_sylvester(type, prec) {
+  init(fs, type, prec);
+}
+
+
+/*----------------------------------------------------*/
+/* input: Vec of polynomials fs                       */
+/*        type                                        */
+/*        output precision                            */
+/*----------------------------------------------------*/
+ZZ_p_block_sylvester_general::ZZ_p_block_sylvester_general(const Vec<ZZX>& fs, const Vec<long> &type, long prec):
   ZZ_p_block_sylvester(type, prec) {
   init(fs, type, prec);
 }

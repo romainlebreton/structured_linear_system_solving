@@ -128,6 +128,13 @@ void hermite_pade_algebraic::init(const Vec<long> &type_in){
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
 
   rank = invert(invA, CL);                             // inverting M mod p
+  // if (rank == -1){
+  //   cout << type << endl;
+  //   Mat<zz_p> CLD;
+  //   CL.to_dense(CLD);
+  //   cout << "k:=GF(" << zz_p::modulus() << ";\n";
+  //   magma_assign(CLD, "cld");
+  // }
 
   sizeX = X_int.length();
   sizeY = Y_int.length();
@@ -181,11 +188,10 @@ hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& ty
 /* f: the power series                                            */
 /* type: the type of the approximant                              */
 /* sigma: requested precision                                     */
-/* witness: solution modulo the next fft prime                    */
+/* w: solution modulo the next fft prime                          */
 /*----------------------------------------------------------------*/
 hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const Vec<long>& type, long sigma, Vec<long>& w, long fft_index):
   hermite_pade(fft_index) {
-  stop_criterion = 1;
   f_full_prec = f;
   prec = sigma;
   init(type);
@@ -206,4 +212,10 @@ hermite_pade_algebraic::hermite_pade_algebraic(const ZZX &f, const ZZ &denom_in,
   prec = sigma;
   denom = denom_in;
   init(type);
+}
+
+/*----------------------------------------------------------------*/
+/* does nothing                                                   */
+/*----------------------------------------------------------------*/
+hermite_pade_algebraic::hermite_pade_algebraic(){
 }

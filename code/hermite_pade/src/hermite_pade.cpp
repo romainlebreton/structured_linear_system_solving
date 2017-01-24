@@ -841,3 +841,10 @@ void hermite_pade::switch_mode(long i){
     throw "mode not supported";
   mode = i;
 }
+
+
+/*----------------------------------------------------------------*/
+/* does nothing                                                   */
+/*----------------------------------------------------------------*/
+hermite_pade::hermite_pade(){
+}
