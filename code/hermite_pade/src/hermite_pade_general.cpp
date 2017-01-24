@@ -45,9 +45,8 @@ void hermite_pade_general::increase_rank(Vec<hankel> & vh_zz_p, Vec<ZZ_hankel> &
 /* creates a new block Sylvester matrix                           */
 /*----------------------------------------------------------------*/
 SmartPtr<ZZ_p_block_sylvester> hermite_pade_general::create_bmc(){
-  Vec<ZZ_pX> fs_p;
-  conv(fs_p, vec_fs);
-  return MakeSmart<ZZ_p_block_sylvester_general>(ZZ_p_block_sylvester_general(fs_p, type, original_sizeX));
+  return MakeSmart<ZZ_p_block_sylvester_general>(ZZ_p_block_sylvester_general(vec_fs, type, original_sizeX));
+  // return MakeSmart<ZZ_p_block_sylvester_general>(ZZ_p_block_sylvester_general(fs_p, type, original_sizeX));
 }
 
 /*----------------------------------------------------------------*/
