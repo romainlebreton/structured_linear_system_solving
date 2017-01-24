@@ -779,6 +779,8 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   cout << "everything: " << GetTime() - time_all << endl;
   cout << "loop: " << GetTime() - time_loop << endl;
   cout << "mul time: " << time_mulA << endl;
+  if (time_spent_lower != 0)
+    cout << "Time for lower: " << time_spent_lower << endl;
   cout << "mul M right: " << time_mul_m_right << endl;
   cout << "mul X right: " << time_mul_x_right << endl;
   cout << "mul Y right: " << time_mul_y_right << endl;
