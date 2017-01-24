@@ -337,13 +337,17 @@ Mat<ZZ_p> hermite_pade::mulA_right(const Mat<ZZ_p> &b){
 /* (CL is cauchy-geometric-like)                                  */
 /*----------------------------------------------------------------*/
 Vec<ZZ_p> hermite_pade::mulA_left(const Vec<ZZ_p>& b){
-  double t = GetTime();
   Vec<ZZ_p> b1=b;
   b1.SetLength(e.length());
+  double time = GetTime();
   Vec<ZZ_p> x = mul_X_left(b1);
+  time_mul_x_left += GetTime() - time;
+  time = GetTime();
   x = mul_M_left(x);
+  time_mul_m_left += GetTime() - time;
+  time = GetTime();
   x = mul_Y_left(x);
-  time_mulA += GetTime() - t;
+  time_mul_y_left += GetTime() - time;
 
   return x;
 }
@@ -443,12 +447,20 @@ void hermite_pade::Newton(long n){
   				 conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(lift_invA[n-1].H)), 
 				 conv<ZZ_p>(d), conv<ZZ_p>(c), conv<ZZ_p>(vec_w[n]) );
 
+  double time = GetTime();
   C_n.mul_right(X1, X);
+  time_cauchy_right += GetTime() - time;
   X2 = mulA_right(X1);
+  time = GetTime();
   C_n.mul_right(X3, X2);
+  time_cauchy_right += GetTime() - time;
+  time = GetTime();
   C_n.mul_left(Y1, Y);
+  time_cauchy_left += GetTime() - time;
   Y2 = mulA_left(Y1);
+  time = GetTime();
   C_n.mul_left(Y3, Y2);
+  time_cauchy_left += GetTime() - time;
 
   lift_invA.append(  ZZ_p_cauchy_like_geometric(-(2*X1-X3), (2*Y1-Y3), conv<ZZ_p>(d), conv<ZZ_p>(c), conv<ZZ_p>(vec_w[n])) );
 
@@ -767,9 +779,16 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   cout << "everything: " << GetTime() - time_all << endl;
   cout << "loop: " << GetTime() - time_loop << endl;
   cout << "mul time: " << time_mulA << endl;
-  cout << "mul M: " << time_mul_m_right << endl;
-  cout << "mul X: " << time_mul_x_right << endl;
-  cout << "mul Y: " << time_mul_y_right << endl;
+  cout << "mul M right: " << time_mul_m_right << endl;
+  cout << "mul X right: " << time_mul_x_right << endl;
+  cout << "mul Y right: " << time_mul_y_right << endl;
+  if (mode == 2){
+    cout << "mul M left: " << time_mul_m_left << endl;
+    cout << "mul X left: " << time_mul_x_left << endl;
+    cout << "mul Y left: " << time_mul_y_left << endl;
+    cout << "time cauchy left: " << time_cauchy_left << endl;
+    cout << "time cauchy right: " << time_cauchy_right << endl;
+  }
   cout << "total reconstruction time: " << time_recon_all << endl;
   cout << "reconstruction only: " << time_recon << endl;
   cout << "divisions in recon: " << div_in_recon << endl; 

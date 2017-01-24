@@ -65,6 +65,12 @@ class hermite_pade {
   double time_mul_m_right = 0;
   double time_mul_x_right = 0;
   double time_mul_y_right = 0;
+  double time_mul_x_left = 0;
+  double time_mul_y_left = 0;
+  double time_mul_m_left = 0;
+  double time_cauchy_right = 0;
+  double time_cauchy_left = 0;
+
   
   /*----------------------------------------------------------------*/
   /* applies a block reversal to v                                  */

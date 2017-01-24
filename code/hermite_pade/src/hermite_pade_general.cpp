@@ -136,7 +136,7 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
 
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
   rank = invert_fast(invA, CL); // inverting M mod p
-  //  cout << "original rank: " << rank << endl;
+  cout << "original rank: " << rank << endl;
 
   sizeX = X_int.length();
   sizeY = Y_int.length();
@@ -158,6 +158,7 @@ hermite_pade_general::hermite_pade_general(const Vec<ZZX> &fs, const Vec<long> &
 
   to_cauchy_grp(CL, X_int, Y_int, e_zz_p, f_zz_p, MH); // converting from Hankel to Cauchy
   rank = invert_fast(invA, CL); // inverting M mod p
+  cout << "new rank: " << rank << endl;
   sizeX = X_int.length();
   sizeY = Y_int.length();
 
