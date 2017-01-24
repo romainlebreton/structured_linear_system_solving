@@ -135,7 +135,7 @@ coefficients of degrees $n-1,\dots,m+n-2$, where we write $P_\vb=b_0 +
 $\mA=(\mA_{i,j})_{1 \le i \le p,1 \le j \le q}$ can be described by a
 sequence of $pq$ such polynomials $\mathscr{P}=(P_{\mA_{i,j}})_{1 \le
   i \le p,1 \le j \le q}$, together with the sequences
-$I=(i_1,\dots,i_p)$ and $J=(j_1,\dots,j_q)$ giving the row-sizes,
+$I=(m_1,\dots,m_p)$ and $J=(n_1,\dots,n_q)$ giving the row-sizes,
 resp.\ column-sizes of the blocks. Then, our main problem is the
 following.
 
@@ -311,13 +311,11 @@ using middle product techniques~\cite{HaQuZi04,BoLeSc03,BoSc05}, the
 cost goes down from $3\alpha \M(p') +O(\alpha p')$ to $\alpha \M(p')
 +O(\alpha p')$. 
 
-If one needs to multiply $\mA$ as above by {\em several} vectors,
-further improvements are possible: we mention (without giving details) 
-an algorithm from~\cite{BoJeMoSc16}, which
-makes it possible to multiply $\mA$ by $\alpha$ vectors in time 
- $O(\alpha^{\omega-1}
-\M(p'))$ instead of $O(\alpha^2 \M(p'))$, by reduction to 
-a sequence of polynomial matrix multiplications.
+If one needs to multiply $\mA$ as above by {\em several} vectors, further
+improvements are possible: we mention (without giving details) an algorithm
+from~\cite{BoJeSc08,BoJeMoSc16}, which makes it possible to multiply $\mA$ by $\alpha$
+vectors in time $O(\alpha^{\omega-1} \M(p'))$ instead of $O(\alpha^2 \M(p'))$,
+by reduction to a sequence of polynomial matrix multiplications.
 
 \smallskip\noindent{\bf \small Reduction from mosaic Toeplitz to Cauchy structure.}
  We said that our primary interest lies in mosaic
