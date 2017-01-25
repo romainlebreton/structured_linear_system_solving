@@ -5,6 +5,10 @@
 \usepackage{enumerate}
 \usepackage[colorlinks=true,linkcolor=cyan]{hyperref}
 
+\usepackage[lined,boxed,ruled,vlined]{algorithm2e}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+
 \numberofauthors{1}
 \author{
 \alignauthor
@@ -55,6 +59,7 @@ bla
 \newcommand{\M}{\ensuremath{\mathscr{M}}}
 
 \newcommand{\lm}{\ensuremath{\operatorname{lm}}}
+\newcommand{\rank}{\ensuremath{\operatorname{rank}}}
 
 \DeclareBoldMathCommand{\bF}{F}
 \DeclareBoldMathCommand{\bh}{h}
@@ -269,7 +274,9 @@ exponent for linear algebra, in the sense that matrices of size $n$
 can be multiplied in $O(n^\omega)$ base ring operations over any ring;
 the best bound to date is $\omega < 2.38$~\cite{CoWi90, LeGall14}.
 The notation $\Otilde{\,}$ indicates that we omit polylogarithmic
-terms.
+terms. Among the linear algebra operations whose cost reduce to matrix
+multiplication, we will have to compute rank and rank
+profile~\cite{IbMoHu82}.
 
 Matrix-vector multiplication with $\mC_{\vu,\vv}$ reduces to degree
 $n$ polynomial interpolation at the points $\vv$ and evaluation at the
@@ -674,30 +681,129 @@ $\mA^{(i)}_{0,0}$ is invertible and has generic rank profile, then
 $\mA^{(i+j)}_{0,0}$ has generic rank profile if and only if the $j$th principal
 minor of $\mS^{(i,j)}_{1,1}$ does.
 
+\todo{reintegrate the following notations}
+Let $i,j$ be non-negative integers with $0 \le i+j \le p$, and
+${\mA^{(i)}_{0,0}}$ invertible. Write a block decomposition of $\mS^{(i)}$ as
+\begin{equation}\label{eq:Siblock}
+\mS^{(i)} = \begin{bmatrix} 
+\mS^{(i,j)}_{0,0} & \mS^{(i,j)}_{0,1} & \mS^{(i,j)}_{0,2}\\
+\mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1} & \mS^{(i,j)}_{1,2}\\
+\mS^{(i,j)}_{2,0} & \mS^{(i,j)}_{2,1} & \mS^{(i,j)}_{2,2}
+    \end{bmatrix},  
+\end{equation}
+with $\mS^{(i,j)}_{0,0}={\mA^{(i)}_{0,0}}{}^{-1}$ of size $i \times i$ and
+$\mS^{(i,j)}_{1,1}$ of size $j \times j$ (from this, the sizes of all blocks can
+be deduced).  Similarly, we can refine our decompositions of $\mY^{(i)}$ and
+$\mZ^{(i)}$ as
+$$
+\mY^{(i)} = 
+\begin{bmatrix}
+  \mY^{(i)}_0 \\\mY^{(i,j)}_1 \\\mY^{(i,j)}_2
+\end{bmatrix}, \quad
+\mZ^{(i)} = 
+\begin{bmatrix}
+  \mZ^{(i)}_0 \\\mZ^{(i,j)}_1 \\\mZ^{(i,j)}_2
+\end{bmatrix},
+$$
+with $\mY^{(i,j)}_1$ and $\mZ^{(i,j)}_2$ of size $j \times \alpha$.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{A faster quadratic algorithm}\label{ssec:quad}
 
 We can then describe the basic iterative step of our algorithm; we
 will use a step size $\beta \in \{1,\dots,\alpha\}$, given as a
-parameter.  Suppose that we have found that ${\mA^{(i)}_{0,0}}$ has rank $i$, with
+parameter. 
+
+Note that the formulae that computes $(\mY^{(i+j)},\mZ^{(i+j)})$ from
+$(\mY^{(i)},\mZ^{(i)})$ only involves the matrices that belong to the row or the
+column of $\mS^{(i,j)}_{1,1}$. So the line~\ref{line:rowcol} of
+Algorithm~\ref{algo:quadratic} computes respectively the row 
+$
+\begin{bmatrix}
+  \mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1} & \mS^{(i,j)}_{1,2}
+\end{bmatrix} 
+$ 
+and the column 
+$
+\begin{bmatrix} 
+  \mS^{(i,j)}_{0,1}& \mS^{(i,j)}_{1,1}& \mS^{(i,j)}_{2,1}
+\end{bmatrix}^t $
+from its $\nabla_{\vu_{i+1:i+j}, \vf^{(i)}}$-generators
+$(\mY^{(i,j)}_1,\mZ^{(i)})$ and its
+$\nabla_{\ve^{(i)},\vv_{i+1:i+j}}$-generators $(\mY^{(i)},\mZ^{(i,j)}_1)$.
+
+\paragraph*{Complexity}
+Computing the rank profile in line~\ref{line:rankprof} costs
+$O(\beta^\omega)$.  Using block matrix multiplication in
+Eq.~\eqref{eq:recA2}, since $j \le \beta \le \alpha$, we see that we
+can recover the matrices of line~\ref{line:rowcol} in time
+$O(\beta^{\omega-2} \alpha (m+n))$.  To compute $\mY^{(i+j)}$ on
+line~\ref{line:nextgen}, we first compute
+$\mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1$ in time
+$O(\beta^{\omega-1} \alpha)$; then all other operations take time
+$O(\beta^{\omega-2} \alpha m)$.  Similarly, computing $\mZ^{(i+j)}$
+takes time $O(\beta^{\omega-2} \alpha n)$.
+
+%%%%%%%%%%%%
+
+\begin{algorithm}[t]
+  \LinesNumbered \DontPrintSemicolon
+  \caption{Quadratic Algorithm for Problem~\ref{pb:cauchy} \label{algo:quadratic}}
+
+  \Input{$\mA,\mG,\mH, \beta$}
+  \Output{$r=\rank(\mA), \mY^{(i)}_0,\mZ^{(i)}_0$ or FAIL }
+  % \SetKwFunction{Algorithm}{RDAC} \Algorithm{$A,\mathbf{C},i,N,k$}
+
+  $i=0, \mS^{(0)}=\mA, \mY^{(0)}=\mG, \mZ^{(0)}=\mH, r_{\max} = p$\;
+  \While{$i \neq r_{\max}$}{
+    $j = \min (\beta,r_{ \max}-i)$\;
+    Compute $\mS^{(i,j)}_{1,1}$ from its generators $(\mY^{(i,j)}_1,\mZ^{(i,j)}_1)$\;
+    Compute the rank and the rank profile of $\mS^{(i,j)}_{1,1}$\; \label{line:rankprof}
+    \If{$\mS^{(i,j)}_{1,1}$ does not have generic rank profile}{
+      \Return FAIL\;
+    }
+    \lIf{$\rank( \mS^{(i,j)}_{1,1}) \neq j$}{
+      $r_{\max}=i+\rank( \mS^{(i,j)}_{1,1})$\
+    }
+    Compute the row and column of $\mS^{(i,j)}_{1,1}$ in $\mS^{(i,j)}$\; \label{line:rowcol}
+    Compute the generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of $\mS^{(i+j)}$\; \label{line:nextgen}
+    $i = i + j$\;
+  }
+  Compute $\mS^{(i)}$ from its generators $(\mY^{(i)},\mZ^{(i)})$\;
+  Read the Schur complement of $\mA^{(i)}_{0,0}$ in $\mA$ as a part of  $\mS^{(i)}$\\
+  \lIf{Schur complement is non zero}{\Return FAIL}
+  \lElse {\Return $(i,\mY^{(i)}_0,\mZ^{(i)}_0)$}
+\end{algorithm}
+
+
+
+
+ Suppose that we have found that ${\mA^{(i)}_{0,0}}$ has rank $i$, with
 generic rank profile, and that we have computed $(\mY^{(i)},\mZ^{(i)})$, for
 some index $i$ in $\{0,\dots,p\}$.
 
 \smallskip{\noindent \bf 0.} If $i=p$, return $(\mY^{(p)}_0,\mZ^{(p)}_0)$.
 
-\smallskip{\noindent \bf 1.} Let $j=\min(\beta, p-i) \ge 1$, and
-compute the matrices $\mS^{(i,j)}_{1,0}$, $\mS^{(i,j)}_{1,1}$,
-$\mS^{(i,j)}_{1,2}$, $\mS^{(i,j)}_{0,1}$ and $\mS^{(i,j)}_{0,2}$
-of~\eqref{eq:Siblock}. Since $(\mY^{(i)},\mZ^{(i)})$ are
-$\nabla_{\ve^{(i)},\vf^{(i)}}$-generators of $\mS^{(i)}$,  $(\mY^{(i,j)}_1,\mZ^{(i)})$ and $(\mY^{(i)},\mZ^{(i,j)}_1)$ are
+\smallskip{\noindent \bf 1.} Let $j=\min(\beta, p-i) \ge 1$, and compute the
+matrices $\mS^{(i,j)}_{1,0}$, $\mS^{(i,j)}_{1,1}$, $\mS^{(i,j)}_{1,2}$,
+$\mS^{(i,j)}_{0,1}$ and $\mS^{(i,j)}_{2,1}$ of~\eqref{eq:Siblock}. Since
+$(\mY^{(i)},\mZ^{(i)})$ are $\nabla_{\ve^{(i)},\vf^{(i)}}$-generators of
+$\mS^{(i)}$, $(\mY^{(i,j)}_1,\mZ^{(i)})$ and $(\mY^{(i)},\mZ^{(i,j)}_1)$ are
 respectively $\nabla_{\vu_{i+1:i+j}, \vf^{(i)}}$-generators and
 $\nabla_{\ve^{(i)},\vv_{i+1:i+j}}$-generators of its submatrices
-$$\begin{bmatrix}\mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1} & \mS^{(i,j)}_{1,2}\end{bmatrix} \quad\text{and}\quad
-\begin{bmatrix} \mS^{(i,j)}_{0,1}\\ \mS^{(i,j)}_{1,1}\\ \mS^{(i,j)}_{2,1}
-\end{bmatrix}.$$ Using block matrix multiplication in
-Eq.~\eqref{eq:recA2}, since $j \le \beta \le \alpha$, we see that we can
-recover all these matrices in time $O(\beta^{\omega-2} \alpha (m+n))$.
+$$
+\begin{bmatrix}
+  \mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1} & \mS^{(i,j)}_{1,2}
+\end{bmatrix} 
+\quad\text{and}\quad
+\begin{bmatrix} 
+  \mS^{(i,j)}_{0,1}\\ \mS^{(i,j)}_{1,1}\\ \mS^{(i,j)}_{2,1}
+\end{bmatrix}.
+$$ 
+Using block matrix multiplication in Eq.~\eqref{eq:recA2}, since
+$j \le \beta \le \alpha$, we see that we can recover all these matrices in time
+$O(\beta^{\omega-2} \alpha (m+n))$.
 
 \smallskip{\noindent \bf 2.} If $\mS^{(i,j)}_{1,1}$ does not have generic
 rank profile, raise an error. Else, compute its rank $\rho$. This
