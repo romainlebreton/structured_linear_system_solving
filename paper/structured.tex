@@ -83,8 +83,7 @@ bla
 \def\gathen#1{{#1}}
 
 
-\title{Using structured linear algebra to compute Hermite-Pad\'e
-approximants}
+\title{Practical improvements in structured linear algebra}
 
 \begin{document}
 
@@ -495,11 +494,10 @@ We can then state the main question of this section; remark that the
 assumptions on the vectors $\vu,\vv$ are slightly stronger than the one
 required for $\nabla_{\vu,\vv}$ to be invertible.
 \begin{pbm}\label{pb:cauchy}
-  Consider vectors $\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$, with
-  $u_i \ne v_j$, $u_i \ne u_{i'}$, $v_j \ne v_{j'}$ for all
-  $i,i',j,j'$.  Given $\nabla_{\vu,\vv}$-generators of length $\alpha$ for
-  a matrix $\mA$ in $\K^{m \times n}$, with $\alpha \le \min(m,n)$, do
-  the following:
+  Consider vectors $\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$,
+  such that $(\vu,\vv)$ has distinct entries. Given
+  $\nabla_{\vu,\vv}$-generators of length $\alpha$ for a matrix $\mA$
+  in $\K^{m \times n}$, with $\alpha \le \min(m,n)$, do the following:
   \begin{itemize}
   \item if $\mA$ does not have generic rank profile, raise an error,
   \item else, return $\nabla_{\vv',\vu'}$-generators for the inverse of the
