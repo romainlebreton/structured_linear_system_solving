@@ -447,6 +447,8 @@ void hermite_pade::Newton(long n){
   				 conv<Mat<ZZ_p>>(conv<Mat<ZZ>>(lift_invA[n-1].H)), 
 				 conv<ZZ_p>(d), conv<ZZ_p>(c), conv<ZZ_p>(vec_w[n]) );
 
+  // cout << "cauchy dimensions " << C_n.NumRows() << " " << C_n.NumCols() << " " << C_n.NumGens() << endl;
+  // cout << "X dimensions " << X.NumRows() << " " << X.NumCols() << " " << endl;
   double time = GetTime();
   C_n.mul_right(X1, X);
   time_cauchy_right += GetTime() - time;

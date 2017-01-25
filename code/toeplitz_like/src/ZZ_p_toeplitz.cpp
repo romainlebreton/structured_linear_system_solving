@@ -93,12 +93,14 @@ void ZZ_p_toeplitz::mul_right(Vec<ZZ_p>& res, const Vec<ZZ_p>& input) const {
   ZZ_pX tmp = data_rev * input_X;
   for (long i = 0; i < nM; i++)
     res[i] = coeff(tmp, i + mM - 1);
+
 }
 
 /*----------------------------------------------------*/
 /* right multiplication                               */
 /*----------------------------------------------------*/
 void ZZ_p_toeplitz::mul_right(Mat<ZZ_p>& res, const Mat<ZZ_p>& input) const {
+
   long m = NumRows();
   long n = NumCols();
 
@@ -115,6 +117,7 @@ void ZZ_p_toeplitz::mul_right(Mat<ZZ_p>& res, const Mat<ZZ_p>& input) const {
     for (long j = 0; j < m; j++)
       res[j][i] = elts[j];
   }
+
 }
 
 /*----------------------------------------------------*/

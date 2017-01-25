@@ -48,6 +48,7 @@ long ZZ_p_cauchy_like_geometric::NumGens() const {
 /* computes output = M*input                         */
 /*---------------------------------------------------*/
 void ZZ_p_cauchy_like_geometric::mul_right(Vec<ZZ_p>& output, const Vec<ZZ_p>& input) const {
+
   long m = NumRows();
   long n = NumCols();
   long alpha = NumGens();
@@ -72,6 +73,7 @@ void ZZ_p_cauchy_like_geometric::mul_right(Vec<ZZ_p>& output, const Vec<ZZ_p>& i
 /* computes output = M*input                         */
 /*---------------------------------------------------*/
 void ZZ_p_cauchy_like_geometric::mul_right(Mat<ZZ_p>& output, const Mat<ZZ_p>& input) const {
+
   long m = NumRows();
   long n = NumCols();
   long alpha = NumGens();
@@ -107,6 +109,7 @@ void ZZ_p_cauchy_like_geometric::mul_right(Mat<ZZ_p>& output, const Mat<ZZ_p>& i
     for (long j = 0; j < m; j++)
       output[j][i] = diag[j]*vec_out[j];
   }
+
 }
 
 
