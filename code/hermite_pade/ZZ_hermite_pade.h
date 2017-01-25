@@ -78,12 +78,7 @@ class hermite_pade {
   /* returns [v2,v1,v5,v4,v3] (blocks have length type[i]+1)        */
   /*----------------------------------------------------------------*/
   Vec<ZZ_p> flip_on_type (const Vec<ZZ_p> &v);
-
-  /*----------------------------------------------------------------*/
-  /* applies a block reversal to v                                  */
-  /* e.g., type = [1,2] v = [v1,v2,v3,v4,v5]                        */
-  /* returns [v2,v1,v5,v4,v3] (blocks have length type[i]+1)        */
-  /*----------------------------------------------------------------*/
+  Vec<long> flip_on_type (const Vec<long> &v);
   Vec<Vec<ZZ>> flip_on_type(const Vec<Vec<ZZ>> &v);
 
   /*----------------------------------------------------------------*/

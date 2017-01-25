@@ -25,6 +25,24 @@ Vec<ZZ_p> hermite_pade::flip_on_type (const Vec<ZZ_p> &v){
   return r;
 }
 
+
+/*----------------------------------------------------------------*/
+/* applies a block reversal to v                                  */
+/* e.g., type = [1,2] v = [v1,v2,v3,v4,v5]                        */
+/* returns [v2,v1,v5,v4,v3] (blocks have length type[i]+1)        */                                    
+/*----------------------------------------------------------------*/
+Vec<long> hermite_pade::flip_on_type (const Vec<long> &v){
+  Vec<long> r;
+  r.SetMaxLength(v.length());
+  long acc = 0;
+  for (long i = 0; i < type.length(); i++){
+    for(long j = type[i]; j >= 0; j--)
+      r.append(v[j+acc]);
+    acc += type[i] + 1;
+  }
+  return r;
+}
+
 /*----------------------------------------------------------------*/
 /* applies a block reversal to v                                  */
 /*----------------------------------------------------------------*/
@@ -565,6 +583,8 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
   double t = GetTime();
   Vec<Vec<ZZ>> sol;
   sol.SetLength(0);
+
+  Vec<long> flip_wit = flip_on_type(witness); // local variable?
   
   ZZ bound;
   if (n == 0)
@@ -593,9 +613,20 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
       temp.append(a);
       temp.append(b);
       sol.append(temp);
+
+      if (stop_criterion == 2) {
+	ZZ_pPush push;
+	ctx2.restore();
+	if (conv<long>(conv<ZZ>(conv<ZZ_p>(a) / conv<ZZ_p>(b))) != flip_wit[i]){
+	  cout << "early abort in ratrecon with n=" << n << " i=" << i << endl;
+	  time_recon_all += GetTime()-t;
+	  return false;
+	}
+      }
+
     }
     catch(...){
-    	time_recon += GetTime() - t;
+      time_recon += GetTime() - t;
       time_recon_all += GetTime()-t;
       return false;
     }
@@ -645,13 +676,13 @@ bool hermite_pade::reconstruct_and_check(Vec<ZZX> & sol_poly, const Vec<ZZ_p> &v
     break;
   case 2:
     {
-      ZZ_pContext push;
+      ZZ_pPush push;
       ctx2.restore();
       Vec<ZZ_p> sol_ZZ_p;
       for (long int i = 0; i < sol.length(); i++)
-	sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
+ 	sol_ZZ_p.append(conv<ZZ_p>(sol[i][0]) / conv<ZZ_p>(sol[i][1]));
       if ( conv<Vec<long>>(conv<Vec<ZZ>>(sol_ZZ_p)) != witness ){
-	cout << "failed ratrecon with n=" << n << endl;
+	cout << "failed ratrecon using witness with n=" << n << endl;
 	time_recon_all += GetTime()-t;
 	return false;
       }
@@ -729,8 +760,8 @@ void hermite_pade::random_solution(Vec<ZZX> &sol_poly){
   if ((NumCols() - Rank()) != 1)
     throw "lifting works only in case of nullity 1";
 
-  zz_pContext zz_p_push;
-  ZZ_pContext ZZ_p_push;
+  zz_pPush zz_p_push;
+  ZZ_pPush ZZ_p_push;
 
   ctx.restore();
   long n = 0; // start at p^2^n
@@ -826,7 +857,6 @@ long hermite_pade::NumCols() const {
 /*----------------------------------------------------------------*/
 hermite_pade::hermite_pade(long fft_index) {
   level = 0;
-  zz_pContext push;
   zz_p::FFTInit(fft_index+1);
   ctx2 = ZZ_pContext(ZZ(zz_p::modulus())); 
   zz_p::FFTInit(fft_index);
