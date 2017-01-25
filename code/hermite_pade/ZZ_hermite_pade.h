@@ -70,7 +70,7 @@ class hermite_pade {
   double time_mul_m_left = 0;
   double time_cauchy_right = 0;
   double time_cauchy_left = 0;
-
+  double time_spent_lower = 0;
   
   /*----------------------------------------------------------------*/
   /* applies a block reversal to v                                  */

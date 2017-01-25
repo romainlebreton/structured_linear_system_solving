@@ -56,6 +56,7 @@ Vec<ZZ_p> hermite_pade_general::mul_M_right(const Vec<ZZ_p> &b){
   Vec<ZZ_p> upper = hermite_pade::mul_M_right(b);
   if (rows_added != 0){
     Vec<Vec<ZZ_p>> b_split = split_on_type(flip_on_type(b));
+    double time = GetTime();
     ZZ_pX lower;
     for (long i = 0; i < type.length(); i++){
       Vec<ZZ_p> values;
@@ -67,6 +68,7 @@ Vec<ZZ_p> hermite_pade_general::mul_M_right(const Vec<ZZ_p> &b){
     for (long i = 0; i < deg(lower)+1; i++){
       upper.append(lower[i]);
     }
+    time_spent_lower += GetTime() - time;
   }
   return upper;
 }
