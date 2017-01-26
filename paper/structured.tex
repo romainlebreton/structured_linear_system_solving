@@ -60,6 +60,9 @@ bla
 
 \newcommand{\lm}{\ensuremath{\operatorname{lm}}}
 \newcommand{\rank}{\ensuremath{\operatorname{rank}}}
+\newcommand{\DAC}{\ensuremath{\mathsf{DAC}}}
+\newcommand{\Iter}{\ensuremath{\mathsf{Iter}}}
+
 
 \DeclareBoldMathCommand{\bF}{F}
 \DeclareBoldMathCommand{\bh}{h}
@@ -81,7 +84,6 @@ bla
 \newtheorem{algo}{Algorithm}
 
 \def\gathen#1{{#1}}
-
 
 \title{Practical improvements in structured linear algebra}
 
@@ -709,13 +711,13 @@ $\mS^{(i,j)}_{1,1}$ as pivot (see Eq.~(\ref{eq:Ri})).
 
 \begin{algorithm}[t]
   \LinesNumbered \DontPrintSemicolon
-  \caption{Quadratic Algorithm for Problem~\ref{pb:cauchy} \label{algo:quadratic}}
+  \caption{Iterative algorithm $\Iter$ for Problem~\ref{pb:cauchy} \label{algo:iter}}
 
-  \Input{$\mA, \mG,\mH, \beta$}
-  \Output{$r=\rank(\mA), \mY^{(i)}_0,\mZ^{(i)}_0$ or FAIL }
+  \Input{Generators $(\mG,\mH)$ of $\mA$ and step size $\beta$}
+  \Output{$r=\rank(\mA), \mY^{(r)}_0,\mZ^{(r)}_0$ or FAIL }
   % \SetKwFunction{Algorithm}{RDAC} \Algorithm{$A,\mathbf{C},i,N,k$}
 
-  $i=0, \mS^{(0)}=\mA, \mY^{(0)}=\mG, \mZ^{(0)}=\mH, \bar{r} = p$\;
+  $i=0, \mY^{(0)}=\mG, \mZ^{(0)}=\mH, \bar{r} = p$\;
   \While{$i \neq \bar{r}$}{
     $j = \min (\beta,\bar{r}-i)$\;
     Recover $\mS^{(i,j)}_{1,1}$ from its generators $(\mY^{(i,j)}_1,\mZ^{(i,j)}_1)$\;
@@ -735,14 +737,14 @@ $\mS^{(i,j)}_{1,1}$ as pivot (see Eq.~(\ref{eq:Ri})).
   \lElse {\Return $(\bar{r},\mY^{(\bar{r})}_0,\mZ^{(\bar{r})}_0)$}
 \end{algorithm}
 
-We describe in Algorithm~\ref{algo:quadratic} an quadratic iterative
+We describe in Algorithm~\ref{algo:iter} an quadratic iterative
 algorithm for Problem~\ref{pb:cauchy}; we will use a step size
 $\beta \in \{1,\dots,\alpha\}$, given as a parameter.
 
 Note that the formulae that computes $(\mY^{(i+j)},\mZ^{(i+j)})$ from
 $(\mY^{(i)},\mZ^{(i)})$ only involves the matrices that belong to the
 row or the column of $\mS^{(i,j)}_{1,1}$. So
-Algorithm~\ref{algo:quadratic}, line~\ref{line:rowcol} recovers the
+Algorithm~\ref{algo:iter}, line~\ref{line:rowcol} recovers the
 row $\mS^{(i,j)}_{1,\ast}$ from its
 $\nabla_{\vu_{i+1:i+j}, \vv^{(i)}}$-generators
 $(\mY^{(i,j)}_1,\mZ^{(i)})$ and the column $\mS^{(i,j)}_{\ast,1}$ from
@@ -806,9 +808,64 @@ cost drops to $O(\alpha^{\omega-2} mn)$, as claimed previously.
 
 \subsection{The divide-and-conquer algorithm}\label{ssec:MBA-C}
 
+\begin{algorithm}[t]
+  \LinesNumbered \DontPrintSemicolon
+  \caption{Divide-And-Conquer algorithm $\DAC$ \label{algo:dac}}
+
+  \Input{Generators $(\mG,\mH)$ of $\mA$, threshold $t$}
+  \Output{$r=\rank(\mA), \mY^{(r)}_0,\mZ^{(r)}_0$ or FAIL }
+
+  $p = \min(m,n), p' = \max(m,n)$\; 
+
+  \lIf{$p' \leq t$}{\Return $\Iter(\mG,\mH, \alpha)$} 
+  $i = \lceil p/2 \rceil$\;
+  $(r_0,\mY^{(r_0)}_0,\mZ^{(r_0)}_0) = \DAC(\mG^{(i)}_0, \mH^{(i)}_0,  t)$\;\label{line:dac0}
+
+  Compute $(\mY^{(r_0)},\mZ^{(r_0)})$ from $(\mY^{(r_0)}_0,\mZ^{(r_0)}_0)$ and $(\mG,\mH)$
+  \label{line:recoverfullgen0}\;
+
+  \If{$r_0 < i$}{
+    \lIf{$\mY^{(r_0)}_1 \mZ^{(r_0)}_1{}^t \neq 0$}{\Return FAIL}
+    \Return $(r_0,\mY^{(r_0)}_0,\mZ^{(r_0)}_0)$ }
+
+  $(r_1,\mY^{(r_0,r_1)}_1,\mZ^{(r_0,r_1)}_1) = \DAC(\mY^{(r_0)}_1,\mZ^{(r_0)}_1, t)$
+  \label{line:dac1}\;
+
+  Compute $(\mY^{(r_0+r_1)}_0,\mZ^{(r_0+r_1)}_0)$ from
+  $(\mY^{(r_0,r_1)}_1,\mZ^{(r_0,r_1)}_1)$ and
+  $(\mY^{(r_0)},\mZ^{(r_0)})$
+  \label{line:recoverfullgen1}\;
+
+  \Return $(r_0+r_1,\mY^{(r_0+r_1)}_0,\mZ^{(r_0+r_1)}_0)$
+\end{algorithm}
+
+
 We now review the divide-and-conquer approach to solving
 Problem~\ref{pb:cauchy}, and discuss a constant factor improvement for
 the case of certain Cauchy-like matrices. 
+\todo{and better dependency $\alpha^{\omega-1}$ in $\alpha$ ? Or not new ?}
+
+Our algorithm proceed essentially following~\cite{JeMo10}, with the
+minor difference that do not assume $\mA$ invertible, and that we
+explicitly check if $\mA$ satisfies the generic rank profile
+assumption.
+
+Recursive calls to $\DAC$ on lines~\ref{line:dac0},~\ref{line:dac1} will raise an error if the submatrices are
+not in generic position, so we can assume that we are not in that case.
+
+Computations of
+lines~\ref{line:recoverfullgen0},~\ref{line:recoverfullgen1} are f the
+same essence ; using Eq.~\eqref{eq:defYi} and~\eqref{eq:defZi}, we can
+recover the full generators $(\mY^{(i+j)},\mZ^{(i+j)})$ if we know the
+generators $(\mY^{(i,j)}_1,\mZ^{(i,j)}_1)$ of the inverse of the
+principal minor $\mS^{(i,j)}_{1,1}$ and previous full generators
+$(\mY^{(i)},\mZ^{(i)})$.
+
+\todo{Romain : here}
+
+ \bigskip
+
+%%%%%%%%%%%%%%%%
 
 Let $\mA,\mG,\mH,p,r$ be as in the previous subsection, and for $i$ in
 $\{0,\dots,p\}$, define
