@@ -358,16 +358,16 @@ we define the following
   $[\mA_{i,1}~\cdots~\mA_{i,q}]$.  Let $\eta_i$ be the first row of $\mA_{i,*}$,
   shifted left once, let $\eta'_i$ be the last row of $\mA_{i,*}$, and finally
   let $\vh_i=(\eta'_{i-1}-\eta_i)$ (for $i=1$, $\eta'_0$ is the zero vector);
-  this is a row-vector of size $n$. If $\vi_{i,n}$ denotes the row-vector of
+  this is a row-vector of size $n$. If $\ve_{i,n}$ denotes the row-vector of
   dimension $n$ with only a one at index $i$, we also let $\vg_{i}$ be the
-  transpose of $\vi_{m_1 + \cdots +m_{i-1}+1,m}$.
+  transpose of $\ve_{m_1 + \cdots +m_{i-1}+1,m}$.
   
 \item For $1 \le j \le q$, define $\mA_{*,j}$ similarly to $\mA_{i,*}$;
   $\gamma_j$ and $\gamma'_j$ are its first and last columns, with now a downward
   shift for $\gamma'_j$; in addition, their entry of index $m_1 + \cdots + m_j$
   are set to zero. Then, we define $\vg_{p+j}=(\gamma'_{j}-\gamma_{j+1})$ (as
   above, undefined entries are set to zero).  We also let
-  $\vh_{p+j}=\vi_{n_1 + \cdots +n_j,n}$.
+  $\vh_{p+j}=\ve_{n_1 + \cdots +n_j,n}$.
 \end{itemize}
 With these definitions, the matrices
 $\mG=\left< \vg_1 | \dots | \vg_{p+q} \right>$ and
@@ -378,8 +378,8 @@ Now we conjugate $\mA$ by Vandermonde matrices since those matrices transform
 diagonal matrices into displacement matrices; more precisely, we have the
 formulae
 \[
-  \mD_{\vu}  \mV_{\vu} = \mV_{\vu}  \mZ + (\vu^m)^t \, \vi_{m,m}, \quad
-  \mW_{\vv}  \mD_{\vv} = \mZ  \mW_{\vv} + (\vi_{1,n})^t \, \vv^n
+  \mD_{\vu}  \mV_{\vu} = \mV_{\vu}  \mZ + (\vu^m)^t \, \ve_{m,m}, \quad
+  \mW_{\vv}  \mD_{\vv} = \mZ  \mW_{\vv} + (\ve_{1,n})^t \, \vv^n
 \]
 where $\vu^m = \begin{bmatrix} u_1^m & \cdots & u_n^m \end{bmatrix}$ and the
 same for $\vv^n$.
@@ -391,8 +391,8 @@ consequence, if $\phi(\mA)=\mG \mH^t$ then
   \mathsf{A}  \mW_{\vv} - \mV_{\vu}  \mathsf{A}  \mW_{\vv}  \mD_{\vv} \nonumber \\
   & = & \mV_{\vu}  \left( \mZ  \mathsf{A} - \mathsf{A}  \mZ \right) \mW_{\vv} 
   \label{eq:gentoetogencau}\\
-  &   & + (\vu^m)^t \, \vi_{m,m}  \mathsf{A}  \mW_{\vv} 
-        - \mV_{\vu}  \mathsf{A}  (\vi_{1,n})^t \, \vv^n . \nonumber 
+  &   & + (\vu^m)^t \, \ve_{m,m}  \mathsf{A}  \mW_{\vv} 
+        - \mV_{\vu}  \mathsf{A}  (\ve_{1,n})^t \, \vv^n . \nonumber 
 \end{eqnarray}
 
 This motivates the following definitions
@@ -599,8 +599,8 @@ to $\begin{bmatrix} \mI_{i,i} & 0 \end{bmatrix}$, we get
 \[ 
 \mR^{(i)} = \begin{bmatrix}
      \mI_{i,i} & 0\\
-     \mS^{(i)}_{0,0} & \mS^{(i)}_{0,1}\\
      \mS^{(i)}_{1,0} & \mS^{(i)}_{1,1}\\
+     \mS^{(i)}_{0,0} & \mS^{(i)}_{0,1}\\
      0 & \mI_{p - i, n - i}
    \end{bmatrix} = \mR^{(0)} \begin{bmatrix}
      \mA_{0, 0}^{(i)} \phantom{}^{- 1} & - \mA_{0, 0}^{(i)} \phantom{}^{- 1} \mA_{0,
@@ -611,11 +611,11 @@ to $\begin{bmatrix} \mI_{i,i} & 0 \end{bmatrix}$, we get
 A key result for the sequel is~\cite[Proposition~1]{Cardinal99} which states the
 Cauchy structure of $\mS^{(i)}$ and gives formulae for its generators. Given
 integers $a,b$, $\vu_{a:b}$ denotes the sequence $(u_a,\dots,u_b)$ (and
-similarly for $\vv_{a:b}$); we then define $\ve^{(i)}=(\vv_{1:i},\vu_{i+1:m})$
-and $\vf^{(i)}=(\vu_{1:i},\vv_{i+1:n})$. Then the matrix $\mS^{(i)}$ is
-Cauchy-like for the vectors $\ve^{(i)}, \vf^{(i)}$ ; remark that the operator
-$\nabla_{\ve^{(i)},\vf^{(i)}}$ is invertible, in view of our assumption on $\vu$
-and $\vv$. Define the $\nabla_{\ve^{(i)},\vf^{(i)}}$-generators
+similarly for $\vv_{a:b}$); we then define $\vu^{(i)}=(\vv_{1:i},\vu_{i+1:m})$
+and $\vv^{(i)}=(\vu_{1:i},\vv_{i+1:n})$. Then the matrix $\mS^{(i)}$ is
+Cauchy-like for the vectors $\vu^{(i)}, \vv^{(i)}$ ; remark that the operator
+$\nabla_{\vu^{(i)},\vv^{(i)}}$ is invertible, in view of our assumption on $\vu$
+and $\vv$. Define the $\nabla_{\vu^{(i)},\vv^{(i)}}$-generators
 $(\mY^{(i)}, \mZ^{(i)})$ of $\mS^{(i)}$ by decomposing
 \[
  \mG=\begin{bmatrix} 
@@ -642,24 +642,50 @@ with $\mG^{(i)}_0, \mH^{(i)}_0, \mY^{(i)}_0, \mZ^{(i)}_0 \in \K^{i \times \alpha
 \end{align}
 
 \begin{lemma}\label{lemma:cpj-cm}
- $(\mY^{(i)},\mZ^{(i)})$ are $\nabla_{\ve^{(i)},\vf^{(i)}}$-generators for $\mS^{(i)}$.
+ $(\mY^{(i)},\mZ^{(i)})$ are $\nabla_{\vu^{(i)},\vv^{(i)}}$-generators for $\mS^{(i)}$.
 \end{lemma}
-
 
 For $i=0$, we simply have $\mS^{(0)}=\mA$ and
 $(\mY^{(0)},\mZ^{(0)})=(\mG,\mH)$.  If $\mA$ has generic rank profile,
-then the above lemma shows that for $i=\rank(\mA)$, $(\mY^{(r)}_0,\mZ^{(r)}_0)$
-are $\nabla_{\vv',\vu'}$-generators for ${\mA^{(r)}_{0,0}}{}^{-1}$,
-for $\vu',\vv'$ as in Problem~\ref{pb:cauchy}, so they solve our
-problem.  These facts will allow us to devise an iterative algorithm
-that starts from $(\mY^{(0)},\mZ^{(0)})$ and computes
-$(\mY^{(i_1)},\mZ^{(i_1)})$, $(\mY^{(i_2)},\mZ^{(i_2)})$, \dots for
-some sequence of indices $0 < i_1 < i_2 < \dots$, until we finally
-reach $(\mY^{(r)},\mZ^{(r)})$, on which we read off our output; if
-$\mA$ does not have generic rank profile, we will detect it. 
+then the above lemma shows that for $r=\rank(\mA)$,
+$(\mY^{(r)}_0,\mZ^{(r)}_0)$ are $\nabla_{\vv',\vu'}$-generators for
+${\mA^{(r)}_{0,0}}{}^{-1}$, for $\vu',\vv'$ as in
+Problem~\ref{pb:cauchy}, so they solve our problem.
 
-\todo{Say that the next point was used in Cardinal but not clearly stated, not
-  even for the particular case used in Cardinal's paper?}
+Let $i,j$ be non-negative integers with $0 \le i+j \le p$, and
+${\mA^{(i)}_{0,0}}$ invertible. Write a block decomposition of $\mS^{(i)}$, $\mY^{(i)}$ and
+$\mZ^{(i)}$ as
+\begin{equation*}
+\mS^{(i)} = \begin{bmatrix} 
+\mS^{(i)}_{0,0} & \mS^{(i,j)}_{0,1} & \mS^{(i,j)}_{0,2}\\
+\mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1} & \mS^{(i,j)}_{1,2}\\
+\mS^{(i,j)}_{2,0} & \mS^{(i,j)}_{2,1} & \mS^{(i,j)}_{2,2}
+    \end{bmatrix},  
+\mY^{(i)} = 
+\begin{bmatrix}
+  \mY^{(i)}_0 \\\mY^{(i,j)}_1 \\\mY^{(i,j)}_2
+\end{bmatrix},
+\mZ^{(i)} = 
+\begin{bmatrix}
+  \mZ^{(i)}_0 \\\mZ^{(i,j)}_1 \\\mZ^{(i,j)}_2
+\end{bmatrix}
+\end{equation*}
+with $\mS^{(i,j)}_{1,1} \in \K^{j \times j}$ and
+$\mY^{(i,j)}_1, \mZ^{(i,j)}_2 \in \K^{j \times \alpha}$ (from this,
+the sizes of all blocks can be deduced).
+
+To solve Problem~\ref{pb:cauchy}, we need to detect when $\mA$ has
+generic rank profile. By construction, $\mS^{(i,j)}_{1,1}$ is the
+Schur complement of ${\mA^{(i)}_{0,0}}$, seen as a submatrix of
+$\mA^{(i+j)}_{0,0}$. This implies the following result.
+
+\begin{lemma}\label{lemma:update}
+  Assume that $\mA^{(i)}_{0,0}$ is invertible and has generic rank
+  profile.
+  $\mA^{(i+j)}_{0,0}$ has generic rank profile if and only if
+  $\mS^{(i,j)}_{1,1}$ does, and
+  ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm rank}(\mS^{(i,j)}_{1,1})$. 
+\end{lemma}
 
 An interesting point is that we can derive $R^{(i+j)}$ from $R^{(j)}$ similarly
 to the previous operation that computes $R^{(i)}$ from $R^{(0)}$. Let
@@ -672,54 +698,14 @@ intuitive way to prove this identity is to show that the column operations that
 reduce $\begin{bmatrix} \mA^{(i+j)}_{0,0} & \mA^{(i+j)}_{0,1} \end{bmatrix}$ to
 $\begin{bmatrix} \mI_{i+j,i+j} & 0 \end{bmatrix}$ can be decomposed in two
 operations that respectively reduce the first $i$th rows, then the next $j$th
-rows, and that these operations match with the transformations of $R^{(i)}$ from
-$R^{(0)}$ and of $R^{(i+j)}$ from $R^{(i)}$.
+rows, and that these operations match with the transformations from
+$R^{(0)}$ to $R^{(i)}$  and from $R^{(i)}$ to $R^{(i+j)}$ .
 
 \todo{Maybe improve this ``intuitive proof'' : could say the transformation of
   $R^{(i+j)}$ from $R^{(i)}$ has the same result than the column reduction. And
   that transformations like that are unique, so they coincide. }
 
-Finally, we need to detect when $\mA$ has generic rank profile. By construction,
-the $j$th principal minor of $\mS^{(i)}_{1,1}$ is the Schur complement of
-${\mA^{(i)}_{0,0}}$, seen as a submatrix of $\mA^{(i+j)}_{0,0}$. Assume that
-$\mA^{(i)}_{0,0}$ is invertible and has generic rank profile, then
-$\mA^{(i+j)}_{0,0}$ has generic rank profile if and only if the $j$th principal
-minor of $\mS^{(i,j)}_{1,1}$ does.
 
-\begin{lemma}\label{lemma:update}
-  Assume that $\mA^{(i)}_{0,0}$ is invertible and has generic rank
-  profile.
-  $\mA^{(i+j)}_{0,0}$ has generic rank profile if and only if
-  $\mS^{(i,j)}_{1,1}$ does, and
-  ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm rank}(\mS^{(i,j)}_{1,1})$. 
-\end{lemma}
-
-
-\todo{reintegrate the following notations}
-Let $i,j$ be non-negative integers with $0 \le i+j \le p$, and
-${\mA^{(i)}_{0,0}}$ invertible. Write a block decomposition of $\mS^{(i)}$ as
-\begin{equation}\label{eq:Siblock}
-\mS^{(i)} = \begin{bmatrix} 
-\mS^{(i,j)}_{0,0} & \mS^{(i,j)}_{0,1} & \mS^{(i,j)}_{0,2}\\
-\mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1} & \mS^{(i,j)}_{1,2}\\
-\mS^{(i,j)}_{2,0} & \mS^{(i,j)}_{2,1} & \mS^{(i,j)}_{2,2}
-    \end{bmatrix},  
-\end{equation}
-with $\mS^{(i,j)}_{0,0}={\mA^{(i)}_{0,0}}{}^{-1}$ of size $i \times i$ and
-$\mS^{(i,j)}_{1,1}$ of size $j \times j$ (from this, the sizes of all blocks can
-be deduced).  Similarly, we can refine our decompositions of $\mY^{(i)}$ and
-$\mZ^{(i)}$ as
-$$
-\mY^{(i)} = 
-\begin{bmatrix}
-  \mY^{(i)}_0 \\\mY^{(i,j)}_1 \\\mY^{(i,j)}_2
-\end{bmatrix}, \quad
-\mZ^{(i)} = 
-\begin{bmatrix}
-  \mZ^{(i)}_0 \\\mZ^{(i,j)}_1 \\\mZ^{(i,j)}_2
-\end{bmatrix},
-$$
-with $\mY^{(i,j)}_1$ and $\mZ^{(i,j)}_2$ of size $j \times \alpha$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -733,24 +719,24 @@ with $\mY^{(i,j)}_1$ and $\mZ^{(i,j)}_2$ of size $j \times \alpha$.
   \Output{$r=\rank(\mA), \mY^{(i)}_0,\mZ^{(i)}_0$ or FAIL }
   % \SetKwFunction{Algorithm}{RDAC} \Algorithm{$A,\mathbf{C},i,N,k$}
 
-  $i=0, \mS^{(0)}=\mA, \mY^{(0)}=\mG, \mZ^{(0)}=\mH, r_{\max} = p$\;
-  \While{$i \neq r_{\max}$}{
-    $j = \min (\beta,r_{\max}-i)$\;
+  $i=0, \mS^{(0)}=\mA, \mY^{(0)}=\mG, \mZ^{(0)}=\mH, \bar{r} = p$\;
+  \While{$i \neq \bar{r}$}{
+    $j = \min (\beta,\bar{r}-i)$\;
     Recover $\mS^{(i,j)}_{1,1}$ from its generators $(\mY^{(i,j)}_1,\mZ^{(i,j)}_1)$\;
     Compute the rank and the rank profile of $\mS^{(i,j)}_{1,1}$\; \label{line:rankprof}
     \If{$\mS^{(i,j)}_{1,1}$ does not have generic rank profile}{
       \Return FAIL\;
     }
     \lIf{$\rank( \mS^{(i,j)}_{1,1})\!<\!j$}{
-      $j=\rank( \mS^{(i,j)}_{1,1}), r_{\max}=i+j$}
+      $j=\rank( \mS^{(i,j)}_{1,1}), \bar{r}=i+j$}
     Recover the row $\mS^{(i,j)}_{1,\ast}$ and column $\mS^{(i,j)}_{\ast,1}$\; \label{line:rowcol}
     Compute the generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of $\mS^{(i+j)}$\; \label{line:nextgen}
     $i = i + j$\;
   }
-  Recover $\mS^{(r_{\max})}$ from its generators $(\mY^{(r_{\max})},\mZ^{(r_{\max})})$\;\label{line:recoverwhole}
-  Read in $\mS^{(r_{\max})}$ the Schur complement of $\mA^{(r_{\max})}_{0,0}$ in $\mA$\;
+  Recover $\mS^{(\bar{r})}$ from its generators $(\mY^{(\bar{r})},\mZ^{(\bar{r})})$\;\label{line:recoverwhole}
+  Read in $\mS^{(\bar{r})}$ the Schur complement of $\mA^{(\bar{r})}_{0,0}$ in $\mA$\;
   \lIf{Schur complement is non zero}{\Return FAIL}
-  \lElse {\Return $(r_{\max},\mY^{(r_{\max})}_0,\mZ^{(r_{\max})}_0)$}
+  \lElse {\Return $(\bar{r},\mY^{(\bar{r})}_0,\mZ^{(\bar{r})}_0)$}
 \end{algorithm}
 
 We describe in Algorithm~\ref{algo:quadratic} an quadratic iterative
@@ -762,9 +748,9 @@ $(\mY^{(i)},\mZ^{(i)})$ only involves the matrices that belong to the
 row or the column of $\mS^{(i,j)}_{1,1}$. So
 Algorithm~\ref{algo:quadratic}, line~\ref{line:rowcol} recovers the
 row $\mS^{(i,j)}_{1,\ast}$ from its
-$\nabla_{\vu_{i+1:i+j}, \vf^{(i)}}$-generators
+$\nabla_{\vu_{i+1:i+j}, \vv^{(i)}}$-generators
 $(\mY^{(i,j)}_1,\mZ^{(i)})$ and the column $\mS^{(i,j)}_{\ast,1}$ from
-its $\nabla_{\ve^{(i)},\vv_{i+1:i+j}}$-generators
+its $\nabla_{\vu^{(i)},\vv_{i+1:i+j}}$-generators
 $(\mY^{(i)},\mZ^{(i,j)}_1)$.
 
 \smallskip\noindent{\bf \small Termination and correction.}
@@ -781,18 +767,18 @@ Lemma~\ref{lemma:update} to determine if $\mA^{(i+j)}_{0,0}$ has the
 same properties.
 
 The while loop exits on one of two conditions that both ensures that
-$r_{\max} = \max\{ r \ |\ \forall j \leq r, \det(\mA^{(j)}_{0,0}) \neq
+$\bar{r} = \max\{ r \ |\ \forall j \leq r, \det(\mA^{(j)}_{0,0}) \neq
 0 \}$.
 Either $\rank(\mS^{(i,j)}_{1,1})$ is always $j$, then $i$ will
-eventually reach $r_{\max}=p$. Or $\rank(\mS^{(i,j)}_{1,1})<j$ at some
-point and after setting $r_{\max}=i+\rank( \mS^{(i,j)}_{1,1})$, we
-have $\det(\mA^{(\ell)}_{0,0}) \neq 0$ for all $\ell \leq r_{\max}$
-and $\det(\mA^{(r_{\max}+1)}_{0,0}) = 0$, and the while loop exits
+eventually reach $\bar{r}=p$. Or $\rank(\mS^{(i,j)}_{1,1})<j$ at some
+point and after setting $\bar{r}=i+\rank( \mS^{(i,j)}_{1,1})$, we
+have $\det(\mA^{(\ell)}_{0,0}) \neq 0$ for all $\ell \leq \bar{r}$
+and $\det(\mA^{(\bar{r}+1)}_{0,0}) = 0$, and the while loop exits
 right after.
 
-After the while loop, it remains to test if $\rank(\mA) = r_{\max}$
+After the while loop, it remains to test if $\rank(\mA) = \bar{r}$
 which is done by checking that the Schur complement of
-$\mA^{(r_{\max})}_{0,0}$ in $\mA$ is zero.
+$\mA^{(\bar{r})}_{0,0}$ in $\mA$ is zero.
 
 \smallskip\noindent{\bf \small Complexity.}
 Computing the rank profile in line~\ref{line:rankprof} costs
@@ -805,9 +791,9 @@ $\mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1$ in time
 $O(\beta^{\omega-1} \alpha)$; then all other operations take time
 $O(\beta^{\omega-2} \alpha m)$.  Similarly, computing $\mZ^{(i+j)}$
 takes time $O(\beta^{\omega-2} \alpha n)$.  Recovering the whole
-matrix $\mS^{(r_{\max})}$ from its
-$\nabla_{\ve^{(r_{\max})},\vf^{(r_{\max})}}$-generators
-$(\mY^{(r_{\max})},\mZ^{(r_{\max})})$ is done by means
+matrix $\mS^{(\bar{r})}$ from its
+$\nabla_{\vu^{(\bar{r})},\vv^{(\bar{r})}}$-generators
+$(\mY^{(\bar{r})},\mZ^{(\bar{r})})$ is done by means
 of~\eqref{eq:recA2}, using block matrix multiplication, with a cost
 $O(\alpha^{\omega-2} mn)$.
 
