@@ -584,30 +584,31 @@ $$
 We see that $( \mS^{(i)})_{i=0\dots p}$ form a sequence of matrix starting from
 $\mA$ and ending at $\mA^{-1}$, at least when $\mA$ is square and invertible. To
 understand where these matrices come from, let's introduce the matrix
-\[ \mR^{(0)} = \begin{bmatrix}
-     \mA\\
-     \mI_{p, n}
-   \end{bmatrix} = \begin{bmatrix}
-     \mS^{(0)}\\
-     \mI_{p, n}
-   \end{bmatrix} \in \K^{(m + p) \times n} 
-\]
-where $\mI_{p, n} \in \K^{p \times n}$ is the rectangular matrix with ones on
-the diagonal. If one performs column operations to reduce the first $i$th rows
-$\begin{bmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{bmatrix}$ of $\mR^{(0)}$
-to $\begin{bmatrix} \mI_{i,i} & 0 \end{bmatrix}$, we get
-\[ 
-\mR^{(i)} = \begin{bmatrix}
+$ \mR^{(0)} = \begin{bmatrix}
+  \mA\\
+  \mI_{p, n}
+\end{bmatrix} = \begin{bmatrix}
+  \mS^{(0)}\\
+  \mI_{p, n}
+\end{bmatrix}
+$
+in $\K^{(m + p) \times n} $, where $\mI_{p, n} \in \K^{p \times n}$ is
+the rectangular matrix with ones on the diagonal. If one performs
+column operations to reduce the first $i$th rows
+$\begin{bmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{bmatrix}$ of
+$\mR^{(0)}$ to $\begin{bmatrix} \mI_{i,i} & 0 \end{bmatrix}$, we get
+\begin{equation}\label{eq:Ri}
+\mR^{(i)}\!=\!\begin{bmatrix}
      \mI_{i,i} & 0\\
      \mS^{(i)}_{1,0} & \mS^{(i)}_{1,1}\\
      \mS^{(i)}_{0,0} & \mS^{(i)}_{0,1}\\
      0 & \mI_{p - i, n - i}
-   \end{bmatrix} = \mR^{(0)} \begin{bmatrix}
+   \end{bmatrix}\!= \mR^{(0)} \begin{bmatrix}
      \mA_{0, 0}^{(i)} \phantom{}^{- 1} & - \mA_{0, 0}^{(i)} \phantom{}^{- 1} \mA_{0,
      1}^{(i)}\\
      0 & \mI_{n - i,n-i}
-   \end{bmatrix}. 
-\]
+   \end{bmatrix}
+\end{equation}
 A key result for the sequel is~\cite[Proposition~1]{Cardinal99} which states the
 Cauchy structure of $\mS^{(i)}$ and gives formulae for its generators. Given
 integers $a,b$, $\vu_{a:b}$ denotes the sequence $(u_a,\dots,u_b)$ (and
@@ -687,25 +688,20 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
   ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm rank}(\mS^{(i,j)}_{1,1})$. 
 \end{lemma}
 
-An interesting point is that we can derive $R^{(i+j)}$ from $R^{(j)}$ similarly
-to the previous operation that computes $R^{(i)}$ from $R^{(0)}$. Let
-$\bar{\mA}$ be the matrix $\mS^{(i)}$ where the $i$ first rows are permuted with
-the next $j$ rows, and the same for the columns. If we write $\bar{\mS}^{(j)}$
-the sequence of matrices starting from $\bar{\mS}^{(0)}=\bar{\mA}$, a direct
-calculation shows the previous claim that $\mS^{(i+j)}$ is equal to
-$\bar{\mS}^{(j)}$ after permuting back its rows and columns. Another more
-intuitive way to prove this identity is to show that the column operations that
-reduce $\begin{bmatrix} \mA^{(i+j)}_{0,0} & \mA^{(i+j)}_{0,1} \end{bmatrix}$ to
-$\begin{bmatrix} \mI_{i+j,i+j} & 0 \end{bmatrix}$ can be decomposed in two
-operations that respectively reduce the first $i$th rows, then the next $j$th
-rows, and that these operations match with the transformations from
-$R^{(0)}$ to $R^{(i)}$  and from $R^{(i)}$ to $R^{(i+j)}$ .
-
-\todo{Maybe improve this ``intuitive proof'' : could say the transformation of
-  $R^{(i+j)}$ from $R^{(i)}$ has the same result than the column reduction. And
-  that transformations like that are unique, so they coincide. }
-
-
+An interesting point is that we can derive $R^{(i+j)}$ from $R^{(j)}$
+similarly to the previous operation that computes $R^{(i)}$ from
+$R^{(0)}$. Let $\bar{\mS}^{(0)}$ be the matrix $\mS^{(i)}$ where the
+$i$ first rows are permuted with the next $j$ rows, and the same for
+the columns. If we write $\bar{\mS}^{(j)}$ the sequence of matrices
+starting from $\bar{\mS}^{(0)}$, a direct calculation shows the
+previous claim that $\mS^{(i+j)}$ is equal to $\bar{\mS}^{(j)}$ after
+permuting back its rows and columns. Another more intuitive way to
+prove this identity is to show that the column operations that reduce
+$\begin{bmatrix} \mA^{(i+j)}_{0,0} & \mA^{(i+j)}_{0,1} \end{bmatrix}$
+to $\begin{bmatrix} \mI_{i+j,i+j} & 0 \end{bmatrix}$ can be decomposed
+in two operations that respectively reduce the first $i$th rows using
+$\mA^{(i)}_{0,0}$ as pivot, then the next $j$th rows using
+$\mS^{(i,j)}_{1,1}$ as pivot (see Eq.~(\ref{eq:Ri})).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -780,13 +776,12 @@ After the while loop, it remains to test if $\rank(\mA) = \bar{r}$
 which is done by checking that the Schur complement of
 $\mA^{(\bar{r})}_{0,0}$ in $\mA$ is zero.
 
-\smallskip\noindent{\bf \small Complexity.}
-Computing the rank profile in line~\ref{line:rankprof} costs
-$O(\beta^\omega)$.  Using block matrix multiplication in
-Eq.~\eqref{eq:recA2}, we see that we can recover the matrices of
-line~\ref{line:rowcol} in time $O(\beta^{\omega-2} \alpha (m+n))$
-since $j \le \beta \le \alpha$.  To compute $\mY^{(i+j)}$ on
-line~\ref{line:nextgen}, we first compute
+\smallskip\noindent{\bf \small Complexity.} Computing the rank
+profile in line~\ref{line:rankprof} costs $O(\beta^\omega)$.  Using
+block matrix multiplication in Eq.~\eqref{eq:recA2}, we see that we
+can recover the matrices of line~\ref{line:rowcol} in time
+$O(\beta^{\omega-2} \alpha (m+n))$ since $j \le \beta \le \alpha$.  To
+compute $\mY^{(i+j)}$ on line~\ref{line:nextgen}, we first compute
 $\mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1$ in time
 $O(\beta^{\omega-1} \alpha)$; then all other operations take time
 $O(\beta^{\omega-2} \alpha m)$.  Similarly, computing $\mZ^{(i+j)}$
@@ -794,10 +789,10 @@ takes time $O(\beta^{\omega-2} \alpha n)$.  Recovering the whole
 matrix $\mS^{(\bar{r})}$ from its
 $\nabla_{\vu^{(\bar{r})},\vv^{(\bar{r})}}$-generators
 $(\mY^{(\bar{r})},\mZ^{(\bar{r})})$ is done by means
-of~\eqref{eq:recA2}, using block matrix multiplication, with a cost
-$O(\alpha^{\omega-2} mn)$.
+of~\eqref{eq:recA2} with a cost $O(\alpha^{\omega-2} mn)$ using block
+matrix multiplication.
 
-The cost of one iteration of the while loop is
+One iteration of the while loop costs
 $O(\beta^{\omega-2} \alpha (m+n))$; we iterate $O(p/\beta)$ times, for
 a total cost of $O(\beta^{\omega-3} \alpha p(m+n))$, which is
 $O(\beta^{\omega-3} \alpha mn)$. This dominates the cost of
