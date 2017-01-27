@@ -938,6 +938,81 @@ balances the costs of the two recursive calls; as a result, the
 overall runtime of the algorithm is $O(\alpha^2 \M(p') \log(p))$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Experimental results}
+
+We have implemented the algorithms described so far, together with all
+subroutines they rely on, in a C++ library available at
+\url{gitsomething}. Our implementation is based on Shoup's
+NTL~\cite{Shoup95,NTL} version 10.3.0, and is dedicated to word-size
+primes (NTL's \texttt{lzz\_p} class). In all that follows, timings are
+measured on an Intel i7-4790 CPU with 32 GB RAM; only one thread is
+used throughout.
+
+The main building blocks we need are fast polynomial and matrix
+computations. NTL already implements very efficient FFT-based
+polynomial arithmetic; matrix multiplication over small fields (for $p
+< 2^{23}$) is now extremely efficient, comparable to reference
+implementations such as FFLAS-FFPACK~\cite{fflas-ffpack}. On top of
+this, we implemented a fast polynomial matrix multiplication, that
+relies on the cyclotomic TFT of~\cite{ArSc15}.
+
+We first discuss Problem~\ref{pb:cauchy}. Our first tests compare our
+new $O(\alpha^{\omega-2} n^2)$ algorithm to the previous one, with
+runtime $O(\alpha n^2)$. Except for very small values of $n$, say $n <
+50$, for which the behavior fluctuates rapidly, we found that the new
+algorithm becomes more efficient for rather small values of $\alpha$:
+our crossover points are $\alpha=8$ or $9$ for primes less than
+$2^{23}$, and $\alpha=13$ or $14$ for larger word-size primes. The
+following graph shows the ratio Time(our algorithm) / Time(previous
+algorithm), for $\alpha=30$. We see that for small primes, for which
+matrix multiplication is very efficient, our algorithm brings a
+substantial improvement.
+
+\includegraphics[width=7cm]{ratio-block-eschost-desktop.pdf}
+
+We consider next the divide-and-conquer algorithm. The key factor for
+the efficiency of this algorithm is the cost of multiplying an $n
+\times n$ cauchy-like matrix of displacement rank $\alpha$ by an $n
+\times \alpha$ dense matrix. We first compare the direct approach of
+cost $O(\alpha^2 \M(n))$ to the algorithm of~\cite{BoJeMoSc16}, with
+cost $O(\alpha^{\omega-1} \M(n))$, with a view of determining for what
+values of $\alpha$ the latter becomes useful. For the former
+algorithm, because we are able to cache several forward FFTs, we found
+it slightly more advantageous to forego the cyclotomic TFT and simply
+use NTL's FFT. As a consequence, the runtime of the first displays the
+typical FFT starcaise behavior. This in turn implies that as $n$
+grows, the crossover value for $\alpha$ fluctuates, roughly between
+$30$ and $55$. The following graph shows the time ratio Time(algorithm
+of~\cite{BoJeMoSc16}) / Time(direct algorithm), for $\alpha=60$; at
+best, the new algorithm wins by a factor of 2. The results do not
+depend much on the nature of the prime (since polynomial arithmetic is
+a significant part of the runtime, and behaves essentially in the same
+manner, independently of $p$).
+
+\includegraphics[width=7cm]{ratio-mul-matrix-eschost-desktop.pdf}
+
+Taking these results into account, we determined empirically crossover
+values $n_0$ to end the recursion in the divide-and-conquer algorithm,
+and switch to the quadratic algorithm. For $\alpha \le 10$, taking
+$n_0\simeq 200$ is a good choice; for $\alpha \ge 20$, we take $n_0 =
+500$ (and we interpolate linearly between the two). The crossover
+points are essentially the same for small (less than $2^{23}$) or
+large word size primes. These values being set, we can then show
+runtimes for solving Problem~\ref{pb:cauchy} for $\alpha=5$ and
+$\alpha=50$, and increasing values of $n$; we also display the time
+taken by a dense matrix inversion, as a matter of reference (this does
+not depend on the choice of $\alpha$).
+
+
+
+
+Our solution of Problem~\ref{pb:mosaic} is a direct reduction to the
+Cauchy-like case; we still have to examine the time for putting the
+problem into Cauchy form by means of the formulas of~\ref{xxx}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
