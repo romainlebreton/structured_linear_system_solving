@@ -908,13 +908,9 @@ long invert_fast(lzz_p_cauchy_like_geometric& Cinv,
   else
     do_thresh = thresh;
 
-  cout << "done " << do_thresh << endl;
-
   Mat<zz_p> Yp_out, Zp_out;
 
   long r = invert_rec(Yp_out, Zp_out, CL.G, CL.H, CL.C.u1, CL.C.v1, CL.C.rho, do_thresh);
-
-  cout << "done2\n";
 
   if (r == -1)
     return -1;
