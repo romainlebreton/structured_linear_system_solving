@@ -41,6 +41,7 @@ void rand_gen(Vec<ZZX> &f, Vec<long> &type, long& nbits, char* filename){
   }
   //cout << "f: " << f << endl;
   //cout << "type: " << type << endl;
+  cout << "nbits: " << nbits << endl;
 }
 
 void run_DAC(const Vec<ZZX> &f, const Vec<long> &type, long prec){
@@ -86,9 +87,12 @@ void run_CRT(const Vec<ZZX> &f, const Vec<long> &type, long prec, long nbits){
   for (long i = 0; i < type.length(); i++)
     ncols += type[i] + 1;
   long times = 2*(long)((nbits*ncols*log(2) + ncols*log(ncols))/(60*log(2)));
+  long actual_times = min(50,times);
   double time = 0;
   cout << "Running CRT " << times << " times" << endl;
-  for (long i = 0; i < times; i++){
+  cout << "actually running: " << actual_times << endl;
+//  cout << "actual time " << actual_times << endl;
+  for (long i = 0; i < actual_times; i++){
     time = GetTime();
     hermite_pade_general hp(f, type, prec,i);
 
@@ -102,7 +106,9 @@ void run_CRT(const Vec<ZZX> &f, const Vec<long> &type, long prec, long nbits){
     //cout << "check_zz_p: " << trunc(res, prec) << endl;
     //cout << "k:=GF(" << zz_p::modulus() << ");\n";
   }
-  cout << "Took: " << time << endl;
+  time = time / actual_times;
+  cout << "average: " << time << endl;
+  cout << "Took: " << time*times / 2 << endl;
 }
 
 int main(int argc, char **argv){
