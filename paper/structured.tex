@@ -62,6 +62,7 @@ bla
 \newcommand{\rank}{\ensuremath{\operatorname{rank}}}
 \newcommand{\DAC}{\ensuremath{\mathsf{DAC}}}
 \newcommand{\Iter}{\ensuremath{\mathsf{Iter}}}
+\newcommand{\Raise}{\textbf{raise} error}
 
 
 \DeclareBoldMathCommand{\bF}{F}
@@ -577,28 +578,31 @@ $$
 If the principal minor
  ${\mA^{(i)}_{0,0}}$  is invertible, we define as in~\cite{Cardinal99}
 $$
-\mS^{(i)} = \begin{bmatrix} 
+\mS^{(i)} = 
+\begin{bmatrix} 
+     \mS^{(i)}_{0,0} & \mS^{(i)}_{0,1}\\
+     \mS^{(i)}_{1,0} & \mS^{(i)}_{1,1}\\
+\end{bmatrix} = 
+\begin{bmatrix} 
    {\mA^{(i)}_{0,0}}{}^{-1} &  -{\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1} \\[1mm]
     \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1} & 
     \mA^{(i)}_{1,1} - \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1}
 \end{bmatrix}.
 $$
-We see that $( \mS^{(i)})_{i=0\dots p}$ form a sequence of matrix starting from
-$\mA$ and ending at $\mA^{-1}$, at least when $\mA$ is square and invertible. To
-understand where these matrices come from, let's introduce the matrix
+We see that $( \mS^{(i)})_{i=0\dots p}$ form a sequence of matrix
+starting from $\mA=\mS^{(0)}$ and ending at $\mA^{-1}=\mS^{(p)}$, at
+least when $\mA$ is square and invertible. To understand where these
+matrices come from, let's introduce the matrix
 $ \mR^{(0)} = \begin{bmatrix}
-  \mA\\
+  \mA \\
   \mI_{p, n}
-\end{bmatrix} = \begin{bmatrix}
-  \mS^{(0)}\\
-  \mI_{p, n}
-\end{bmatrix}
+\end{bmatrix} 
 $
 in $\K^{(m + p) \times n} $, where $\mI_{p, n} \in \K^{p \times n}$ is
-the rectangular matrix with ones on the diagonal. If one performs
-column operations to reduce the first $i$th rows
-$\begin{bmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{bmatrix}$ of
-$\mR^{(0)}$ to $\begin{bmatrix} \mI_{i,i} & 0 \end{bmatrix}$, we get
+the rectangular matrix with ones on the diagonal. If one applies to
+$\mR^{(0)}$ the column operations that reduce its first $i$th rows
+$\begin{bmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{bmatrix}$ to
+$\begin{bmatrix} \mI_{i,i} & 0 \end{bmatrix}$, we get
 \begin{equation}\label{eq:Ri}
 \mR^{(i)}\!=\!\begin{bmatrix}
      \mI_{i,i} & 0\\
@@ -639,9 +643,9 @@ $(\mY^{(i)}, \mZ^{(i)})$ of $\mS^{(i)}$ by decomposing
 with $\mG^{(i)}_0, \mH^{(i)}_0, \mY^{(i)}_0, \mZ^{(i)}_0 \in \K^{i \times \alpha}$ such that
 \begin{align}
 \mY^{(i)}_0&= -{\mA^{(i)}_{0,0}}{}^{-1} \mG^{(i)}_0,\  
-&\mY^{(i)}_1&=-\mA^{(i)}_{1,0}{\mA^{(i)}_{0,0}}{}^{-1}\mG^{(i)}_0 + \mG^{(i)}_1,\label{eq:defYi}\\
+&\mY^{(i)}_1&= \mA^{(i)}_{1,0} \mY^{(i)}_0 + \mG^{(i)}_1,\label{eq:defYi}\\
 \mZ^{(i)}_0&= {\mA^{(i)}_{0,0}}^{-t} \mH^{(i)}_0,\  
-&\mZ^{(i)}_1&=-{\mA^{(i)}_{0,1}}{}^t{\mA^{(i)}_{0,0}}{}^{-t}\mH^{(i)}_0 + \mH^{(i)}_1\label{eq:defZi}.
+&\mZ^{(i)}_1&=-{\mA^{(i)}_{0,1}}{}^t \mZ^{(i)}_0 + \mH^{(i)}_1\label{eq:defZi}.
 \end{align}
 
 \begin{lemma}\label{lemma:cpj-cm}
@@ -650,7 +654,7 @@ with $\mG^{(i)}_0, \mH^{(i)}_0, \mY^{(i)}_0, \mZ^{(i)}_0 \in \K^{i \times \alpha
 
 For $i=0$, we simply have $\mS^{(0)}=\mA$ and
 $(\mY^{(0)},\mZ^{(0)})=(\mG,\mH)$.  If $\mA$ has generic rank profile,
-then the above lemma shows that for $r=\rank(\mA)$,
+then Lemma~\ref{lemma:cpj-cm} shows that for $r=\rank(\mA)$,
 $(\mY^{(r)}_0,\mZ^{(r)}_0)$ are $\nabla_{\vv',\vu'}$-generators for
 ${\mA^{(r)}_{0,0}}{}^{-1}$, for $\vu',\vv'$ as in
 Problem~\ref{pb:cauchy}, so they solve our problem.
@@ -714,26 +718,28 @@ $\mS^{(i,j)}_{1,1}$ as pivot (see Eq.~(\ref{eq:Ri})).
   \caption{Iterative algorithm $\Iter$ for Problem~\ref{pb:cauchy} \label{algo:iter}}
 
   \Input{Generators $(\mG,\mH)$ of $\mA$ and step size $\beta$}
-  \Output{$r=\rank(\mA), \mY^{(r)}_0,\mZ^{(r)}_0$ or FAIL }
+  \Output{$r=\rank(\mA)$, generators $(\mY^{(r)}_0,\mZ^{(r)}_0)$ of
+    $\mA^{(r)}_{0,0}{}^{-1}$}
   % \SetKwFunction{Algorithm}{RDAC} \Algorithm{$A,\mathbf{C},i,N,k$}
 
   $i=0, \mY^{(0)}=\mG, \mZ^{(0)}=\mH, \bar{r} = p$\;
   \While{$i \neq \bar{r}$}{
     $j = \min (\beta,\bar{r}-i)$\;
     Recover $\mS^{(i,j)}_{1,1}$ from its generators $(\mY^{(i,j)}_1,\mZ^{(i,j)}_1)$\;
-    Compute the rank and the rank profile of $\mS^{(i,j)}_{1,1}$\; \label{line:rankprof}
+    Compute the rank $\rho$ and the rank profile of $\mS^{(i,j)}_{1,1}$\; \label{line:rankprof}
     \If{$\mS^{(i,j)}_{1,1}$ does not have generic rank profile}{
-      \Return FAIL\;
+      \Raise\;
     }
-    \lIf{$\rank( \mS^{(i,j)}_{1,1})\!<\!j$}{
-      $j=\rank( \mS^{(i,j)}_{1,1}), \bar{r}=i+j$}
+    \lIf{$\rho<j$}{$j=\rho,\ \bar{r}=i+\rho$}
     Recover the row $\mS^{(i,j)}_{1,\ast}$ and column $\mS^{(i,j)}_{\ast,1}$\; \label{line:rowcol}
     Compute the generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of $\mS^{(i+j)}$\; \label{line:nextgen}
     $i = i + j$\;
   }
-  Recover $\mS^{(\bar{r})}$ from its generators $(\mY^{(\bar{r})},\mZ^{(\bar{r})})$\;\label{line:recoverwhole}
+  Recover $\mS^{(\bar{r})}$ from its generators $(\mY^{(\bar{r})},\mZ^{(\bar{r})})$
+  \label{line:recoverwhole}\;
+
   Read in $\mS^{(\bar{r})}$ the Schur complement of $\mA^{(\bar{r})}_{0,0}$ in $\mA$\;
-  \lIf{Schur complement is non zero}{\Return FAIL}
+  \lIf{Schur complement is non zero}{\Raise}
   \lElse {\Return $(\bar{r},\mY^{(\bar{r})}_0,\mZ^{(\bar{r})}_0)$}
 \end{algorithm}
 
@@ -778,17 +784,18 @@ After the while loop, it remains to test if $\rank(\mA) = \bar{r}$
 which is done by checking that the Schur complement of
 $\mA^{(\bar{r})}_{0,0}$ in $\mA$ is zero.
 
-\smallskip\noindent{\bf \small Complexity.} Computing the rank
-profile in line~\ref{line:rankprof} costs $O(\beta^\omega)$.  Using
-block matrix multiplication in Eq.~\eqref{eq:recA2}, we see that we
-can recover the matrices of line~\ref{line:rowcol} in time
+\smallskip\noindent{\bf \small Complexity.} Computing the rank profile
+in line~\ref{line:rankprof} costs $O(\beta^\omega)$.  Using block
+matrix multiplication in Eq.~\eqref{eq:recA2}, we see that we can
+recover the matrices of line~\ref{line:rowcol} in time
 $O(\beta^{\omega-2} \alpha (m+n))$ since $j \le \beta \le \alpha$.  To
 compute $\mY^{(i+j)}$ on line~\ref{line:nextgen}, we first compute
+$\mS^{(i,j)}_{1,1}{}^{-1}$ in time $O(\beta^{\omega})$,
 $\mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1$ in time
 $O(\beta^{\omega-1} \alpha)$; then all other operations take time
 $O(\beta^{\omega-2} \alpha m)$.  Similarly, computing $\mZ^{(i+j)}$
 takes time $O(\beta^{\omega-2} \alpha n)$.  Recovering the whole
-matrix $\mS^{(\bar{r})}$ from its
+matrix $\mS^{(\bar{r})}$ on line~\ref{line:recoverwhole} from its
 $\nabla_{\vu^{(\bar{r})},\vv^{(\bar{r})}}$-generators
 $(\mY^{(\bar{r})},\mZ^{(\bar{r})})$ is done by means
 of~\eqref{eq:recA2} with a cost $O(\alpha^{\omega-2} mn)$ using block
@@ -813,26 +820,28 @@ cost drops to $O(\alpha^{\omega-2} mn)$, as claimed previously.
   \caption{Divide-And-Conquer algorithm $\DAC$ \label{algo:dac}}
 
   \Input{Generators $(\mG,\mH)$ of $\mA$, threshold $t$}
-  \Output{$r=\rank(\mA), \mY^{(r)}_0,\mZ^{(r)}_0$ or FAIL }
+  \Output{$r=\rank(\mA)$, generators $(\mY^{(r)}_0,\mZ^{(r)}_0)$ of
+    $\mA^{(r)}_{0,0}{}^{-1}$}
 
-  $p = \min(m,n), p' = \max(m,n)$\; 
+  $p = \min(m,n), p' = \max(m,n), (\mY^{(0)},\mZ^{(0)}) = (\mG,\mH)$\; 
 
   \lIf{$p' \leq t$}{\Return $\Iter(\mG,\mH, \alpha)$} 
   $i = \lceil p/2 \rceil$\;
   $(r_0,\mY^{(r_0)}_0,\mZ^{(r_0)}_0) = \DAC(\mG^{(i)}_0, \mH^{(i)}_0,  t)$\;\label{line:dac0}
 
-  Compute $(\mY^{(r_0)},\mZ^{(r_0)})$ from $(\mY^{(r_0)}_0,\mZ^{(r_0)}_0)$ and $(\mG,\mH)$
+  Compute $(\mY^{(r_0)},\mZ^{(r_0)})$ from
+  $(\mY^{(r_0)}_0,\mZ^{(r_0)}_0)$, $(\mY^{(0)},\mZ^{(0)})$
   \label{line:recoverfullgen0}\;
 
   \If{$r_0 < i$}{
-    \lIf{$\mY^{(r_0)}_1 \mZ^{(r_0)}_1{}^t \neq 0$}{\Return FAIL}
+    \lIf{$\mY^{(r_0)}_1 (\mZ^{(r_0)}_1)^t \neq 0$}{\Raise}
     \Return $(r_0,\mY^{(r_0)}_0,\mZ^{(r_0)}_0)$ }
 
-  $(r_1,\mY^{(r_0,r_1)}_1,\mZ^{(r_0,r_1)}_1) = \DAC(\mY^{(r_0)}_1,\mZ^{(r_0)}_1, t)$
+  $(r_1,\mY^{(r_0+r_1)}_1,\mZ^{(r_0+r_1)}_1) = \DAC(\mY^{(r_0)}_1,\mZ^{(r_0)}_1, t)$
   \label{line:dac1}\;
 
   Compute $(\mY^{(r_0+r_1)}_0,\mZ^{(r_0+r_1)}_0)$ from
-  $(\mY^{(r_0,r_1)}_1,\mZ^{(r_0,r_1)}_1)$ and
+  $(\mY^{(r_0+r_1)}_1,\mZ^{(r_0+r_1)}_1)$ and
   $(\mY^{(r_0)},\mZ^{(r_0)})$
   \label{line:recoverfullgen1}\;
 
@@ -853,17 +862,24 @@ assumption.
 Recursive calls to $\DAC$ on lines~\ref{line:dac0},~\ref{line:dac1} will raise an error if the submatrices are
 not in generic position, so we can assume that we are not in that case.
 
+Note that if $\mS^{(i,j)}_{1,1}$ is invertible, the
+$\nabla_{\vv_{i+1:i+j},\vu_{i+1:i+j}}$-generators for its
+inverse are
+$-\mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1$ and
+$\mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1$.  
+
 Computations of
-lines~\ref{line:recoverfullgen0},~\ref{line:recoverfullgen1} are f the
-same essence ; using Eq.~\eqref{eq:defYi} and~\eqref{eq:defZi}, we can
-recover the full generators $(\mY^{(i+j)},\mZ^{(i+j)})$ if we know the
-generators $(\mY^{(i,j)}_1,\mZ^{(i,j)}_1)$ of the inverse of the
-principal minor $\mS^{(i,j)}_{1,1}$ and previous full generators
-$(\mY^{(i)},\mZ^{(i)})$.
+lines~\ref{line:recoverfullgen0},~\ref{line:recoverfullgen1} are of
+the same essence; using Eq.~\eqref{eq:defYi} and~\eqref{eq:defZi}, we
+can recover the full $\nabla_{\vu^{(i+j)},\vv^{(i+j)}}$ generators
+$(\mY^{(i+j)},\mZ^{(i+j)})$ of $\mS^{(i+j)}$ if we know the generators
+$(\mY^{(i,j)}_1,\mZ^{(i,j)}_1)$ of the inverse of the principal minor
+$\mS^{(i,j)}_{1,1}$ used as pivot in the column reduction and previous
+full generators $(\mY^{(i)},\mZ^{(i)})$ of $\mS^{(i)}$.
 
-\todo{Romain : here}
 
- \bigskip
+
+\bigskip
 
 %%%%%%%%%%%%%%%%
 
@@ -872,7 +888,7 @@ $\{0,\dots,p\}$, define
 ${\mA^{(i)}_{0,0}},\mA^{(i)}_{0,1},\mA^{(i)}_{1,0},\mA^{(i)}_{1,1},\dots$ as before.
 The algorithm will compute the rank $r$ of $\mA$, together with
 specific generators for the inverse of the leading principal minor
-$\mA_{r,0,0}$, namely $\mY^{(r)}_0=-\mA^{(r)}_{0,0}{}^{-1} \mG^{(r)}_0$ and
+$\mA^{(r)}_{0,0}$, namely $\mY^{(r)}_0=-\mA^{(r)}_{0,0}{}^{-1} \mG^{(r)}_0$ and
   $\mZ^{(r)}_0=\mA^{(r)}_{0,0}{}^{-t}\mH^{(r)}_0$, as did the algorithm in the
   previous subsection.
 
@@ -1038,7 +1054,8 @@ of up to 3. In any case, there is a clear gain over dense methods.
 
 Our solution of Problem~\ref{pb:mosaic} is a direct reduction to the
 Cauchy-like case; we still have to examine the time for putting the
-problem into Cauchy form by means of the formulas of~\ref{xxx}.
+problem into Cauchy form by means of the formulae of
+Eq.~(\ref{eq:gentoetogencau}).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
