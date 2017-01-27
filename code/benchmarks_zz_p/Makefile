@@ -42,8 +42,12 @@ threshold:	utest_cauchy_like_find_threshold
 	./test_cauchy_like_find_threshold 1 > threshold-dac.FFT0.$(shell hostname).dat
 	./test_cauchy_like_find_threshold 0 > threshold-dac.65537.$(shell hostname).dat
 
-crossover:	utest_cauchy_like_invert
+crossover: crossover0 crossover1
+
+crossover0:	utest_cauchy_like_invert
 	./test_cauchy_like_invert 1 > crossover.FFT0.$(shell hostname).dat
+
+crossover1:	utest_cauchy_like_invert
 	./test_cauchy_like_invert 0 > crossover.65537.$(shell hostname).dat
 
 process: 
@@ -70,3 +74,11 @@ plot:
 	gnuplot -e "infile1='threshold-dac-alpha.65537.$(BENCH_MACHINE).dat'" -e "infile2='threshold-dac-alpha.FFT0.$(BENCH_MACHINE).dat'" -e "outfile='threshold-dac-alpha.$(BENCH_MACHINE).pdf'" threshold-fast-slow.plt
 	gnuplot -e "infile1='crossover-invert.65537.$(BENCH_MACHINE).dat'" -e "infile2='crossover-invert.FFT0.$(BENCH_MACHINE).dat'" -e "outfile='crossover-invert.$(BENCH_MACHINE).pdf'" crossover-invert.plt
 	gnuplot -e "infile1='crossover-mul-vector.65537.$(BENCH_MACHINE).dat'" -e "infile2='crossover-mul-vector.FFT0.$(BENCH_MACHINE).dat'" -e "outfile='crossover-mul-vector.$(BENCH_MACHINE).pdf'" crossover-mul-vector.plt
+
+large_n_alpha:	utest_cauchy_like_invert_alpha
+	./test_cauchy_like_invert_alpha 1 > large_n.FFT0.$(shell hostname).dat
+	./test_cauchy_like_invert_alpha 0 > large_n.65537.$(shell hostname).dat
+
+large_n_inv:	utest_cauchy_like_invert_ntl
+	./test_cauchy_like_invert_ntl 0 > large_n_inv.65537.$(shell hostname).dat
+	./test_cauchy_like_invert_ntl 1 > large_n_inv.FFT0.$(shell hostname).dat

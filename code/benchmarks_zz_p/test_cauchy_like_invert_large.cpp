@@ -11,23 +11,14 @@ NTL_CLIENT
 /* else, runs mod 65537                                       */
 /*------------------------------------------------------------*/
 void check(int opt){
-
-  long st, end;
-
-  if (opt == 1){
+  if (opt == 1)
     zz_p::FFTInit(0);
-    st = 100;
-    end = 5000;
-  }
-  else{
+  else
     zz_p::UserFFTInit(65537);
-    st = 500;
-    end = 5000;
-  }
 
-  cout << "#p =" << zz_p::modulus() << endl;
+  cout << "# p=" << zz_p::modulus() << endl;
 
-   for (long i = st; i < end; i += 100){
+   for (long i = 2000; i < 10000; i += 1000){
 
      long NB = 1;
      if (i < 1000)
@@ -63,19 +54,7 @@ void check(int opt){
      double t1 = 0;
 
      zz_p a = to_zz_p(9);
-     
-     long st = 1;
-     long step = 1;
-     if (i > 1000 && opt == 1){
-       st = 680;
-       step = 10;
-     }
-     if (i > 2000 && opt != 1){
-       //       st = 170;
-       step = 10;
-     }
-
-     for (long alpha = st; alpha < i && t1 < 1.1*t0; alpha += step){
+     for (long alpha = 1; alpha < i && t1 < 1.1*t0; alpha += 5){
        mat_zz_p A, B;
        random(A, i, alpha);
        random(B, i, alpha);
@@ -83,15 +62,6 @@ void check(int opt){
 
        cout << i << " " << alpha << " ";
      
-       t1 = GetTime();
-       for (long k = 0; k < NB; k++){
-	 lzz_p_cauchy_like_geometric Minv;
-	 invert_fast(Minv, M);
-       }
-       t1 = GetTime() - t1;
-       t1 = t1/NB;
-       cout << t1 << " ";
-
        t1 = GetTime();
        for (long k = 0; k < NB; k++){
 	 lzz_p_cauchy_like_geometric Minv;

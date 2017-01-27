@@ -742,8 +742,12 @@ long invert_rec(Mat<zz_p>& Yp_out, Mat<zz_p>& Zp_out,
   long alpha = Yp_in.NumCols();
   long N = min(m, n);
 
+  long thresh_alpha = 15;
+  if (zz_p::modulus() < (1L << 23))
+    thresh_alpha = 8;
+
   if (N < thresh){
-    if (alpha < 15)
+    if (alpha < thresh_alpha)
       return invert_raw(Yp_out, Zp_out, Yp_in, Zp_in, u1, v1, rho);
     else
       return invert_block_raw(Yp_out, Zp_out, Yp_in, Zp_in, u1, v1, rho);
@@ -864,11 +868,12 @@ long invert_block(lzz_p_cauchy_like_geometric& Cinv,
   Mat<zz_p> Yp_out, Zp_out;
 
   long r;
-  if (CL.NumGens() > min(CL.NumRows(), CL.NumCols()))
+  if (CL.NumGens() > min(CL.NumRows(), CL.NumCols())){
     r = invert_raw(Yp_out, Zp_out, CL.G, CL.H, CL.C.u1, CL.C.v1, CL.C.rho);
-  else
+  }
+  else{
     r = invert_block_raw(Yp_out, Zp_out, CL.G, CL.H, CL.C.u1, CL.C.v1, CL.C.rho);
-
+  }
   if (r == -1)
     return -1;
 
@@ -884,7 +889,11 @@ long invert_block(lzz_p_cauchy_like_geometric& Cinv,
 long invert(lzz_p_cauchy_like_geometric& Cinv,
 	    const lzz_p_cauchy_like_geometric& CL){
 
-  if (CL.NumGens() < 15)
+  long thresh_alpha = 15;
+  if (zz_p::modulus() < (1L << 23))
+    thresh_alpha = 8;
+
+  if (CL.NumGens() < thresh_alpha)
     return invert_direct(Cinv, CL);
   else
     return invert_block(Cinv, CL);
