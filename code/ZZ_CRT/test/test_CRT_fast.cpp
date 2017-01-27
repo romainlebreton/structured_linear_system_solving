@@ -12,41 +12,29 @@ NTL_CLIENT
 /* check takes an extra argument, not used here               */
 /*------------------------------------------------------------*/
 void check(int opt){
+  long NB = 7625;
   Vec<long> moduli;
+  Vec<long> rems;
+  rems.SetLength(NB);
 
-  for (long j = 801; j < 802; ){
-    long base = 1L << 59;
-    moduli.SetLength(j);
-    for (long i = 0; i < moduli.length(); i++){
-      base = NextPrime(base+1);
-      moduli[i] = base;
-    }
-    
-    ZZ_CRT_crt_fast crt(moduli);
-    ZZ_CRT_rem_fast rem(moduli);
-
-    Vec<long> rems;
-    ZZ a = to_ZZ("1725436586697640946858688965569256363112777243042596638790631055949824");
-    for (long i = 0; i < moduli.length(); i++)
-      a *= (3*to_ZZ(moduli[i])/2);
-    a = -a;
-
-    rem.eval(rems, a);
-    ZZ b;
-    crt.crt(b, rems);
-
-    if (0){
-      cout << j << endl;
-    }
-    else{
-      cout << "a:=" << a << ";\n";
-      magma_assign(moduli, "m");
-      magma_assign(rems, "r");
-      cout << "b:=" << b << ";\n";
-      cout << "print b eq (a mod &*m);\n";
-    }
-   } 
   
+  long base = 1L << 59;
+  moduli.SetLength(NB);
+  for (long i = 0; i < moduli.length(); i++){
+    base = NextPrime(base+1);
+    moduli[i] = base;
+    rems[i] = rand() % base;
+  }
+    
+  ZZ_CRT_crt_fast crt(moduli);
+
+  ZZ b;
+  double t = GetTime();
+  long avg = 100;
+  for (long i = 0; i < avg; i++)
+    crt.crt(b, rems);
+  cout << (GetTime()-t)/avg*10000 << endl;
+ 
 } 
 
 int main(int argc, char ** argv){
