@@ -575,8 +575,7 @@ $$
     \mA^{(i)}_{1,0} & \mA^{(i)}_{1,1}
   \end{bmatrix}.
 $$ 
-If the principal minor
- ${\mA^{(i)}_{0,0}}$  is invertible, we define as in~\cite{Cardinal99}
+If the principal minor ${\mA^{(i)}_{0,0}}$ is invertible, we define
 $$
 \mS^{(i)} = 
 \begin{bmatrix} 
@@ -584,15 +583,20 @@ $$
      \mS^{(i)}_{1,0} & \mS^{(i)}_{1,1}\\
 \end{bmatrix} = 
 \begin{bmatrix} 
-   {\mA^{(i)}_{0,0}}{}^{-1} &  -{\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1} \\[1mm]
-    \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1} & 
-    \mA^{(i)}_{1,1} - \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1}
+  \mA^{(i)}_{1,1} - \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1} 
+  & 
+  \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1} 
+  \\[1mm]
+  -{\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1}
+  &  
+  {\mA^{(i)}_{0,0}}{}^{-1} 
 \end{bmatrix}.
 $$
-We see that $( \mS^{(i)})_{i=0\dots p}$ form a sequence of matrix
-starting from $\mA=\mS^{(0)}$ and ending at $\mA^{-1}=\mS^{(p)}$, at
-least when $\mA$ is square and invertible. To understand where these
-matrices come from, let's introduce the matrix
+similarly to~\cite{Cardinal99} (both block rows and columns are
+permuted).  We see that $( \mS^{(i)})_{i=0\dots p}$ form a sequence of
+matrix starting from $\mA=\mS^{(0)}$ and ending at
+$\mA^{-1}=\mS^{(p)}$, at least when $\mA$ is square and invertible. To
+understand where these matrices come from, let's introduce the matrix
 $ \mR^{(0)} = \begin{bmatrix}
   \mA \\
   \mI_{p, n}
@@ -602,50 +606,68 @@ in $\K^{(m + p) \times n} $, where $\mI_{p, n} \in \K^{p \times n}$ is
 the rectangular matrix with ones on the diagonal. If one applies to
 $\mR^{(0)}$ the column operations that reduce its first $i$th rows
 $\begin{bmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{bmatrix}$ to
-$\begin{bmatrix} \mI_{i,i} & 0 \end{bmatrix}$, we get
+$\begin{bmatrix} 0 & \mI_{i,i} \end{bmatrix}$ using $\mA^{(i)}_{0,0}$
+as pivot, we get
 \begin{equation}\label{eq:Ri}
-\mR^{(i)}\!=\!\begin{bmatrix}
-     \mI_{i,i} & 0\\
-     \mS^{(i)}_{1,0} & \mS^{(i)}_{1,1}\\
-     \mS^{(i)}_{0,0} & \mS^{(i)}_{0,1}\\
-     0 & \mI_{p - i, n - i}
-   \end{bmatrix}\!= \mR^{(0)} \begin{bmatrix}
-     \mA_{0, 0}^{(i)} \phantom{}^{- 1} & - \mA_{0, 0}^{(i)} \phantom{}^{- 1} \mA_{0,
-     1}^{(i)}\\
-     0 & \mI_{n - i,n-i}
-   \end{bmatrix}
+\mR^{(i)} =
+\begin{bmatrix}
+  \mS^{(i)} \\
+  \mI_{p, n}
+\end{bmatrix} 
+= \mP^i \ \mR^{(0)} 
+\begin{bmatrix}
+  - \mA_{0, 0}^{(i)} \phantom{}^{- 1} \mA_{0, 1}^{(i)}
+  & 
+  \mA_{0, 0}^{(i)} \phantom{}^{- 1} \\
+ \mI_{n - i,n-i} & 0
+\end{bmatrix}
 \end{equation}
-A key result for the sequel is~\cite[Proposition~1]{Cardinal99} which states the
-Cauchy structure of $\mS^{(i)}$ and gives formulae for its generators. Given
-integers $a,b$, $\vu_{a:b}$ denotes the sequence $(u_a,\dots,u_b)$ (and
-similarly for $\vv_{a:b}$); we then define $\vu^{(i)}=(\vv_{1:i},\vu_{i+1:m})$
-and $\vv^{(i)}=(\vu_{1:i},\vv_{i+1:n})$. Then the matrix $\mS^{(i)}$ is
-Cauchy-like for the vectors $\vu^{(i)}, \vv^{(i)}$ ; remark that the operator
-$\nabla_{\vu^{(i)},\vv^{(i)}}$ is invertible, in view of our assumption on $\vu$
-and $\vv$. Define the $\nabla_{\vu^{(i)},\vv^{(i)}}$-generators
-$(\mY^{(i)}, \mZ^{(i)})$ of $\mS^{(i)}$ by decomposing
+where $\mP$ is a cyclic permutation matrix than moves the rows up by one place.
+
+A key result for the sequel is Lemma~\ref{lemma:cpj-cm}; it comes
+from~\cite[Proposition~1]{Cardinal99} and states the Cauchy structure
+of $\mS^{(i)}$ and gives formulae for its generators. Given integers
+$a,b$, $\vu_{a:b}$ denotes the sequence $(u_a,\dots,u_b)$ (and
+similarly for $\vv_{a:b}$); we then define
+$\vu^{(i)}=(\vu_{i+1:m},\vv_{1:i})$ and
+$\vv^{(i)}=(\vv_{i+1:n},\vu_{1:i})$. Then the matrix $\mS^{(i)}$ is
+Cauchy-like for the vectors $\vu^{(i)}, \vv^{(i)}$; remark that the
+operator $\nabla_{\vu^{(i)},\vv^{(i)}}$ is invertible, in view of our
+assumption on $\vu$ and $\vv$. Define the
+$\nabla_{\vu^{(i)},\vv^{(i)}}$-generators $(\mY^{(i)}, \mZ^{(i)})$ of
+$\mS^{(i)}$ by decomposing
 \[
  \mG=\begin{bmatrix} 
    \mG^{(i)}_0 \\ \mG^{(i)}_1
   \end{bmatrix},\ 
   \mH=\begin{bmatrix} 
         \mH^{(i)}_0 \\    \mH^{(i)}_1 
-  \end{bmatrix},\ 
- \mY^{(i)}
- = \begin{bmatrix}
-  \mY^{(i)}_0 \\    \mY^{(i)}_1 
-     \end{bmatrix},\ 
-\mZ^{(i)}
- = \begin{bmatrix}
-  \mZ^{(i)}_0 \\    \mZ^{(i)}_1 
-     \end{bmatrix},
+  \end{bmatrix}
 \]
-with $\mG^{(i)}_0, \mH^{(i)}_0, \mY^{(i)}_0, \mZ^{(i)}_0 \in \K^{i \times \alpha}$ such that
+with $\mG^{(i)}_0, \mH^{(i)}_0 \in \K^{i \times \alpha}$ and defining
+\[
+\mY^{(i)} = 
+\begin{bmatrix}
+-\mA^{(i)}_{1,0}{\mA^{(i)}_{0,0}}{}^{-1}\mG^{(i)}_0 + \mG^{(i)}_1 \\
+-{\mA^{(i)}_{0,0}}{}^{-1} \mG^{(i)}_0 
+\end{bmatrix},
+\mZ^{(i)} = 
+\begin{bmatrix}
+-{\mA^{(i)}_{0,1}}{}^t{\mA^{(i)}_{0,0}}{}^{-t}\mH^{(i)}_0 + \mH^{(i)}_1 \\
+{\mA^{(i)}_{0,0}}^{-t} \mH^{(i)}_0 
+\end{bmatrix}.
+\]
+
+\todo{Romain : here}
+
 \begin{align}
-\mY^{(i)}_0&= -{\mA^{(i)}_{0,0}}{}^{-1} \mG^{(i)}_0,\  
-&\mY^{(i)}_1&= \mA^{(i)}_{1,0} \mY^{(i)}_0 + \mG^{(i)}_1,\label{eq:defYi}\\
-\mZ^{(i)}_0&= {\mA^{(i)}_{0,0}}^{-t} \mH^{(i)}_0,\  
-&\mZ^{(i)}_1&=-{\mA^{(i)}_{0,1}}{}^t \mZ^{(i)}_0 + \mH^{(i)}_1\label{eq:defZi}.
+\mY^{(i)}_0&= \mA^{(i)}_{1,0} \mY^{(i)}_1 + \mG^{(i)}_0,\label{eq:defYi}
+&
+\mY^{(i)}_1&= -{\mA^{(i)}_{0,0}}{}^{-1} \mG^{(i)}_1,\  
+\\
+\mZ^{(i)}_0&=-{\mA^{(i)}_{0,1}}{}^t \mZ^{(i)}_1 + \mH^{(i)}_0\label{eq:defZi}.
+&
+\mZ^{(i)}_1&= {\mA^{(i)}_{0,0}}^{-t} \mH^{(i)}_1,\  
 \end{align}
 
 \begin{lemma}\label{lemma:cpj-cm}
@@ -1077,7 +1099,7 @@ algorithms use one prime $p$, and lift the solution modulo powers of $p$.
 \subsection{Reduction to nullity one}
 
 Many of these techniques rely on the knowledge of a maximal invertible
-minor of $\mA$. However, if $\mA$ is mosaic Toeplitz, there is no
+minor of $\mT$. However, if $\mT$ is mosaic Toeplitz, there is no
 guarantee that it possesses such a minor that would be mosaic Toeplitz
 as well. Hence, we are going to rely on the transformation to the
 Cauchy structure / regularization technique of~\ref{sec:basics}.
