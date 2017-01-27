@@ -1,5 +1,5 @@
 set xlabel "n"
-set ylabel "ratio naive / block"
+set ylabel "time ratio direct / block"
 set terminal pdf
 
 set out outfile
