@@ -320,14 +320,14 @@ void lzz_p_cauchy_like_geometric::to_dense(Mat<zz_p>& M) const {
 static 
 long threshold(long alpha){
   if (alpha >= 29)
-    return 4000;
+    return 6000;
 
   if (zz_p::modulus() < (1L << 23)){
-    long thresholds[] = {400, 300, 300, 200, 400, 400, 400, 400, 500, 500, 800, 800, 1000, 1800, 2000, 3000, 3300, 3600, 4100, 4400};
+    long thresholds[] = {400, 300, 300, 200, 400, 400, 400, 400, 500, 500, 600, 800, 800, 800, 900, 1000, 1500, 1800, 1900, 2000, 2500, 3000, 3200, 3300, 3500, 3600, 3900, 4100, 4200, 4400, 4600};
     return thresholds[alpha];
   }
   else {
-    long thresholds[] = {200, 100, 300, 300, 400, 400, 400, 400, 400, 400, 500, 700, 700, 900, 1500, 1000, 1700, 1600, 1800, 2000};
+    long thresholds[] = {200, 100, 300, 300, 400, 400, 400, 400, 400, 400, 500, 600, 700, 700, 700, 800, 900, 1200, 1500, 1500, 1500, 1600, 1700, 1700, 1600, 1800, 1800, 1900, 2000, 2000, 2000};
     return thresholds[alpha];
   }
 }
@@ -908,9 +908,13 @@ long invert_fast(lzz_p_cauchy_like_geometric& Cinv,
   else
     do_thresh = thresh;
 
+  cout << "done " << do_thresh << endl;
+
   Mat<zz_p> Yp_out, Zp_out;
 
   long r = invert_rec(Yp_out, Zp_out, CL.G, CL.H, CL.C.u1, CL.C.v1, CL.C.rho, do_thresh);
+
+  cout << "done2\n";
 
   if (r == -1)
     return -1;
