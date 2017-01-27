@@ -868,11 +868,12 @@ long invert_block(lzz_p_cauchy_like_geometric& Cinv,
   Mat<zz_p> Yp_out, Zp_out;
 
   long r;
-  if (CL.NumGens() > min(CL.NumRows(), CL.NumCols()))
+  if (CL.NumGens() > min(CL.NumRows(), CL.NumCols())){
     r = invert_raw(Yp_out, Zp_out, CL.G, CL.H, CL.C.u1, CL.C.v1, CL.C.rho);
-  else
+  }
+  else{
     r = invert_block_raw(Yp_out, Zp_out, CL.G, CL.H, CL.C.u1, CL.C.v1, CL.C.rho);
-
+  }
   if (r == -1)
     return -1;
 
