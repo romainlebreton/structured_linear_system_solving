@@ -319,20 +319,16 @@ void lzz_p_cauchy_like_geometric::to_dense(Mat<zz_p>& M) const {
 /*---------------------------------------------------*/
 static 
 long threshold(long alpha){
-  if (zz_p::modulus() < (1L << 20)){
-    if (alpha < 10)
-      return 200;
-    if (alpha < 15)
-      return 400;
-    return 650;
-  }
-  else{
-    if (alpha < 10)
-      return 200;
-    if (alpha < 20)
-      return 400;
-    return 700;
+  if (alpha > 29)
+    return 4000;
 
+  if (zz_p::modulus() < (1L << 23)){
+    long thresholds[] = {400, 300, 300, 200, 400, 400, 400, 400, 500, 500, 800, 800, 1000, 1800, 2000, 3000, 3300, 3600, 4100, 4400};
+    return thresholds[alpha];
+  }
+  else {
+    long thresholds[] = {200, 100, 300, 300, 400, 400, 400, 400, 400, 400, 500, 700, 700, 900, 1500, 1000, 1700, 1600, 1800, 2000};
+    return thresholds[alpha];
   }
 }
 

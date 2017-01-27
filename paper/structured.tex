@@ -976,27 +976,27 @@ runtime $O(\alpha n^2)$. Except for very small values of $n$, say $n <
 algorithm becomes more efficient for rather small values of $\alpha$:
 our crossover points are $\alpha=8$ or $9$ for primes less than
 $2^{23}$, and $\alpha=13$ or $14$ for larger word-size primes. The
-following graph shows the ratio Time(our algorithm) / Time(previous
-algorithm), for $\alpha=30$. We see that for small primes, for which
-matrix multiplication is very efficient, our algorithm brings a
+following graph shows the time ratio between the direct approach and
+our algorithm, for $\alpha=30$. We see that for small primes, for
+which matrix multiplication is very efficient, our algorithm brings a
 substantial improvement.
 
 \includegraphics[width=7cm]{ratio-block-eschost-desktop.pdf}
 
 We consider next the divide-and-conquer algorithm. The key factor for
 the efficiency of this algorithm is the cost of multiplying an $n
-\times n$ cauchy-like matrix of displacement rank $\alpha$ by an $n
-\times \alpha$ dense matrix. We first compare the direct approach of
+\times n$ Cauchy-like matrix of displacement rank $\alpha$ by an $n
+\times \alpha$ dense matrix. We compare here the direct approach of
 cost $O(\alpha^2 \M(n))$ to the algorithm of~\cite{BoJeMoSc16}, with
 cost $O(\alpha^{\omega-1} \M(n))$, with a view of determining for what
 values of $\alpha$ the latter becomes useful. For the former
 algorithm, because we are able to cache several forward FFTs, we found
 it slightly more advantageous to forego the cyclotomic TFT and simply
 use NTL's FFT. As a consequence, the runtime of the first displays the
-typical FFT starcaise behavior. This in turn implies that as $n$
+typical FFT staircaise behavior. This in turn implies that as $n$
 grows, the crossover value for $\alpha$ fluctuates, roughly between
-$30$ and $55$. The following graph shows the time ratio Time(algorithm
-of~\cite{BoJeMoSc16}) / Time(direct algorithm), for $\alpha=60$; at
+$30$ and $55$. The following graph shows the time ratio between then algorithm
+of~\cite{BoJeMoSc16} and the direct one, for $\alpha=60$; at
 best, the new algorithm wins by a factor of 2. The results do not
 depend much on the nature of the prime (since polynomial arithmetic is
 a significant part of the runtime, and behaves essentially in the same
@@ -1006,15 +1006,28 @@ manner, independently of $p$).
 
 Taking these results into account, we determined empirically crossover
 values $n_0$ to end the recursion in the divide-and-conquer algorithm,
-and switch to the quadratic algorithm. For $\alpha \le 10$, taking
-$n_0\simeq 200$ is a good choice; for $\alpha \ge 20$, we take $n_0 =
-500$ (and we interpolate linearly between the two). The crossover
-points are essentially the same for small (less than $2^{23}$) or
-large word size primes. These values being set, we can then show
-runtimes for solving Problem~\ref{pb:cauchy} for $\alpha=5$ and
-$\alpha=50$, and increasing values of $n$; we also display the time
-taken by a dense matrix inversion, as a matter of reference (this does
-not depend on the choice of $\alpha$).
+and switch to the quadratic algorithm. We expect the crossover point
+$n_0$ to grow with $\alpha$, since for a given $\alpha$, it behaves
+like the solution of $\alpha n^2 = \alpha \M(n) \log(n)$ (assuming
+here we do not use fast linear algebra, for simplicity). The following 
+table reports some values for $n_0$ (obtained by searching in increments of $100$).
+The threshold is higher for small primes, since they benefit more from 
+our new quadratic algorithm.
+
+\centerline{
+{\small
+\begin{tabular}{|c||c|c|c|c|c|c|c|}\hline
+  $\alpha$ & 1 & 5 & 10 & 15 & 20 & 25 &30 \\\hline\hline
+$p=65537$  & 400 &400 &500  &1000  &2000  &3300  &4200 \\\hline
+$p\simeq 2^{59}$  & 200 & 400 & 400 & 700 & 1300 & 1600 & 2000\\\hline
+\end{tabular}
+}}
+
+These values being set, we can then show runtimes for solving
+Problem~\ref{pb:cauchy} for $\alpha=5$ and $\alpha=50$, and increasing
+values of $n$; we also display the time taken by a dense matrix
+inversion, as a matter of reference (this does not depend on the
+choice of $\alpha$).
 
 
 
