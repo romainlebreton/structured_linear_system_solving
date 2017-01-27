@@ -9,3 +9,7 @@ set style line 3 lt 1 lw 3 lc 4
 plot infile1 using 1:2 with lines ls 1 title "p=65537",\
      infile2 using 1:2 with lines ls 2 title "p=882705526964617217"
 
+f(x)=a*x+b
+fit f(x) infile1 using 1:2 via a,b
+f(x)=a*x+b
+fit f(x) infile2 using 1:2 via a,b

@@ -42,7 +42,9 @@ threshold:	utest_cauchy_like_find_threshold
 	./test_cauchy_like_find_threshold 1 > threshold-dac.FFT0.$(shell hostname).dat
 	./test_cauchy_like_find_threshold 0 > threshold-dac.65537.$(shell hostname).dat
 
-crossover: crossover0 crossover1
+crossover: crossover0 crossover1 crossover_plot
+
+crossover_plot:
 	awk -f crossover-invert.awk crossover.FFT0.$(BENCH_MACHINE).dat > crossover-invert.FFT0.$(BENCH_MACHINE).dat
 	awk -f crossover-invert.awk crossover.65537.$(BENCH_MACHINE).dat > crossover-invert.65537.$(BENCH_MACHINE).dat
 	gnuplot -e "infile1='crossover-invert.65537.$(BENCH_MACHINE).dat'" -e "infile2='crossover-invert.FFT0.$(BENCH_MACHINE).dat'" -e "outfile='crossover-invert-$(BENCH_MACHINE).pdf'" crossover-invert.plt

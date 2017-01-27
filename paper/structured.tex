@@ -1046,11 +1046,18 @@ $p=8827055\-26964617217$, for increasing values of $n$; we use
 $\alpha=5$, $\alpha=50$ and we also display the runtime of a dense
 matrix inversion in the same size. For a very small displacement rank
 such as $\alpha=5$, the runtime is essentially the same for these two
-primes, since the benefits of fast linear algebra do not
-show. However, with $\alpha=50$, we observe a difference, by a factor
-of up to 3. In any case, there is a clear gain over dense methods.
+primes, since the benefits of fast linear algebra do not show; with
+$\alpha=50$, we observe a difference between these two primes, by a
+factor of up to 3. In any case, there is a clear gain over dense
+methods.
 
 \includegraphics[width=8cm]{large_n-eschost-desktop.pdf}
+
+We also determined, for a given value of $n$, the crossover value
+$\alpha_0$ above which dense linear algebra becomes faster than
+structured methods.  The value $\alpha_0(n)$ grows quite regularly
+with $n$, good approximations being $\alpha_0(n) \simeq 0.2 n$ (for $p < 2^{23}$) and
+$\alpha_0(n) \simeq 0.25 n$ (for larger values of $p$).
 
 Our solution of Problem~\ref{pb:mosaic} is a direct reduction to the
 Cauchy-like case; we still have to examine the time for putting the
