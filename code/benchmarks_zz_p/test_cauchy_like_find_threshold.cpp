@@ -15,9 +15,17 @@ void check(int opt){
     zz_p::FFTInit(0);
   else
     zz_p::UserFFTInit(65537);
-  
-  for (long alpha = 2; alpha < 60; alpha += 4){
-    for (long i = 1000; i < 4000; i += 1000){    
+
+  cout << "#p=" << zz_p::modulus() << endl;
+
+  long step = 1;
+  for (long alpha = 1; alpha < 200; alpha += step){
+    if (alpha > 10)
+      step = 2;
+    if (alpha > 100)
+      step = 5;
+    long i;
+    for (i = max(100, 2*alpha); ;i += 100){    
       zz_p a = to_zz_p(9);
       long j = i;
       
@@ -26,17 +34,21 @@ void check(int opt){
       random(B, j, alpha);
       lzz_p_cauchy_like_geometric M(A, B, to_zz_p(1), power(a, i), a);
        
-      cout << alpha << " " << i << " ";
-      for (long thresh = 100; thresh < min(i, 1000); thresh += 30){
-	double t;
-	t = GetTime();
-	lzz_p_cauchy_like_geometric Minv;
-	invert_fast(Minv, M, thresh);
-	t = GetTime() - t;
-	cout << thresh << " " << t << " ";
-      }
-      cout << endl;
+      long thresh = i/2-10;
+      double t1, t2;
+      t1 = GetTime();
+      lzz_p_cauchy_like_geometric Minv;
+      invert_fast(Minv, M, thresh);
+      t1 = GetTime() - t1;
+      
+      t2 = GetTime();
+      invert(Minv, M);
+      t2 = GetTime() - t2;
+
+      if (t1 < t2)
+  	break;
     }
+    cout << alpha << " " << i << endl;
   }
 }
 
