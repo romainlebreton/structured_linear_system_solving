@@ -319,7 +319,7 @@ void lzz_p_cauchy_like_geometric::to_dense(Mat<zz_p>& M) const {
 /*---------------------------------------------------*/
 static 
 long threshold(long alpha){
-  if (alpha > 29)
+  if (alpha >= 29)
     return 4000;
 
   if (zz_p::modulus() < (1L << 23)){
