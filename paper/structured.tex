@@ -1014,23 +1014,27 @@ table reports some values for $n_0$ (obtained by searching in increments of $100
 The threshold is higher for small primes, since they benefit more from 
 our new quadratic algorithm.
 
-\centerline{
+\begin{center}
 {\small
 \begin{tabular}{|c||c|c|c|c|c|c|c|}\hline
   $\alpha$ & 1 & 5 & 10 & 15 & 20 & 25 &30 \\\hline\hline
 $p=65537$  & 400 &400 &500  &1000  &2000  &3300  &4200 \\\hline
 $p\simeq 2^{59}$  & 200 & 400 & 400 & 700 & 1300 & 1600 & 2000\\\hline
 \end{tabular}
-}}
+}
+\end{center}
 
 These values being set, we can then show runtimes for solving
-Problem~\ref{pb:cauchy} for $\alpha=5$ and $\alpha=50$, and increasing
-values of $n$; we also display the time taken by a dense matrix
-inversion, as a matter of reference (this does not depend on the
-choice of $\alpha$).
+Problem~\ref{pb:cauchy} modulo both $p=65537$ and
+$p=8827055\-26964617217$, for increasing values of $n$; we use
+$\alpha=5$, $\alpha=50$ and we also display the runtime of a dense
+matrix inversion in the same size. For a very small displacement rank
+such as $\alpha=5$, the runtime is essentially the same for these two
+primes, since the benefits of fast linear algebra do not
+show. However, with $\alpha=50$, we observe a difference, by a factor
+of up to 3. In any case, there is a clear gain over dense methods.
 
-
-
+\includegraphics[width=8cm]{large_n-eschost-desktop.pdf}
 
 Our solution of Problem~\ref{pb:mosaic} is a direct reduction to the
 Cauchy-like case; we still have to examine the time for putting the
