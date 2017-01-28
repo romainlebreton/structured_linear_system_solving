@@ -17,7 +17,7 @@ void check(int opt){
     zz_p::UserFFTInit(65537);
 
    for (long i = 10; i < 1000; i += 20){
-     for (long alpha = 4; alpha < min(i, 60); alpha += 1){
+     for (long alpha = 29; alpha < min(i, 30); alpha += 1){
        zz_p a = to_zz_p(9);
        long j = i;
        mat_zz_p A, B;
@@ -27,12 +27,14 @@ void check(int opt){
 
        cout << i << " " << alpha << " ";
        double t;
-       long NB = 1;
-       if (i < 200)
+       long NB = 100;
+       if (i < 700)
 	 NB = 200;
-       if (i < 100)
+       if (i < 500)
 	 NB = 500;
-       if (i < 50)
+       if (i < 200)
+	 NB = 1000;
+       if (i < 100)
 	 NB = 10000;
 
        t = GetTime();

@@ -21,7 +21,7 @@ void check(int opt){
   }
   else{
     zz_p::UserFFTInit(65537);
-    st = 500;
+    st = 100;
     end = 5000;
   }
 
@@ -66,12 +66,16 @@ void check(int opt){
      
      long st = 1;
      long step = 1;
-     if (i > 1000 && opt == 1){
-       st = 680;
+     if (i >= 1000 && opt == 1){
+       st = 150;
+       step = 10;
+     }
+     if (i >= 3000 && opt == 1){
+       st = 300;
        step = 10;
      }
      if (i > 2000 && opt != 1){
-       //       st = 170;
+       st = 100;
        step = 10;
      }
 
@@ -92,14 +96,15 @@ void check(int opt){
        t1 = t1/NB;
        cout << t1 << " ";
 
-       t1 = GetTime();
+       double t2;
+       t2 = GetTime();
        for (long k = 0; k < NB; k++){
 	 lzz_p_cauchy_like_geometric Minv;
 	 invert(Minv, M);
        }
-       t1 = GetTime() - t1;
-       t1 = t1/NB;
-       cout << t1 << " ";
+       t2 = GetTime() - t2;
+       t2 = t2/NB;
+       cout << t2 << " ";
        
        cout << endl;
      }

@@ -6,6 +6,7 @@
 
 NTL_CLIENT
 
+
 /*------------------------------------------------------------*/
 /* if opt = 1, runs FFT0                                      */
 /* else, runs mod 65537                                       */
@@ -19,10 +20,10 @@ void check(int opt){
 
   long lo = 100;
   long hi = 5000;
-  
+
   cout << "# p=" << zz_p::modulus() << endl;
 
-   for (long i = lo; i < hi; i += 100){
+  for (long i = lo; i < hi; i += 100){
 
      long NB = 1;
      if (i < 1000)
@@ -46,32 +47,14 @@ void check(int opt){
      if (i < 50)
        NB = 5000;
 
-     long t_alpha[] = {5, 50};
-
-     for (long idx = 0; idx < 2; idx++){
-       long alpha = t_alpha[idx];
-       double t1 = 0;
-       
-       zz_p a = to_zz_p(9);
-       mat_zz_p A, B;
-       random(A, i, alpha);
-       random(B, i, alpha);
-       lzz_p_cauchy_like_geometric M(A, B, to_zz_p(1), power(a, i), a);
-       
-       cout << i << " " << alpha << " ";
-       
-       t1 = GetTime();
-       for (long k = 0; k < NB; k++){
-	 lzz_p_cauchy_like_geometric Minv;
-	 invert_fast(Minv, M);
-       }
-       t1 = GetTime() - t1;
-       t1 = t1/NB;
-       cout << t1 << " ";
-       
-       cout << endl;
-     }
-     cout << endl;
+     Mat<zz_p> check, check_i;
+     random(check, i, i);
+     double t0 = GetTime();
+     for (long j = 0; j < NB; j++)
+       check_i = inv(check);
+     t0 = GetTime() - t0;
+     t0 = t0/NB;
+     cout << i << " " << 0 << " " << t0 << endl;
    }
 
 }
