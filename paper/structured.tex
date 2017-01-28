@@ -694,7 +694,43 @@ $
 %
 with $\vu^{(i,j)}_0 \in \K^j$ and the same for $\vv^{(i)}$.
 
-To solve Problem~\ref{pb:cauchy}, we need to detect when $\mA$ has
+An interesting point is that operations that derive $S^{(i+j)}$ from
+$S^{(j)}$ and $S^{(i)}$ from $S^{(0)}$ are similar. A direct
+calculation shows that
+%
+\begin{equation}
+\label{eq:Si+j}
+\mS^{(i+j)} = 
+\begin{bmatrix} 
+  \mS^{(i,j)}_{1,1} - \mS^{(i,j)}_{1,0} {\mS^{(i,j)}_{0,0}}{}^{-1} \mS^{(i,j)}_{0,1} 
+  & 
+  \mS^{(i,j)}_{1,0} {\mS^{(i,j)}_{0,0}}{}^{-1} 
+  \\[1mm]
+  -{\mS^{(i,j)}_{0,0}}{}^{-1} \mS^{(i,j)}_{0,1}
+  &  
+  {\mS^{(i,j)}_{0,0}}{}^{-1} 
+\end{bmatrix}
+\end{equation}
+which implies the following formulae on the generators
+\begin{align}
+\mY^{(i+j,m-j)}_1&= -{\mS^{(i,j)}_{0,0}}{}^{-1} \,\mY^{(i,j)}_0,\quad
+\mZ^{(i+j,n-j)}_1= {\mS^{(i,j)}_{0,0}}^{-t} \,\mZ^{(i,j)}_0 \nonumber\\
+\mY^{(i+j,m-j)}_0&=-\mS^{(i,j)}_{1,0} \,\mY^{(i+j,m-j)}_1 + \mY^{(i,j)}_1,\label{eq:Yi+j}\\
+\mZ^{(i+j,n-j)}_0&=-{\mS^{(i,j)}_{0,1}}{}^t \,\mZ^{(i+j,n-j)}_1 + \mZ^{(i,j)}_1 \nonumber.
+\end{align}
+%
+which generalizes previous formulae for $(\mY^{(i)},\mZ^{(i)})$.  The
+intuition behind Eq.~(\ref{eq:Yi+j}) is that by decomposing the
+column operations that reduce
+$\begin{bmatrix} \mA^{(i+j)}_{0,0} & \mA^{(i+j)}_{0,1} \end{bmatrix}$
+to $\begin{bmatrix} 0 & \mI_{i+j,i+j} \end{bmatrix}$ into two
+operations that respectively reduce the first $i$th rows using
+$\mA^{(i)}_{0,0}$ as pivot, then the next $j$th rows using
+$\mS^{(i,j)}_{0,0}$ as pivot (see Eq.~(\ref{eq:Ri})), we split the
+computation of $\mR^{(i+j)}$ into two similar operations that map
+$\mR^{(0)}$ to $\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
+
+Finally, to solve Problem~\ref{pb:cauchy}, we need to detect when $\mA$ has
 generic rank profile. By construction, $\mS^{(i,j)}_{0,0}$ is the
 Schur complement of ${\mA^{(i)}_{0,0}}$, seen as a submatrix of
 $\mA^{(i+j)}_{0,0}$. This implies the following result.
@@ -707,40 +743,7 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
   ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm rank}(\mS^{(i,j)}_{0,0})$. 
 \end{lemma}
 %
-An interesting point is that operations that derive $S^{(i+j)}$ from
-$S^{(j)}$ and $S^{(i)}$ from $S^{(0)}$ are similar. A direct
-calculation shows that
-%
-$$
-\mS^{(i+j)} = 
-\begin{bmatrix} 
-  \mS^{(i,j)}_{1,1} - \mS^{(i,j)}_{1,0} {\mS^{(i,j)}_{0,0}}{}^{-1} \mS^{(i,j)}_{0,1} 
-  & 
-  \mS^{(i,j)}_{1,0} {\mS^{(i,j)}_{0,0}}{}^{-1} 
-  \\[1mm]
-  -{\mS^{(i,j)}_{0,0}}{}^{-1} \mS^{(i,j)}_{0,1}
-  &  
-  {\mS^{(i,j)}_{0,0}}{}^{-1} 
-\end{bmatrix}
-$$
-which implies the following formulae on the generators
-\begin{align}
-\mY^{(i+j,m-j)}_1&= -{\mS^{(i,j)}_{0,0}}{}^{-1} \,\mY^{(i,j)}_0,\quad
-\mZ^{(i+j,n-j)}_1= {\mS^{(i,j)}_{0,0}}^{-t} \,\mZ^{(i,j)}_0 \nonumber\\
-\mY^{(i+j,m-j)}_0&=-\mS^{(i,j)}_{1,0} \,\mY^{(i+j,m-j)}_1 + \mY^{(i,j)}_1,\label{eq:defYi}\\
-\mZ^{(i+j,n-j)}_0&=-{\mS^{(i,j)}_{0,1}}{}^t \,\mZ^{(i+j,n-j)}_1 + \mZ^{(i,j)}_1 \nonumber.
-\end{align}
-%
-which generalizes previous formulae for $(\mY^{(i)},\mZ^{(i)})$.  The
-intuition behind Eq.~(\ref{eq:defYi}) is that by decomposing the
-column operations that reduce
-$\begin{bmatrix} \mA^{(i+j)}_{0,0} & \mA^{(i+j)}_{0,1} \end{bmatrix}$
-to $\begin{bmatrix} 0 & \mI_{i+j,i+j} \end{bmatrix}$ into two
-operations that respectively reduce the first $i$th rows using
-$\mA^{(i)}_{0,0}$ as pivot, then the next $j$th rows using
-$\mS^{(i,j)}_{0,0}$ as pivot (see Eq.~(\ref{eq:Ri})), we decompose the
-computation of $\mR^{(i+j)}$ into two similar operations that map
-$\mR^{(0)}$ to $\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -855,148 +858,85 @@ cost drops to $O(\alpha^{\omega-2} mn)$, as claimed previously.
   \Input{Generators $(\mG,\mH)$ of $\mA$, threshold $t$}
   \Output{$r=\rank(\mA)$, generators of $\mA^{(r)}_{0,0}{}^{-1}$}
 
-  $p = \min(m,n),\ p' = \max(m,n),\ (\mY^{(0)},\mZ^{(0)}) = (\mG,\mH)$\; 
+  $p = \min(m,n), \ i = \lceil p/2 \rceil, \ (\mY^{(0)},\mZ^{(0)}) =
+  (\mG,\mH)$\;
 
-  \lIf{$p' \leq t$}{\Return $\Iter(\mG,\mH, \alpha)$} 
-  $i = \lceil p/2 \rceil$\;
+  \lIf{$\max(m,n) \leq t$}{\Return $\Iter(\mG,\mH, \alpha)$} 
   $(r_0,\mY^{(r_0,m-r_0)}_1,\mZ^{(r_0,n-r_0)}_1) = 
   \DAC(\mY^{(0,i)}_0, \mZ^{(0,i)}_0,  t)$\;\label{line:dac0}
 
-  Compute $(\mY^{(r_0)},\mZ^{(r_0)})$ from
-  $(\mY^{(r_0,m-r_0)}_1,\mZ^{(r_0,n-r_0)}_1)$ and $(\mY^{(0)},\mZ^{(0)})$
+  Recover Schur complement
+  gen. $(\mY^{(r_0,m-r_0)}_0,\mZ^{(r_0,n-r_0)}_0)$ $=(\mY',\mZ')$ from
+  $(\mY^{(r_0,m-r_0)}_1,\mZ^{(r_0,n-r_0)}_1)$ and
+  $(\mY^{(0)},\mZ^{(0)})$
   \label{line:recoverfullgen0}\;
 
   \If{$r_0 < i$}{
-    \lIf{$\mY^{(r_0)}_1 (\mZ^{(r_0)}_1)^t \neq 0$}{\Raise}
-    \Return $(r_0,\mY^{(r_0)}_0,\mZ^{(r_0)}_0)$ }
+    \lIf{Schur complement is non zero}{\Raise}\label{algo:testschur}
+    \lElse{\Return $(r_0,\mY^{(r_0)}_0,\mZ^{(r_0)}_0)$ }}
 
-  $(r_1,\mY^{(r_0+r_1)}_1,\mZ^{(r_0+r_1)}_1) = \DAC(\mY^{(r_0)}_1,\mZ^{(r_0)}_1, t)$
-  \label{line:dac1}\;
+  $(r_1,\mY^{(r_2,m-r_1)}_1,\mZ^{(r_2,n-r_1)}_1) =
+  \DAC(\mY',\mZ', t), \ r_2=r_0+r_1$\label{line:dac1}\;
 
-  Compute $(\mY^{(r_0+r_1)}_0,\mZ^{(r_0+r_1)}_0)$ from
-  $(\mY^{(r_0+r_1)}_1,\mZ^{(r_0+r_1)}_1)$ and
+
+  \Return $r_2$ and $(\mY^{(r_2,m-r_2)}_1,\mZ^{(r_2,n-r_2)}_1)$
+  computed from $(\mY^{(r_2,m-r_1)}_1,\mZ^{(r_2,n-r_1)}_1)$ and
   $(\mY^{(r_0)},\mZ^{(r_0)})$
   \label{line:recoverfullgen1}\;
-
-  \Return $(r_0+r_1,\mY^{(r_0+r_1)}_0,\mZ^{(r_0+r_1)}_0)$
 \end{algorithm}
 
 
 We now review the divide-and-conquer approach to solving
 Problem~\ref{pb:cauchy}, and discuss a constant factor improvement for
 the case of certain Cauchy-like matrices. 
+%
 \todo{and better dependency $\alpha^{\omega-1}$ in $\alpha$ ? Or not new ?}
-
+%
 Our algorithm proceed essentially following~\cite{JeMo10}, with the
 minor difference that do not assume $\mA$ invertible, and that we
 explicitly check if $\mA$ satisfies the generic rank profile
 assumption.
 
-Recursive calls to $\DAC$ on lines~\ref{line:dac0},~\ref{line:dac1} will raise an error if the submatrices are
-not in generic position, so we can assume that we are not in that case.
+Recursive calls to $\DAC$ on lines~\ref{line:dac0},~\ref{line:dac1}
+will raise an error if the respective input matrices
+${\mA^{(i)}_{0,0}}$ and its Schur complement
+$\mA^{(i)}_{1,1} - \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1}
+\mA^{(i)}_{0,1}$
+are not in generic position, so we can assume that we are not in that
+case. Then the correction proof is similar to Section~\ref{ssec:quad}.
 
-Note that if $\mS^{(i,j)}_{1,1}$ is invertible, the
-$\nabla_{\vv_{i+1:i+j},\vu_{i+1:i+j}}$-generators for its
-inverse are
-$-\mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1$ and
-$\mS^{(i,j)}_{1,1}{}^{-t} \mZ^{(i,j)}_1$.  
-
-Computations of
+\smallskip\noindent{\bf \small Complexity.} Computations of
 lines~\ref{line:recoverfullgen0},~\ref{line:recoverfullgen1} are of
-the same essence; using Eq.~\eqref{eq:defYi} and~\eqref{eq:defZi}, we
-can recover the full $\nabla_{\vu^{(i+j)},\vv^{(i+j)}}$ generators
-$(\mY^{(i+j)},\mZ^{(i+j)})$ of $\mS^{(i+j)}$ if we know the generators
-$(\mY^{(i,j)}_1,\mZ^{(i,j)}_1)$ of the inverse of the principal minor
-$\mS^{(i,j)}_{1,1}$ used as pivot in the column reduction and previous
-full generators $(\mY^{(i)},\mZ^{(i)})$ of $\mS^{(i)}$.
-
-
-
-\bigskip
-
-%%%%%%%%%%%%%%%%
-
-Let $\mA,\mG,\mH,p,r$ be as in the previous subsection, and for $i$ in
-$\{0,\dots,p\}$, define
-${\mA^{(i)}_{0,0}},\mA^{(i)}_{0,1},\mA^{(i)}_{1,0},\mA^{(i)}_{1,1},\dots$ as before.
-The algorithm will compute the rank $r$ of $\mA$, together with
-specific generators for the inverse of the leading principal minor
-$\mA^{(r)}_{0,0}$, namely $\mY^{(r)}_0=-\mA^{(r)}_{0,0}{}^{-1} \mG^{(r)}_0$ and
-  $\mZ^{(r)}_0=\mA^{(r)}_{0,0}{}^{-t}\mH^{(r)}_0$, as did the algorithm in the
-  previous subsection.
-
-We choose $i$ in $\{0,\dots,p\}$, and we proceed as follows,
-essentially following~\cite{JeMo10}, with the minor difference that do
-not assume $\mA$ invertible, and that we explicitly check if $\mA$
-satisfies the generic rank profile assumption.
-
-\smallskip\noindent{\bf 0.} If $i$ is less than a certain fixed threshold, return the
-output of the algorithm of the previous section.
-
-\smallskip\noindent{\bf 1.} Call the algorithm recursively for the
-submatrix ${\mA^{(i)}_{0,0}}$, given by its
-$\nabla_{\vu_{1:i},\vv_{1:i}}$-generators
-$(\mG^{(i)}_0,\mH^{(i)}_0)$. This will raise an error if
-${\mA^{(i)}_{0,0}}$ does not have generic rank profile, so we assume
-we are not in that case, and that we know $\rho={\rm
-  rank}({\mA^{(i)}_{0,0}})$, $\mY^{(\rho)}_0=-\mA^{(\rho)}_{0,0}{}^{-1}
-\mG^{(\rho)}_0$ and $\mZ^{(\rho)}_0=\mA^{(\rho)}_{0,0}{}^{-t}\mH^{(\rho)}_0$.
-
-\smallskip\noindent{\bf 2.} Compute $(\mY^{(\rho)}_1,\mZ^{(\rho)}_1)$
-using~\eqref{eq:defYi} and~\eqref{eq:defZi}. The dominant cost is that
-of computing the products $\mA^{(\rho)}_{1,0} \mY^{(\rho)}_0$ and
-$\mA^{(\rho)}_{0,1}{}^t \mZ^{(\rho)}_0$, given the
-$\nabla_{\vu_{\rho+1:m},\vv_{1:\rho}}$-generators
-$(\mG^{(\rho)}_1,\mH^{(\rho)}_0)$ of $\mA^{(\rho)}_{1,0}$, and the
-$\nabla_{\vu_{1:\rho},\vv_{\rho+1:n}}$-generators
-$(\mG^{(\rho)}_0,\mH^{(\rho)}_1)$ of $\mA^{(\rho)}_{0,1}$.  We examine this cost
-below.
-
-\smallskip\noindent{\bf 3.} If $\rho < i$, test whether the Schur
-complement $ \mA^{(\rho)}_{1,1} - \mA^{(\rho)}_{1,0} \mA^{(\rho)}_{0,0}{}^{-1} \mA^{(\rho)}_{0,1}$ vanishes, or
-equivalently whether $\mY^{(\rho)}_1\,
-\mZ^{(\rho)}_1{}^t = 0$: if so, return $(\mY^{(\rho)}_0,\mZ^{(\rho)}_0)$; else,
-raise an error. This is done by finding a minimal set of
-independent rows in $\mZ^{(\rho)}_1$ (this takes time $O(\alpha^{\omega-1}
-n)$) and multiplying their transposes  by ${\mY^{(\rho)}_1}$ (there are at most
-$\alpha$ such rows, so this takes time $O(\alpha^{\omega-1} n)$ as
-well).
-
-\smallskip\noindent{\bf 4.} If $\rho=i$, call the algorithm
-recursively for the Schur complement $\mA^{(i)}_{1,1} -
-\mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}^{-1} \mA^{(i)}_{0,1}$, given by its
-$\nabla_{\vu_{i+1:m},\vv_{i+1:n}}$-generators
-$(\mY^{(i)}_1,\mZ^{(i)}_1)$. This will raise an error if $\mA$ does
-not have generic rank profile. Else, we obtain the rank $\sigma$ of the
-Schur complement, as well as
-$\nabla_{\vv_{i+1:i+\sigma},\vu_{i+1:i+\sigma}}$-generators for its
-leading principal minor; with our notation, they are
-$-\mS^{(i,\sigma)}_{1,1}{}^{-1} \mY^{(i,\sigma)}_1$ and
-$\mS^{(i,\sigma)}_{1,1}{}^{-t} \mZ^{(i,\sigma)}_1$.  
-
-\smallskip\noindent{\bf 5.}  We compute and return
-$(\mY^{(i+\sigma)}_0,\mZ^{(i+\sigma)}_0)$ using the formulas of
-Lemma~\ref{lemma:update}.  This is done by multiplying the above
-matrices by respectively $\mS^{(i,\sigma)}_{0,1}$, given through its
-$\nabla_{\vu_{i+1:i+\sigma},\vu_{1:i}}$-generator
-$(\mY^{(i)}_0,\mZ^{(i,\sigma)}_{1})$, and
-$\mS^{(i,\sigma)}_{1,0}{}^t$, given by its
-$\nabla_{\vv_{1:i},\vv_{i+1:i+\sigma}}$-genera\-tor
-$(\mY^{(i,\sigma)}_1,\mZ^{(i)}_0)$.
-
-\medskip
-
-The bottleneck in this algorithm, at Steps~{\bf 2} and~{\bf 4}, is the
-multiplication of a Cauchy-like matrix of size roughly $m \times n$,
-given by generators of lengh $\alpha$, by $\alpha$ vectors, either on
-the left or on the right. As explained in Section~\ref{sec:basics},
-$\vu$ and $\vv$ are chosen as geometric progressions {\em with the
-  same ratio}; if this is the case at the top-level, this will remain
-the case for all recursive calls; this allows us to reduce the
+the same essence; using Eq.~\eqref{eq:Si+j} and \eqref{eq:Yi+j}, we
+recover the full generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of
+$\mS^{(i+j)}$ if we know the generators
+$(\mY^{(i+j,m-j)}_1,\mZ^{(i+j,m-j)}_1)$ of $\mS^{(i,j)}_{0,0}{}^{-1}$
+and previous full generators $(\mY^{(i)},\mZ^{(i)})$ of $\mS^{(i)}$.
+As explained in Section~\ref{sec:basics}, multiplying a Cauchy-like
+matrix by $\alpha$ vectors costs $O(\alpha^{\omega-1} \M(p'))$.  Now
+if $\vu$ and $\vv$ are chosen as geometric progressions {\em with the
+  same ratio} -- if this is the case at the top-level, this will
+remain the case for all recursive calls -- we can reduce the
 matrix-vector products by all Cauchy matrices involved here to
-Toeplitz matrix-vector products. Choosing $i=\lceil p/2\rceil$
-balances the costs of the two recursive calls; as a result, the
-overall runtime of the algorithm is $O(\alpha^2 \M(p') \log(p))$.
+Toeplitz matrix-vector products and save a constant factor in practice
+for small $\alpha$. This is directly impact our algorithm since this
+operation is its bottleneck.
+%
+\todo{Move the discussion about $\vu$ and $\vv$ in geometric
+  progressions to the experimental section ?}
+%
+
+On line~\ref{algo:testschur}, the Schur complement is zero if and only
+if $\mY'\, \mZ' = 0$. This is done by finding a minimal set of
+independent rows in $\mZ^{(\rho)}_1$ (this takes time
+$O(\alpha^{\omega-1} n)$) and multiplying their transposes by
+${\mY^{(\rho)}_1}$ (there are at most $\alpha$ such rows, so this
+takes time $O(\alpha^{\omega-1} n)$ as well).
+
+Altogether, the total cost of $\DAC$ is
+$O(\alpha^{\omega-1} \M(p') \log(p))$.
+%
+\todo{Improvement ?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
