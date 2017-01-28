@@ -568,14 +568,14 @@ generators $(\mY,\mZ) \in \K^{r\times \alpha} \times \K^{r\times
   \alpha}$ of the inverse of the leading principal minor of $\mA$.
 
 
-Let $p=\min(m,n)$. For $i$ in $\{0,\dots,p\}$, write $\mA$ as
-$$
+Let $p=\min(m,n)$. For $0\leq i \leq p$, write
+$
 \mA=\begin{bmatrix}
     \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \\[1mm]
     \mA^{(i)}_{1,0} & \mA^{(i)}_{1,1}
-  \end{bmatrix}.
-$$ 
-If the principal minor ${\mA^{(i)}_{0,0}}$ is invertible, we define
+  \end{bmatrix}\!\!.
+$
+If ${\mA^{(i)}_{0,0}}$ is invertible, we define
 $$
 \mS^{(i)} = 
 \begin{bmatrix} 
@@ -686,8 +686,13 @@ $\mZ^{(i)}$ into blocks
 \end{bmatrix}
 \end{equation*}
 with $\mS^{(i,j)}_{0,0} \in \K^{j \times j}$ and
-$\mY^{(i,j)}_0, \mZ^{(i,j)}_0 \in \K^{j \times \alpha}$ (from this,
-the sizes of all blocks can be deduced).
+$\mY^{(i,j)}_0, \mZ^{(i,j)}_0 \in \K^{j \times \alpha}$. Also decompose 
+%
+$\vu^{(i)} = 
+\big[ \vu^{(i,j)}_0 \  \vu^{(i,j)}_1 \big]
+$ 
+%
+with $\vu^{(i,j)}_0 \in \K^j$ and the same for $\vv^{(i)}$.
 
 To solve Problem~\ref{pb:cauchy}, we need to detect when $\mA$ has
 generic rank profile. By construction, $\mS^{(i,j)}_{0,0}$ is the
@@ -702,15 +707,28 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
   ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm rank}(\mS^{(i,j)}_{0,0})$. 
 \end{lemma}
 %
-An interesting point is that we can derive $S^{(i+j)}$ from $S^{(j)}$
-similarly to the previous operation that computes $S^{(i)}$ from
-$S^{(0)}$. A direct calculation shows that
+An interesting point is that operations that derive $S^{(i+j)}$ from
+$S^{(j)}$ and $S^{(i)}$ from $S^{(0)}$ are similar. A direct
+calculation shows that
 %
+$$
+\mS^{(i+j)} = 
+\begin{bmatrix} 
+  \mS^{(i,j)}_{1,1} - \mS^{(i,j)}_{1,0} {\mS^{(i,j)}_{0,0}}{}^{-1} \mS^{(i,j)}_{0,1} 
+  & 
+  \mS^{(i,j)}_{1,0} {\mS^{(i,j)}_{0,0}}{}^{-1} 
+  \\[1mm]
+  -{\mS^{(i,j)}_{0,0}}{}^{-1} \mS^{(i,j)}_{0,1}
+  &  
+  {\mS^{(i,j)}_{0,0}}{}^{-1} 
+\end{bmatrix}
+$$
+which implies the following formulae on the generators
 \begin{align}
-\mY^{(i+j,n-j)}_0&= -{\mS^{(i,j)}_{0,0}}{}^{-1} \,\mY^{(i,j)}_0,\quad
-\mZ^{(i+j,m-j)}_0= {\mS^{(i,j)}_{0,0}}^{-t} \,\mZ^{(i,j)}_0 \nonumber\\
-\mY^{(i+j,n-j)}_1&=-\mS^{(i,j)}_{1,0} \,\mY^{(i+j,n-j)}_0 + \mY^{(i,j)}_1,\label{eq:defYi}\\
-\mZ^{(i+j,m-j)}_1&=-{\mS^{(i,j)}_{0,1}}{}^t \,\mZ^{(i+j,m-j)}_0 + \mZ^{(i,j)}_1 \nonumber.
+\mY^{(i+j,m-j)}_1&= -{\mS^{(i,j)}_{0,0}}{}^{-1} \,\mY^{(i,j)}_0,\quad
+\mZ^{(i+j,n-j)}_1= {\mS^{(i,j)}_{0,0}}^{-t} \,\mZ^{(i,j)}_0 \nonumber\\
+\mY^{(i+j,m-j)}_0&=-\mS^{(i,j)}_{1,0} \,\mY^{(i+j,m-j)}_1 + \mY^{(i,j)}_1,\label{eq:defYi}\\
+\mZ^{(i+j,n-j)}_0&=-{\mS^{(i,j)}_{0,1}}{}^t \,\mZ^{(i+j,n-j)}_1 + \mZ^{(i,j)}_1 \nonumber.
 \end{align}
 %
 which generalizes previous formulae for $(\mY^{(i)},\mZ^{(i)})$.  The
@@ -740,13 +758,17 @@ $\mR^{(0)}$ to $\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
   \While{$i \neq \bar{r}$}{
     $j = \min (\beta,\bar{r}-i)$\;
     Recover $\mS^{(i,j)}_{0,0}$ from its generators $(\mY^{(i,j)}_0,\mZ^{(i,j)}_0)$\;
-    Compute the rank $\rho$ and the rank profile of $\mS^{(i,j)}_{0,0}$\; \label{line:rankprof}
+    Compute the rank $\rho$, rank profile, inverse of $\mS^{(i,j)}_{0,0}$\; \label{line:rankprof}
     \If{$\mS^{(i,j)}_{0,0}$ does not have generic rank profile}{
       \Raise\;
     }
     \lIf{$\rho<j$}{$j=\rho,\ \bar{r}=i+\rho$}
-    Recover the row $\mS^{(i,j)}_{0,\ast}$ and column $\mS^{(i,j)}_{\ast,0}$\; \label{line:rowcol}
-    Compute the generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of $\mS^{(i+j)}$\; \label{line:nextgen}
+    Recover $\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$ 
+    from their generator\; \label{line:rowcol}
+
+    Compute the generators $(\mY^{(i+j)},\mZ^{(i+j)})$ 
+    of $\mS^{(i+j)}$\; \label{line:nextgen}
+
     $i = i + j$\;
   }
   Recover $\mS^{(\bar{r})}$ from its generators $(\mY^{(\bar{r})},\mZ^{(\bar{r})})$
@@ -754,21 +776,19 @@ $\mR^{(0)}$ to $\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
 
   Read in $\mS^{(\bar{r})}$ the Schur complement of $\mA^{(\bar{r})}_{0,0}$ in $\mA$\;
   \lIf{the Schur complement is non zero}{\Raise}
-  \lElse {\Return $(\bar{r},\mY^{(\bar{r},n-\bar{r})}_1,\mZ^{(\bar{r},m-\bar{r})}_1)$}
+  \lElse {\Return $(\bar{r},\mY^{(\bar{r},m-\bar{r})}_1,\mZ^{(\bar{r},n-\bar{r})}_1)$}
 \end{algorithm}
 
 We describe in Algorithm~\ref{algo:iter} an quadratic iterative
 algorithm for Problem~\ref{pb:cauchy}; we will use a step size
 $\beta \in \{1,\dots,\alpha\}$, given as a parameter.  Note that the
 formulae that computes $(\mY^{(i+j)},\mZ^{(i+j)})$ from
-$(\mY^{(i)},\mZ^{(i)})$ only involves the block matrices of
-$\mS^{(i)}$ that belong to the row or the column of
-$\mS^{(i,j)}_{0,0}$. So Algorithm~\ref{algo:iter},
-line~\ref{line:rowcol} recovers the row $\mS^{(i,j)}_{0,\ast}$ from
-its $\nabla_{\vu_{i+1:i+j}, \vv^{(i)}}$-generators
-$(\mY^{(i,j)}_0,\mZ^{(i)})$ and the column $\mS^{(i,j)}_{\ast,0}$ from
-its $\nabla_{\vu^{(i)},\vv_{i+1:i+j}}$-generators
-$(\mY^{(i)},\mZ^{(i,j)}_0)$.
+$(\mY^{(i)},\mZ^{(i)})$ only involves $\mS^{(i,j)}_{0,0}{}^{-1}$,
+$\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$. So
+Algorithm~\ref{algo:iter}, line~\ref{line:rowcol} recovers
+$\mS^{(i,j)}_{0,1}$ from its
+$\nabla_{\vu^{(i,j)}_0, \vv^{(i,j)}_1}$-generators
+$(\mY^{(i,j)}_0,\mZ^{(i,j)}_1)$ and the same for $\mS^{(i,j)}_{1,0}$.
 
 \smallskip\noindent{\bf \small Termination and correction.}
 The correction of the algorithm is based on the fact that $\mA$ has
@@ -833,17 +853,17 @@ cost drops to $O(\alpha^{\omega-2} mn)$, as claimed previously.
   \caption{Divide-And-Conquer algorithm $\DAC$ \label{algo:dac}}
 
   \Input{Generators $(\mG,\mH)$ of $\mA$, threshold $t$}
-  \Output{$r=\rank(\mA)$, generators $(\mY^{(r)}_0,\mZ^{(r)}_0)$ of
-    $\mA^{(r)}_{0,0}{}^{-1}$}
+  \Output{$r=\rank(\mA)$, generators of $\mA^{(r)}_{0,0}{}^{-1}$}
 
-  $p = \min(m,n), p' = \max(m,n), (\mY^{(0)},\mZ^{(0)}) = (\mG,\mH)$\; 
+  $p = \min(m,n),\ p' = \max(m,n),\ (\mY^{(0)},\mZ^{(0)}) = (\mG,\mH)$\; 
 
   \lIf{$p' \leq t$}{\Return $\Iter(\mG,\mH, \alpha)$} 
   $i = \lceil p/2 \rceil$\;
-  $(r_0,\mY^{(r_0)}_0,\mZ^{(r_0)}_0) = \DAC(\mG^{(i)}_0, \mH^{(i)}_0,  t)$\;\label{line:dac0}
+  $(r_0,\mY^{(r_0,m-r_0)}_1,\mZ^{(r_0,n-r_0)}_1) = 
+  \DAC(\mY^{(0,i)}_0, \mZ^{(0,i)}_0,  t)$\;\label{line:dac0}
 
   Compute $(\mY^{(r_0)},\mZ^{(r_0)})$ from
-  $(\mY^{(r_0)}_0,\mZ^{(r_0)}_0)$, $(\mY^{(0)},\mZ^{(0)})$
+  $(\mY^{(r_0,m-r_0)}_1,\mZ^{(r_0,n-r_0)}_1)$ and $(\mY^{(0)},\mZ^{(0)})$
   \label{line:recoverfullgen0}\;
 
   \If{$r_0 < i$}{
