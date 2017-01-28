@@ -973,9 +973,10 @@ We have implemented the algorithms described so far, together with all
 subroutines they rely on, in a C++ library available at
 \url{gitsomething}. Our implementation is based on Shoup's
 NTL~\cite{Shoup95,NTL} version 10.3.0, and is dedicated to word-size
-primes (NTL's \texttt{lzz\_p} class). In all that follows, timings are
-measured on an Intel i7-4790 CPU with 32 GB RAM; only one thread is
-used throughout.
+primes (NTL's \texttt{lzz\_p} class); the divide-and-conquer algorithm
+of Subsection~\ref{ssec:MBA-C} actually requires FFT primes.  In all
+that follows, timings are measured on an Intel i7-4790 CPU with 32 GB
+RAM; only one thread is used throughout.
 
 The main building blocks we need are fast polynomial and matrix
 computations. NTL already implements very efficient FFT-based
@@ -993,9 +994,10 @@ algorithm becomes more efficient for rather small values of $\alpha$:
 our crossover points are $\alpha=8$ or $9$ for primes less than
 $2^{23}$, and $\alpha=13$ or $14$ for larger word-size primes. The
 following graph shows the time ratio between the direct approach and
-our algorithm, for $\alpha=30$. We see that for small primes, for
-which matrix multiplication is very efficient, our algorithm brings a
-substantial improvement.
+our algorithm, for $\alpha=30$; the larger value of $p$ used here is
+the FFT prime $p=82705526964617217=7^2 2^{54}+1$. We see that for
+small primes, for which matrix multiplication is very efficient, our
+algorithm brings a substantial improvement.
 
 \includegraphics[width=7cm]{ratio-block-eschost-desktop.pdf}
 
@@ -1021,14 +1023,14 @@ manner, independently of $p$).
 \includegraphics[width=7cm]{ratio-mul-matrix-eschost-desktop.pdf}
 
 Taking these results into account, we determined empirically crossover
-values $n_0$ to end the recursion in the divide-and-conquer algorithm,
+values $n_0$ to end the recursion in the divide-and-conquer algorithm
 and switch to the quadratic algorithm. We expect the crossover point
 $n_0$ to grow with $\alpha$, since for a given $\alpha$, it behaves
 like the solution of $\alpha n^2 = \alpha \M(n) \log(n)$ (assuming
-here we do not use fast linear algebra, for simplicity). The following 
-table reports some values for $n_0$ (obtained by searching in increments of $100$).
-The threshold is higher for small primes, since they benefit more from 
-our new quadratic algorithm.
+here we do not use fast linear algebra, for simplicity). The following
+table reports some values for $n_0$ (obtained by searching for $n_0$
+in increments of $100$).  The threshold is higher for small primes,
+since they benefit more from our new quadratic algorithm.
 
 \begin{center}
 {\small
@@ -1043,26 +1045,33 @@ $p\simeq 2^{59}$  & 200 & 400 & 400 & 700 & 1300 & 1600 & 2000\\\hline
 These values being set, we can then show runtimes for solving
 Problem~\ref{pb:cauchy} modulo both $p=65537$ and
 $p=8827055\-26964617217$, for increasing values of $n$; we use
-$\alpha=5$, $\alpha=50$ and we also display the runtime of a dense
+$\alpha=5$ and $\alpha=50$, and we also display the runtime of a dense
 matrix inversion in the same size. For a very small displacement rank
 such as $\alpha=5$, the runtime is essentially the same for these two
-primes, since the benefits of fast linear algebra do not show; with
-$\alpha=50$, we observe a difference between these two primes, by a
-factor of up to 3. In any case, there is a clear gain over dense
-methods.
+primes; with $\alpha=50$, we observe a difference between these two
+primes, by a factor of up to 3. In any case, there is a clear gain
+over dense methods.
 
 \includegraphics[width=8cm]{large_n-eschost-desktop.pdf}
 
 We also determined, for a given value of $n$, the crossover value
 $\alpha_0$ above which dense linear algebra becomes faster than
 structured methods.  The value $\alpha_0(n)$ grows quite regularly
-with $n$, good approximations being $\alpha_0(n) \simeq 0.2 n$ (for $p < 2^{23}$) and
-$\alpha_0(n) \simeq 0.25 n$ (for larger values of $p$).
+with $n$, good approximations being $\alpha_0(n) \simeq 0.2 n$ (for $p
+< 2^{23}$) and $\alpha_0(n) \simeq 0.25 n$ (for larger values of
+$p$). This means that there is a wide range of inputs for which
+structured methods are can be of use.
 
 Our solution of Problem~\ref{pb:mosaic} is a direct reduction to the
-Cauchy-like case; we still have to examine the time for putting the
-problem into Cauchy form by means of the formulae of
-Eq.~(\ref{eq:gentoetogencau}).
+Cauchy-like case. Putting the problem into Cauchy form by means of the
+formulae of Eq.~(\ref{eq:gentoetogencau}) accounts for a small
+fraction of the total runtime: between 5\% and 10\% for small $\alpha$
+(say $\alpha < 10$), and less than 5\% for larger values of $\alpha$,
+in all instances we considered.  In the thousands of experiments we used
+for our tests, for matrix sizes such as $n \ge 5000$ and small primes
+such as $p=65537$, we observed some instances where the Cauchy matrix
+did not have generic rank profile. This never happened for larger 
+values of $p$, having more than $50$ bits.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
