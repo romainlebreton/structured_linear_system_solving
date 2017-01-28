@@ -733,20 +733,19 @@ $\mR^{(0)}$ to $\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
   \caption{Iterative algorithm $\Iter$ for Problem~\ref{pb:cauchy} \label{algo:iter}}
 
   \Input{Generators $(\mG,\mH)$ of $\mA$ and step size $\beta$}
-  \Output{$r=\rank(\mA)$, generators $(\mY^{(r)}_0,\mZ^{(r)}_0)$ of
-    $\mA^{(r)}_{0,0}{}^{-1}$}
+  \Output{$r=\rank(\mA)$, generators of $\mA^{(r)}_{0,0}{}^{-1}$}
   % \SetKwFunction{Algorithm}{RDAC} \Algorithm{$A,\mathbf{C},i,N,k$}
 
   $i=0, \mY^{(0)}=\mG, \mZ^{(0)}=\mH, \bar{r} = p$\;
   \While{$i \neq \bar{r}$}{
     $j = \min (\beta,\bar{r}-i)$\;
-    Recover $\mS^{(i,j)}_{1,1}$ from its generators $(\mY^{(i,j)}_1,\mZ^{(i,j)}_1)$\;
-    Compute the rank $\rho$ and the rank profile of $\mS^{(i,j)}_{1,1}$\; \label{line:rankprof}
-    \If{$\mS^{(i,j)}_{1,1}$ does not have generic rank profile}{
+    Recover $\mS^{(i,j)}_{0,0}$ from its generators $(\mY^{(i,j)}_0,\mZ^{(i,j)}_0)$\;
+    Compute the rank $\rho$ and the rank profile of $\mS^{(i,j)}_{0,0}$\; \label{line:rankprof}
+    \If{$\mS^{(i,j)}_{0,0}$ does not have generic rank profile}{
       \Raise\;
     }
     \lIf{$\rho<j$}{$j=\rho,\ \bar{r}=i+\rho$}
-    Recover the row $\mS^{(i,j)}_{1,\ast}$ and column $\mS^{(i,j)}_{\ast,1}$\; \label{line:rowcol}
+    Recover the row $\mS^{(i,j)}_{0,\ast}$ and column $\mS^{(i,j)}_{\ast,0}$\; \label{line:rowcol}
     Compute the generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of $\mS^{(i+j)}$\; \label{line:nextgen}
     $i = i + j$\;
   }
@@ -754,23 +753,22 @@ $\mR^{(0)}$ to $\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
   \label{line:recoverwhole}\;
 
   Read in $\mS^{(\bar{r})}$ the Schur complement of $\mA^{(\bar{r})}_{0,0}$ in $\mA$\;
-  \lIf{Schur complement is non zero}{\Raise}
-  \lElse {\Return $(\bar{r},\mY^{(\bar{r})}_0,\mZ^{(\bar{r})}_0)$}
+  \lIf{the Schur complement is non zero}{\Raise}
+  \lElse {\Return $(\bar{r},\mY^{(\bar{r},n-\bar{r})}_1,\mZ^{(\bar{r},m-\bar{r})}_1)$}
 \end{algorithm}
 
 We describe in Algorithm~\ref{algo:iter} an quadratic iterative
 algorithm for Problem~\ref{pb:cauchy}; we will use a step size
-$\beta \in \{1,\dots,\alpha\}$, given as a parameter.
-
-Note that the formulae that computes $(\mY^{(i+j)},\mZ^{(i+j)})$ from
-$(\mY^{(i)},\mZ^{(i)})$ only involves the matrices that belong to the
-row or the column of $\mS^{(i,j)}_{1,1}$. So
-Algorithm~\ref{algo:iter}, line~\ref{line:rowcol} recovers the
-row $\mS^{(i,j)}_{1,\ast}$ from its
-$\nabla_{\vu_{i+1:i+j}, \vv^{(i)}}$-generators
-$(\mY^{(i,j)}_1,\mZ^{(i)})$ and the column $\mS^{(i,j)}_{\ast,1}$ from
+$\beta \in \{1,\dots,\alpha\}$, given as a parameter.  Note that the
+formulae that computes $(\mY^{(i+j)},\mZ^{(i+j)})$ from
+$(\mY^{(i)},\mZ^{(i)})$ only involves the block matrices of
+$\mS^{(i)}$ that belong to the row or the column of
+$\mS^{(i,j)}_{0,0}$. So Algorithm~\ref{algo:iter},
+line~\ref{line:rowcol} recovers the row $\mS^{(i,j)}_{0,\ast}$ from
+its $\nabla_{\vu_{i+1:i+j}, \vv^{(i)}}$-generators
+$(\mY^{(i,j)}_0,\mZ^{(i)})$ and the column $\mS^{(i,j)}_{\ast,0}$ from
 its $\nabla_{\vu^{(i)},\vv_{i+1:i+j}}$-generators
-$(\mY^{(i)},\mZ^{(i,j)}_1)$.
+$(\mY^{(i)},\mZ^{(i,j)}_0)$.
 
 \smallskip\noindent{\bf \small Termination and correction.}
 The correction of the algorithm is based on the fact that $\mA$ has
@@ -788,9 +786,9 @@ same properties.
 The while loop exits on one of two conditions that both ensures that
 $\bar{r} = \max\{ r \ |\ \forall j \leq r, \det(\mA^{(j)}_{0,0}) \neq
 0 \}$.
-Either $\rank(\mS^{(i,j)}_{1,1})$ is always $j$, then $i$ will
-eventually reach $\bar{r}=p$. Or $\rank(\mS^{(i,j)}_{1,1})<j$ at some
-point and after setting $\bar{r}=i+\rank( \mS^{(i,j)}_{1,1})$, we
+Either $\rank(\mS^{(i,j)}_{0,0})$ is always $j$, then $i$ will
+eventually reach $\bar{r}=p$. Or $\rank(\mS^{(i,j)}_{0,0})<j$ at some
+point and after setting $\bar{r}=i+\rank( \mS^{(i,j)}_{0,0})$, we
 have $\det(\mA^{(\ell)}_{0,0}) \neq 0$ for all $\ell \leq \bar{r}$
 and $\det(\mA^{(\bar{r}+1)}_{0,0}) = 0$, and the while loop exits
 right after.
@@ -801,12 +799,12 @@ $\mA^{(\bar{r})}_{0,0}$ in $\mA$ is zero.
 
 \smallskip\noindent{\bf \small Complexity.} Computing the rank profile
 in line~\ref{line:rankprof} costs $O(\beta^\omega)$.  Using block
-matrix multiplication in Eq.~\eqref{eq:recA2}, we see that we can
-recover the matrices of line~\ref{line:rowcol} in time
+matrix multiplication in Eq.~\eqref{eq:recA2}, we can recover the
+matrices of line~\ref{line:rowcol} in time
 $O(\beta^{\omega-2} \alpha (m+n))$ since $j \le \beta \le \alpha$.  To
 compute $\mY^{(i+j)}$ on line~\ref{line:nextgen}, we first compute
-$\mS^{(i,j)}_{1,1}{}^{-1}$ in time $O(\beta^{\omega})$,
-$\mS^{(i,j)}_{1,1}{}^{-1} \mY^{(i,j)}_1$ in time
+$\mS^{(i,j)}_{0,0}{}^{-1}$ in time $O(\beta^{\omega})$,
+$\mS^{(i,j)}_{0,0}{}^{-1} \mY^{(i,j)}_1$ in time
 $O(\beta^{\omega-1} \alpha)$; then all other operations take time
 $O(\beta^{\omega-2} \alpha m)$.  Similarly, computing $\mZ^{(i+j)}$
 takes time $O(\beta^{\omega-2} \alpha n)$.  Recovering the whole
