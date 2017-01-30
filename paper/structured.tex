@@ -578,20 +578,29 @@ one required for $\nabla_{\vu,\vv}$ to be invertible.
   \begin{itemize}
   \item if $\mA$ does not have generic rank profile, raise an error,
   \item else, return $\nabla_{\vv',\vu'}$-generators for the inverse
-    of the leading principal minor of $\mA$ of order $r$, with
+    of the leading principal minor $\mA_r$ of $\mA$ of order $r$, with
     $\vv'=(v_1,\dots,v_r)$ and $\vu'=(u_1,\dots,u_r)$, where
     $r={\rm rank}(\mA)$.
 \end{itemize}
 \end{pbm}
-There exist two major classes of algorithms for handling such
-problems, iterative ones, of cost that grows like $mn$ (for fixed
-$\alpha$), and algorithms using divide-and-conquer techniques, of
-quasi-linear cost in $m+n$. We stress that having a fast
-quadratic-time algorithm is actually crucial in practice: as is the
-case for the Half-GCD, fast linear algebra algorithms, etc, the
+To solve an instance of Problem~\ref{pb:mosaic}, with input matrix
+$\mT$, we apply the transformation of the previous section, to obtain
+a Cauchy-like matrix $\mA = \mV_\vu \mT \mW_{\vv}$. We compute
+generators of $\mA_{r}^{-1}$, where $\mA_r$ is a maximal leading minor
+of $\mA$, and we return a vector $\vb$ of the form
+$\vb=\mW_{\vv}[(-\mA_r^{-1}\vc)^t ~ \vc^t]^t$, where $\vc$ is a random
+vector.
+
+
+There exist two major classes of algorithms for handling
+Problem~\ref{pb:cauchy}, iterative ones, of cost that grows like $mn$
+(for fixed $\alpha$), and algorithms using divide-and-conquer
+techniques, of quasi-linear cost in $m+n$. We stress that having a
+fast quadratic-time algorithm is actually crucial in practice: as is
+the case for the Half-GCD, fast linear algebra algorithms, etc, the
 quasi-linear algorithm will fall back on the quadratic one for input
 sizes under a certain threshold, and the performance of the latter
-will be an important factor in the overall runtime. 
+will be an important factor in the overall runtime.
 
 Iterative algorithms that solve a size $n$ Toeplitz system in time
 $O(n^2)$ have been known for
@@ -1150,6 +1159,14 @@ practical performance. We will highlight in particular the case of
 algebraic approximants, for which we are able to obtain significant
 improvements.
 
+In what follows, we denote by $\mathscr{I}:\mathbb{N}
+\to \mathbb{R}$ a function such that integers of bit size at most $d$
+can be multiplied in $\mathscr{I}(d)$ bit operations; using FFT
+techniques, we can take $\mathscr{I}(d)=O(d \log(d) \log\log(d))$ or
+$\mathscr{I}(d)=d \log(d) 2^{O(\log^*(d))}$~\cite{ScSt71,Furer07}. As
+in~\cite{GaGe13}, we assume that $d\mapsto \mathscr{I}(d)/d$ is
+non-decreasing.  
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Solving square systems by lifting}
@@ -1157,23 +1174,19 @@ improvements.
 In this subsection, we are given a prime power $p^t$, an $n \times n$
 matrix $\mA$ and a vector $\vb$, both with entries modulo $p^t$, and
 we assume that $\mA$ is invertible modulo $p^t$ (we denote by $\mB$
-its inverse). In what follows, we denote by $\mathscr{I}:\mathbb{N}
-\to \mathbb{R}$ a function such that integers of bit size at most $d$
-can be multiplied in $\mathscr{I}(d)$ bit operations; using FFT
-techniques, we can take XXX. As in~\cite{GaGe13}, we assume that
-$d\mapsto \mathscr{I}(d)/d$ is non-decreasing.  We discuss algorithms
-that solve the equation $\mA \vx = \vb$ modulo $p^{t}$, where $t$ is a
-power of 2, and we estimate their complexity when $\mA$ is a
-structured matrix.
+its inverse). We discuss algorithms that solve the equation $\mA \vx =
+\vb$ modulo $p^{t}$, where $t$ is a power of 2, and we estimate their
+complexity when $\mA$ is a structured matrix. 
 
 We take $C_\mA$ such that, for any $t$, given a vector $\vx$ with
 entries defined modulo $p^t$, we can compute $\mA \vx \bmod p^t$ in
 $O(C_\mA \mathscr{I}(t \log(p)))$ bit operations. Below, we will
-assume that $\mA$ is Cauchy-like as in the previous section, and given
-by generators of length $\alpha$, so that we can take $C_\mA \in
-O(\alpha \M(n))$. We saw in the introduction that in some cases (for
-the calculation of algebraic approximants, for instance), better
-estimates are available.
+assume that $\mA$ is Cauchy-like as in~\eqref{eq:recA}, with vectors
+$\vu,\vv$ geometric progressions have the same ratio, and given by
+generators of length $\alpha$, so that we can take $C_\mA \in O(\alpha
+\M(n))$. We saw in the introduction that in some cases (for the
+calculation of algebraic approximants, for instance), better estimates
+are available.
 
 We will focus on two approaches: a divide-and-conquer algorithm and
 Newton iteration, which both feature a running time linear in the
@@ -1265,14 +1278,14 @@ in the previous section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Solving Problem~\ref{pbm:mosaic}}
+\subsection{Solving Problem~\ref{pb:mosaic}}
 
 The techniques above allow us to solve instances of
-Problem~\ref{pbm:mosaic}, that is, find nullspace elements for a
+Problem~\ref{pb:mosaic}, that is, find nullspace elements for a
 mosaic Toeplitz matrix $\mT$, but they would require the knowledge of
 a maximal invertible minor of it. However, there is no guarantee that
 $\mT$ possesses such a minor that would be mosaic Toeplitz as well,
-and we do not know how to find it efficientlty. Hence, we rely on the
+and we do not know how to find it efficiently. Hence, we rely on the
 transformation to the Cauchy structure / regularization technique
 of Section~\ref{sec:basics}.
 
