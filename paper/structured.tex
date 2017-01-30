@@ -1,32 +1,36 @@
-\documentclass{sig-alternate}
+\documentclass[sigconf]{acmart}
+% \documentclass{sig-alternate}
 
+% \usepackage{amsthm}
 \usepackage{bm}
 \usepackage{mathrsfs}
 \usepackage{enumerate}
-\usepackage[colorlinks=true,linkcolor=cyan]{hyperref}
+% \usepackage[colorlinks=true,linkcolor=cyan]{hyperref}
 
 \usepackage[lined,boxed,ruled,vlined]{algorithm2e}
 \SetKwInOut{Input}{Input}
 \SetKwInOut{Output}{Output}
 
-\numberofauthors{3}
-\author{
-\alignauthor
-Seung Gyu Hyun\\
-\affaddr{Cheriton School of Computer Science} \\
-\affaddr{University of Waterloo}
-\email{sghyun@edu.uwaterloo.ca}
-\alignauthor
-Romain Lebreton\\
-\affaddr{LIRMM} \\
-\affaddr{Universit\'e de Montpellier}
-\email{romain.lebreton@lirmm.fr}
-\alignauthor
-\'Eric Schost\\
-\affaddr{Cheriton School of Computer Science} \\
-\affaddr{University of Waterloo}
-\email{eschost@uwaterloo.ca}
+\author{Seung Gyu Hyun}
+\affiliation{%
+  \institution{Cheriton School of Computer Science}
+  \institution{University of Waterloo}
 }
+\email{sghyun@edu.uwaterloo.ca}
+
+\author{Romain Lebreton}
+\affiliation{
+  \institution{LIRMM}
+  \institution{Universit\'e de Montpellier}
+}
+\email{romain.lebreton@lirmm.fr}
+
+\author{\'Eric Schost}
+\affiliation{%
+  \institution{Cheriton School of Computer Science}
+  \institution{University of Waterloo}
+}
+\email{eschost@uwaterloo.ca}
 
 \newcommand{\va}{\ensuremath{\mathsf{a}}}
 \newcommand{\vb}{\ensuremath{\mathsf{b}}}
@@ -90,12 +94,15 @@ Romain Lebreton\\
 
 \newtheorem{pbm}{Problem}
 \renewcommand{\thepbm}{\Alph{pbm}} % "letter-numbered" theorems
-\newtheorem{definition}{Definition}
-\newtheorem{theorem}[definition]{Theorem}
-\newtheorem{corollary}[definition]{Corollary}
-\newtheorem{proposition}[definition]{Proposition}
-\newtheorem{lemma}[definition]{Lemma}
-\newtheorem{algo}{Algorithm}
+% \newtheorem{definition}{Definition}
+% \newtheorem{theorem}[definition]{Theorem}
+% \newtheorem{corollary}[definition]{Corollary}
+% \newtheorem{proposition}[definition]{Proposition}
+% \newtheorem{lemma}[definition]{Lemma}
+
+\theoremstyle{acmdefinition}
+\newtheorem{remark}[theorem]{Remark}
+% \newtheorem{algo}{Algorithm}
 
 \def\gathen#1{{#1}}
 
@@ -368,6 +375,7 @@ points in geometric progression can be done in time $O(\M(n))$;
 similarly, multiplication by $\mA$ as above takes time
 $O(\alpha\M(\mx))$.
 
+\begin{remark}\label{rmk:factor3}
 We propose here a refinement of this idea, that allows us to
 save a constant factor in runtime: we require that $\vu$ and $\vv$ be
 geometric progressions with {\em the same ratio} $\tau$. Then, the
@@ -392,6 +400,7 @@ $O(\alpha \M(\mx))$, but the constant in the big-O is lower: for $m=n$,
 using middle product techniques~\cite{HaQuZi04,BoLeSc03,BoSc05}, the
 cost goes down from $3\alpha \M(\mx) +O(\alpha \mx)$ to $\alpha \M(\mx)
 +O(\alpha \mx)$. 
+\end{remark}
 
 If one needs to multiply $\mA$ as above by {\em several} vectors,
 further improvements are possible: we mention without giving details
@@ -622,13 +631,13 @@ and Mouilleron~\cite{JeMo10}, following~\cite{Cardinal99}, allows one
 to bypass costly compression stages that are needed in Kaltofen's
 algorithm and its extensions, by predicting the shape of the
 generators we have to compute. For the case of square Cauchy-like
-matrices of size $n$, this results in an algorithm of cost $O(\alpha^2
-\M(n)\log(n)^2)$. As pointed out in~\cite[Theorem~5.3.1]{Pan01} (see
-also~\cite{ChPa00}), the cost can be reduced to $O(\alpha^2
-\M(n)\log(n))$ by choosing vectors $\vu$ and $\vv$ in geometric
-progression. In our case, we will use vectors $\vu$, $\vv$ that are 
-in geometric progression with the same ratio, in order to apply the remark
-in the previous section.
+matrices of size $n$, this results in an algorithm of cost
+$O(\alpha^2 \M(n)\log(n)^2)$. As pointed out
+in~\cite[Theorem~5.3.1]{Pan01} (see also~\cite{ChPa00}), the cost can
+be reduced to $O(\alpha^2 \M(n)\log(n))$ by choosing vectors $\vu$ and
+$\vv$ in geometric progression. In our case, we will use vectors
+$\vu$, $\vv$ that are in geometric progression with the same ratio, in
+order to apply Remark~\ref{rmk:factor3}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
