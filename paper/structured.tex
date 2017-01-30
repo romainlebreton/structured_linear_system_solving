@@ -1,32 +1,36 @@
-\documentclass{sig-alternate}
+\documentclass[sigconf]{acmart}
+% \documentclass{sig-alternate}
 
+% \usepackage{amsthm}
 \usepackage{bm}
 \usepackage{mathrsfs}
 \usepackage{enumerate}
-\usepackage[colorlinks=true,linkcolor=cyan]{hyperref}
+% \usepackage[colorlinks=true,linkcolor=cyan]{hyperref}
 
 \usepackage[lined,boxed,ruled,vlined]{algorithm2e}
 \SetKwInOut{Input}{Input}
 \SetKwInOut{Output}{Output}
 
-\numberofauthors{3}
-\author{
-\alignauthor
-Seung Gyu Hyun\\
-\affaddr{Cheriton School of Computer Science} \\
-\affaddr{University of Waterloo}
-\email{sghyun@edu.uwaterloo.ca}
-\alignauthor
-Romain Lebreton\\
-\affaddr{LIRMM} \\
-\affaddr{Universit\'e Montpellier2}
-\email{romain.lebreton@lirmm.fr}
-\alignauthor
-\'Eric Schost\\
-\affaddr{Cheriton School of Computer Science} \\
-\affaddr{University of Waterloo}
-\email{eschost@uwaterloo.ca}
+\author{Seung Gyu Hyun}
+\affiliation{%
+  \institution{Cheriton School of Computer Science}
+  \institution{University of Waterloo}
 }
+\email{sghyun@edu.uwaterloo.ca}
+
+\author{Romain Lebreton}
+\affiliation{
+  \institution{LIRMM}
+  \institution{Universit\'e de Montpellier}
+}
+\email{romain.lebreton@lirmm.fr}
+
+\author{\'Eric Schost}
+\affiliation{%
+  \institution{Cheriton School of Computer Science}
+  \institution{University of Waterloo}
+}
+\email{eschost@uwaterloo.ca}
 
 \newcommand{\va}{\ensuremath{\mathsf{a}}}
 \newcommand{\vb}{\ensuremath{\mathsf{b}}}
@@ -90,14 +94,23 @@ Romain Lebreton\\
 
 \newtheorem{pbm}{Problem}
 \renewcommand{\thepbm}{\Alph{pbm}} % "letter-numbered" theorems
-\newtheorem{definition}{Definition}
-\newtheorem{theorem}[definition]{Theorem}
-\newtheorem{corollary}[definition]{Corollary}
-\newtheorem{proposition}[definition]{Proposition}
-\newtheorem{lemma}[definition]{Lemma}
-\newtheorem{algo}{Algorithm}
+% \newtheorem{definition}{Definition}
+% \newtheorem{theorem}[definition]{Theorem}
+% \newtheorem{corollary}[definition]{Corollary}
+% \newtheorem{proposition}[definition]{Proposition}
+% \newtheorem{lemma}[definition]{Lemma}
+
+\theoremstyle{acmdefinition}
+\newtheorem{remark}[theorem]{Remark}
+% \newtheorem{algo}{Algorithm}
 
 \def\gathen#1{{#1}}
+
+\acmConference[ISSAC]{International Symposium on Symbolic and Algebraic Computation}{2017}{Kaiserslautern, Germany}
+\acmYear{2017}
+\copyrightyear{2017}
+\setcopyright{rightsretained}
+
 
 \title{Algorithms for structured linear systems and their implementation}
 
@@ -126,11 +139,15 @@ Romain Lebreton\\
 
 In this paper, we discuss linear algebra algorithms inspired by the
 following kind of question: given polynomials such as
-\begin{align*}
-t_0 &= 8x^4 - 8x^2 + 1\\
-t_1 &= 16x^5 - 20x^3 + 5x\\
-t_2 &= 32x^6 - 48x^4 + 18x^2 - 1,
-\end{align*}
+\[
+\left\{
+\begin{array}{rcl}
+t_0 &=& 8x^4 - 8x^2 + 1\\
+t_1 &=& 16x^5 - 20x^3 + 5x\\
+t_2 &=& 32x^6 - 48x^4 + 18x^2 - 1,
+\end{array}
+\right.
+\]
 find that the relation $t_0-2x t_1+t_2=0$ holds (this is the
 recurrence between Chebyshev polynomials of the first kind).  
 
@@ -154,19 +171,19 @@ is, $m \times n$ matrices $\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le
   q}$ with a $p \times q$ block structure, each of the $pq$ blocks $\mT_{i,j}$
 being Toeplitz.
 
-An $m \times n$ Toeplitz matrix $\mT=(t_{i-j})_{1\le i \le m, 1 \le j
-  \le n}$ can be succinctly represented by the polynomial
+An $m \times n$ Toeplitz matrix
+$\mT=(t_{i-j})_{1\le i \le m, 1 \le j \le n}$ can be succinctly
+represented by the polynomial
 $P_\mT=t_{-n+1} + t_{-n+2} x + \cdots + t_{m-1} x^{m+n-2}$;
 multiplication of $\mT$ by a vector $\vb=[b_0~\cdots~b_{n-1}]^t$
 amounts to computing $P_\mT P_\vb \bmod x^{m+n-1}$ and keeping the
-coefficients of degrees $n-1,\dots,m+n-2$, where we write $P_\vb=b_0 +
-\cdots + b_{n-1} x^{n-1}$.  More generally, a mosaic Toeplitz
-$\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le q}$ can be described by a
-sequence of $pq$ such polynomials $\mathscr{P}=(P_{\mT_{i,j}})_{1 \le
-  i \le p,1 \le j \le q}$, together with the sequences
-$I=(m_1,\dots,m_p)$ and $J=(n_1,\dots,n_q)$ giving the row-sizes,
-resp.\ column-sizes of the blocks. Then, our main problem is the
-following.
+coefficients of degrees $n-1,\dots,m+n-2$.  More generally, a mosaic
+Toeplitz $\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le q}$ can be
+described by a sequence of $pq$ such polynomials
+$\mathscr{P}=(P_{\mT_{i,j}})_{1 \le i \le p,1 \le j \le q}$, together
+with the sequences $I=(m_1,\dots,m_p)$ and $J=(n_1,\dots,n_q)$ giving
+the row-sizes, resp.\ column-sizes of the blocks. Then, our main
+problem is the following.
 
 \begin{pbm}\label{pb:mosaic}
   Given polynomials $\mathscr{P}$ and integers $I,J$ as above, 
@@ -364,6 +381,7 @@ points in geometric progression can be done in time $O(\M(n))$;
 similarly, multiplication by $\mA$ as above takes time
 $O(\alpha\M(\mx))$.
 
+\begin{remark}\label{rmk:factor3}
 We propose here a refinement of this idea, that allows us to
 save a constant factor in runtime: we require that $\vu$ and $\vv$ be
 geometric progressions with {\em the same ratio} $\tau$. Then, the
@@ -377,7 +395,7 @@ $$\mC_{\vu,\vv}=\mD_{\tau^{-1}}
 \frac 1{u_1 - v_1 \tau^{1-m}}  & \frac 1{u_1 - v_1 \tau^{2-m}} & \cdots & \frac 1{u_1-v_1 \tau^{n-m}}
 \end{bmatrix},$$
 where $\mD_{\tau^{-1}}$ is diagonal with entries
-$(1,\tau^{-1},\tau^{-2},\dots,\tau^{1-m})$, and where the left-hand matrix
+$(1,\tau^{-1},\tau^{-2},\dots,\tau^{1-m})$, and where the right-hand matrix
 is Toeplitz. In the reconstruction formula~\eqref{eq:recA}, the
 diagonal matrix $\mD_\tau$ commutes with all matrices $\mD_{g_i}$, so
 we can take it out of the sum. Hence, we replaced $\alpha$ evaluations
@@ -388,6 +406,7 @@ $O(\alpha \M(\mx))$, but the constant in the big-O is lower: for $m=n$,
 using middle product techniques~\cite{HaQuZi04,BoLeSc03,BoSc05}, the
 cost goes down from $3\alpha \M(\mx) +O(\alpha \mx)$ to $\alpha \M(\mx)
 +O(\alpha \mx)$. 
+\end{remark}
 
 If one needs to multiply $\mA$ as above by {\em several} vectors,
 further improvements are possible: we mention without giving details
@@ -423,51 +442,51 @@ $$
   1 & \cdots & 1
 \end{bmatrix}.
 $$
-For $\vu$ as above, $\vv$ in $\K^n$ and $\mA$ in $\K^{m\times n}$, we
-let $\mA' = \mV_\vu\, \mA\, \mW_\vv$; we now prove that if $\mA$ is Toeplitz-like,
- $\mA'$ is Cauchy-like. 
+For $\vu$ as above, $\vv$ in $\K^n$ and $\mT$ in $\K^{m\times n}$, we
+let $\mA = \mV_\vu\, \mT\, \mW_\vv$; we now prove that if $\mT$ is Toeplitz-like,
+ $\mA$ is Cauchy-like. 
 
-\todo{$\mA$ or $\mT$ for mosaic Toeplitz?}
-The $\nabla_{\vu,\vv}$-generators of $\mA'$ depend on the
-$\phi$-generators of $\mA$, so let us start with those. If
-$\mA=(\mA_{i,j})_{1 \le i \le p,1 \le j \le q}$ is mosaic Toeplitz of
-size $m \times n$, with $\mA_{i,j}$ of size $m_i \times n_j$, we
+The $\nabla_{\vu,\vv}$-generators of $\mA$ depend on the
+$\phi$-generators of $\mT$, so let us start with those. If
+$\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le q}$ is mosaic Toeplitz of
+size $m \times n$, with $\mT_{i,j}$ of size $m_i \times n_j$, we
 define the following.
 \begin{itemize}
-\item For $1 \le i \le p$, let $\mA_{i,*}$ be the block matrix
-  $[\mA_{i,1}~\cdots~\mA_{i,q}]$.  Let $\eta_i$ be the first row of $\mA_{i,*}$,
-  shifted left once, let $\eta'_i$ be the last row of $\mA_{i,*}$, and finally
-  let $\vh_i=(\eta'_{i-1}-\eta_i)$ (for $i=1$, $\eta'_0$ is the zero vector);
-  this is a row-vector of size $n$. If $\ve_{i,n}$ denotes the row-vector of
-  dimension $n$ with only a one at index $i$, we also let $\vg_{i}$ be the
-  transpose of $\ve_{m_1 + \cdots +m_{i-1}+1,m}$.
+\item For $1 \le i \le p$, let $\mT_{i,*}$ be the block matrix
+  $[\mT_{i,1}~\cdots~\mT_{i,q}]$.  Let $\eta_i$ be the first row of
+  $\mT_{i,*}$, shifted left once, let $\eta'_i$ be the last row of
+  $\mT_{i,*}$, and finally let $\vh_i=(\eta'_{i-1}-\eta_i)$ (for
+  $i=1$, $\eta'_0$ is the zero vector); this is a row-vector of size
+  $n$. If $\ve_{i,n}$ denotes the row-vector of dimension $n$ with
+  only a one at index $i$, we also let $\vg_{i}$ be the transpose of
+  $\ve_{m_1 + \cdots +m_{i-1}+1,m}$.
   
-\item For $1 \le j \le q$, define $\mA_{*,j}$ similarly to $\mA_{i,*}$;
-  $\gamma_j$ and $\gamma'_j$ are its first and last columns, with now a downward
-  shift for $\gamma'_j$; in addition, their entry of index $m_1 + \cdots + m_j$
-  are set to zero. Then, we define $\vg_{p+j}=(\gamma'_{j}-\gamma_{j+1})$ (as
-  above, undefined entries are set to zero).  We also let
-  $\vh_{p+j}=\ve_{n_1 + \cdots +n_j,n}$.
+\item For $1 \le j \le q$, define $\mT_{*,j}$ similarly to
+  $\mT_{i,*}$; $\gamma_j$ and $\gamma'_j$ are its first and last
+  columns, with now a downward shift for $\gamma'_j$; in addition,
+  their entry of index $m_1 + \cdots + m_j$ are set to zero. Then, we
+  define $\vg_{p+j}=(\gamma'_{j}-\gamma_{j+1})$ ($\gamma_{q+1}$ is
+  set to zero).  We also let $\vh_{p+j}=\ve_{n_1 + \cdots +n_j,n}$.
 \end{itemize}
 With these definitions, the matrices
 $\mG=\left< \vg_1 | \dots | \vg_{p+q} \right>$ and
 $\mH= \left<\vh^t_1 | \dots | \vh^t_{p+q} \right>$ are $\phi$-generators of
-$\mA$.
+$\mT$.
 
-To obtain $\mA'$, we conjugate $\mA$ by Vandermonde matrices, since $
+To obtain $\mA$, we conjugate $\mT$ by Vandermonde matrices, since $
 \mD_{\vu} \mV_{\vu} - \mV_{\vu} \mZ_m$ and $ \mW_{\vv} \mD_{\vv} -
 \mZ_n \mW_{\vv}$ have small rank; explicitly, they are equal to
 respectively $(\vu^m)^t \, \ve_{m,m}$ and $(\ve_{1,n})^t \, \vv^n$,
 where $\vu^m = \begin{bmatrix} u_1^m & \cdots & u_n^m \end{bmatrix}$,
 and similarly for $\vv^n$. As a
-consequence, since $\phi(\mA)=\mG \mH^t$, we have
+consequence, since $\phi(\mT)=\mG \mH^t$, we have
 \begin{eqnarray}
-  \nabla_{\vu, \vv} \left( \mathsf{A}' \right) & = & \mD_{\vu}  \mV_{\vu} 
-  \mathsf{A}  \mW_{\vv} - \mV_{\vu}  \mathsf{A}  \mW_{\vv}  \mD_{\vv} \nonumber \\
-  & = & \mV_{\vu}  \left( \mZ  \mathsf{A} - \mathsf{A}  \mZ \right) \mW_{\vv} 
+  \nabla_{\vu, \vv} \left( \mA \right) & = & \mD_{\vu}  \mV_{\vu} 
+  \mT  \mW_{\vv} - \mV_{\vu}  \mT  \mW_{\vv}  \mD_{\vv} \nonumber \\
+  & = & \mV_{\vu}  \left( \mZ  \mT - \mT  \mZ \right) \mW_{\vv} 
   \label{eq:gentoetogencau}\\
-  &   & + (\vu^m)^t \, \ve_{m,m}  \mathsf{A}  \mW_{\vv} 
-        - \mV_{\vu}  \mathsf{A}  (\ve_{1,n})^t \, \vv^n . \nonumber 
+  &   & + (\vu^m)^t \, \ve_{m,m}  \mT  \mW_{\vv} 
+        - \mV_{\vu}  \mT  (\ve_{1,n})^t \, \vv^n . \nonumber 
 \end{eqnarray}
 This motivates the following definitions.
 \begin{itemize}
@@ -478,20 +497,18 @@ This motivates the following definitions.
   $\vh'_{p+j}$ be the row of index $n_1 + \cdots +n_j$ in $\mW_\vv$.
 
 \item We define $\vg_{p+q+1} = (\vu^m)^t$, and $\vh_{p+q+1}$ as the last row of
-  $\mA \mW_\vv$; we also define $\vg_{p+q+2}$ as the first column of
-  $-\mV_\vu \mA$, and $\vh_{p+q+2} = \vv^n$.
+  $\mT \mW_\vv$; we also define $\vg_{p+q+2}$ as the first column of
+  $-\mV_\vu \mT$, and $\vh_{p+q+2} = \vv^n$.
 \end{itemize}
-
-Then it follows from Eq.~(\ref{eq:gentoetogencau}) that the matrix $\mG'$
-with columns $\vg'_1,\dots,\vg'_{p+q+2}$, and the matrix $\mH'$ with columns
-that are the transpose of $\vh'_1,\dots,\vh'_{p+q+2}$, are
-$\nabla_{\vu,\vv}$-generators of $\mA'$.
-
-The bottleneck in the computation of $\mG'$ and $\mH'$ are $p$
-left-products by $\mW_\vv$ and $p$ products by $\mV_\vu$.  If all
-entries of $\vu$ and $\vv$ are in geometric progression this takes
-time $O(p \M(n) + q \M(m))$; whereas $\mA$ has $\phi$-generators of
-length $p+q$, the generators $(\mG',\mH')$ have length $p+q+2$.
+%
+It follows from Eq.~(\ref{eq:gentoetogencau}) that
+$\mG'= \left< \vg'_1 | \dots | \vg'_{p+q+2}\right>$, and $\mH'$ with
+columns that are the transpose of $\vh'_1,\dots,\vh'_{p+q+2}$, are
+$\nabla_{\vu,\vv}$-generators of $\mA$ of length $p+q+2$ (whereas
+$\mT$ has $\phi$-generators of length $p+q$). The bottleneck in the
+computation of $\mG'$ and $\mH'$ are $p$ left-products by $\mW_\vv$
+and $q$ products by $\mV_\vu$.  If all entries of $\vu$ and $\vv$ are
+in geometric progression this takes time $O(p \M(n) + q \M(m))$.
 
 \smallskip\noindent{\bf \small Regularization.}  In our algorithms for
 Cauchy-like matrices, we will assume that the input matrix has {\em
@@ -499,39 +516,41 @@ Cauchy-like matrices, we will assume that the input matrix has {\em
 size up to its rank are invertible.  Regularization for structured
 matrices was introduced for this purpose by
 Kaltofen~\cite{Kaltofen94}, for the Toeplitz structure. In our Cauchy
-context, one could apply to $\mA'$ as defined above the regularization
+context, one could apply to $\mA$ as defined above the regularization
 procedure from~\cite[Section~5.6]{Pan01}, which consists in replacing
-$\mA'$ by $\mA'' = \mD_\vx \mC_{\va,\vu} \mA' \mC_{\vv,\vb}\mD_\vy$,
+$\mA$ by $\mA' = \mD_\vx \mC_{\va,\vu} \mA \mC_{\vv,\vb}\mD_\vy$,
 for some new vectors $\vx,\va \in \K^m$ and $\vy,\vb \in
 \K^n$. Theorem~5.6.2 in~\cite{Pan01} shows that if $\va,\vu$ consist
 of $2m$ distinct scalars, and $\vb,\vv$ consist of $2n$ distinct
 scalars, then there exists a non-zero polynomial $\Delta$ in the
 entries of $\vx$ and $\vy$, of degree at most $\mn=\min(m,n)$ in each
 block of variables, such that the non-vanishing of $\Delta$ implies
-that $\mA''$ has generic rank profile (that theorem is stated for
+that $\mA'$ has generic rank profile (that theorem is stated for
 square matrices, but the result holds in the rectangular case as
 well).  The downside of this contruction is that it requires to
-compute a pair of generators of length $p+q+4$ for $\mA''$, involving
+compute a pair of generators of length $p+q+4$ for $\mA'$, involving
 the multiplication of $\mG'$ and $\mH'$ by $\mC_{\va,\vu}$ and
 $\mC_{\vv,\vb}$.
 
-We now point out a simpler property, involving only  $\mA' = \mV_\vu\, \mA\,
+\smallskip
+
+We now point out a simpler property, involving only  $\mA = \mV_\vu\, \mT\,
 \mW_\vv$ as above. For the rest of this paragraph, we assume that the
 entries of $\vu$ and $\vv$ are indeterminates over $\K$, and we show
-that $\mA'$ has generic rank profile; this will imply that the same
+that $\mA$ has generic rank profile; this will imply that the same
 property holds for a generic choice of $\vu,\vv$ with entries in
 $\K$. This construction is clearly favorable over the one above, since
-it involves no extra computation on $\mA'$.
+it involves no extra computation on $\mA$.
 
 Following the proof of~\cite[Theorem~5.6.2]{Pan01}, we can use the
-Cauchy-Binet formula to express the minors of $\mA'$ in terms of those
-of $\mV_\vu$, $\mA$ and $\mW_\vv$ as follows. Let $i \le {\rm
-  rank}(\mA)$ and let $I=\{1,\dots,i\}$. The determinant $\delta_i$ of
-the $i$th leading principal minor of $\mA'$ is the sum over all
+Cauchy-Binet formula to express the minors of $\mA$ in terms of those
+of $\mV_\vu$, $\mT$ and $\mW_\vv$ as follows. Let $i \le {\rm
+  rank}(\mT)$ and let $I=\{1,\dots,i\}$. The determinant $\delta_i$ of
+the $i$th leading principal minor of $\mA$ is the sum over all
 $J=\{j_1,\dots,j_i\} \subset \{1,\dots,m\}$ and $K=\{k_1,\dots,k_i\}
 \subset \{1,\dots,n\}$ of the terms $\alpha_{I,J}\, \beta_{J,K}\,
 \gamma_{K,I}$, where $\alpha_{I,J}$ is the determinant of
-$(\mV_\vu)_{I,J}$, $\beta_{J,K}$ is the determinant of $\mA_{J,K}$,
+$(\mV_\vu)_{I,J}$, $\beta_{J,K}$ is the determinant of $\mT_{J,K}$,
 and $\gamma_{K,I}$ is the determinant of $(\mW_\vv)_{K,I}$.
 
 Let $<$ be the monomial ordering on the variables $u_1,\dots,u_i$,
@@ -542,13 +561,13 @@ $J=\{j_1,\dots,j_i\}$ with $j_1 < \dots < j_i$ then the leading monomial
 (denoted $\lm(\cdot)$) of $\alpha_{I,J}$ is
 $\vu^J := u_1^{j_1-1} \cdots u_i^{j_i-1}$.  Similarly if $K=\{k_1,\dots,k_i\}$
 with $k_1 < \cdots < k_i$, then
-$\vv^K := v_1^{n-k_1} \cdots v_i^{n-k_i}=\lm(\gamma_{K,I})$. Since $\mA$ is of
+$\vv^K := v_1^{n-k_1} \cdots v_i^{n-k_i}=\lm(\gamma_{K,I})$. Since $\mT$ is of
 rank greater of equal to $i$, at least one of its $i$th minor $\beta_{J,K}$ does
 not vanish. Let $J_{\max},K_{\max}$ be the pair of subsets that maximizes
 $\vu^J \vv^K$ amongst those for which $\beta_{J,K} \neq 0$. Then we must have
-$\lm(\det(\mA'_{I,I})) = \vu^{J_{\max}} \vv^{K_{\max}}$, which shows that
-$\det(\mA'_{I,I})$ is non-zero. Note that the partial degrees in all variables
-of $\det(\mA'_{I,I})$ is at most $\max(n,m)$. 
+$\lm(\det(\mA_{I,I})) = \vu^{J_{\max}} \vv^{K_{\max}}$, which shows that
+$\det(\mA_{I,I})$ is non-zero. Note that the partial degrees in all variables
+of $\det(\mA_{I,I})$ is at most $\max(n,m)$. 
 
 \todo{See if we can derive anything for geometric sequences $\vu, \vv$
   with the same ratio}
@@ -627,13 +646,13 @@ and Mouilleron~\cite{JeMo10}, following~\cite{Cardinal99}, allows one
 to bypass costly compression stages that are needed in Kaltofen's
 algorithm and its extensions, by predicting the shape of the
 generators we have to compute. For the case of square Cauchy-like
-matrices of size $n$, this results in an algorithm of cost $O(\alpha^2
-\M(n)\log(n)^2)$. As pointed out in~\cite[Theorem~5.3.1]{Pan01} (see
-also~\cite{ChPa00}), the cost can be reduced to $O(\alpha^2
-\M(n)\log(n))$ by choosing vectors $\vu$ and $\vv$ in geometric
-progression. In our case, we will use vectors $\vu$, $\vv$ that are 
-in geometric progression with the same ratio, in order to apply the remark
-in the previous section.
+matrices of size $n$, this results in an algorithm of cost
+$O(\alpha^2 \M(n)\log(n)^2)$. As pointed out
+in~\cite[Theorem~5.3.1]{Pan01} (see also~\cite{ChPa00}), the cost can
+be reduced to $O(\alpha^2 \M(n)\log(n))$ by choosing vectors $\vu$ and
+$\vv$ in geometric progression. In our case, we will use vectors
+$\vu$, $\vv$ that are in geometric progression with the same ratio, in
+order to apply Remark~\ref{rmk:factor3}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1308,6 +1327,10 @@ Chinese Remainder techniques easy to apply, since after the
 normalization above, one can simply apply the Chinese Remainder
 Theorem to all entries of the modular solutions we computed.
 
+This idea could be extended to the case of an arbitrary nullspace
+dimension, but it would be tantamount to computing and lifting a whole
+nullspace basis. Instead, we chose to reduce the nullspace dimension by
+adding a new block of equations, 
 
 
 
