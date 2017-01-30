@@ -71,13 +71,17 @@
 \newcommand{\Z}{\ensuremath{\mathbb{Z}}}
 
 \newcommand{\M}{\ensuremath{\mathscr{M}}}
+\newcommand{\I}{\ensuremath{\mathscr{I}}}
+\newcommand{\CA}{\ensuremath{\mathscr{C}_\mA}}
+\newcommand{\P}{\ensuremath{\mathscr{P}}}
 
 \newcommand{\mx}{\ensuremath{\nu}}
 \newcommand{\mn}{\ensuremath{\mu}}
 
 \newcommand{\lm}{\ensuremath{\operatorname{lm}}}
 \newcommand{\rank}{\ensuremath{\operatorname{rank}}}
-\newcommand{\DAC}{\ensuremath{\mathsf{DAC}}}
+\newcommand{\DACp}{\ensuremath{\mathsf{DAC}_p}}
+\newcommand{\DACQ}{\ensuremath{\mathsf{DAC}_\Q}}
 \newcommand{\Iter}{\ensuremath{\mathsf{Iter}}}
 \newcommand{\Raise}{\textbf{raise} error}
 
@@ -180,13 +184,13 @@ amounts to computing $P_\mT P_\vb \bmod x^{m+n-1}$ and keeping the
 coefficients of degrees $n-1,\dots,m+n-2$.  More generally, a mosaic
 Toeplitz $\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le q}$ can be
 described by a sequence of $pq$ such polynomials
-$\mathscr{P}=(P_{\mT_{i,j}})_{1 \le i \le p,1 \le j \le q}$, together
+$\P=(P_{\mT_{i,j}})_{1 \le i \le p,1 \le j \le q}$, together
 with the sequences $I=(m_1,\dots,m_p)$ and $J=(n_1,\dots,n_q)$ giving
 the row-sizes, resp.\ column-sizes of the blocks. Then, our main
 problem is the following.
 
 \begin{pbm}\label{pb:mosaic}
-  Given polynomials $\mathscr{P}$ and integers $I,J$ as above, 
+  Given polynomials $\P$ and integers $I,J$ as above, 
   defining a mosaic Toeplitz matrix $\mT$, find a non-zero
   vector in the kernel of $\mT$.
 \end{pbm}
@@ -711,7 +715,7 @@ as pivot, we get
 \mR^{(i)} =
 \begin{bmatrix}
   \mS^{(i)} \\
-  \mI_{p, n}
+  \mI_{\mu, n}
 \end{bmatrix} 
 = \mP^i \ \mR^{(0)} 
 \begin{bmatrix}
@@ -752,7 +756,7 @@ $(\mY^{(0)},\mZ^{(0)})=(\mG,\mH)$ and
 \mZ^{(i)}\!=\! 
 \begin{bmatrix}
 -{\mA^{(i)}_{0,1}}{}^t{\mA^{(i)}_{0,0}}{}^{-t}\mH^{(i)}_0 + \mH^{(i)}_1 \\
-{\mA^{(i)}_{0,0}}^{-t} \mH^{(i)}_0 
+{\mA^{(i)}_{0,0}}{}^{-t} \mH^{(i)}_0 
 \end{bmatrix}.
 \]
 \begin{lemma}\label{lemma:cpj-cm}
@@ -815,15 +819,15 @@ which implies the following formulae on the generators
 \end{align}
 %
 this generalizes previous formulae for $(\mY^{(i)},\mZ^{(i)})$.  The
-intuition behind Eq.~(\ref{eq:Yi+j}) is that by decomposing the
-column operations that reduce
+intuition behind Eq.~(\ref{eq:Yi+j}) is that by decomposing the column
+operations that reduce
 $\begin{bmatrix} \mA^{(i+j)}_{0,0} & \mA^{(i+j)}_{0,1} \end{bmatrix}$
-to $\begin{bmatrix} 0 & \mI_{i+j,i+j} \end{bmatrix}$ into two
-operations that respectively reduce the first $i$th rows using
-$\mA^{(i)}_{0,0}$ as pivot, then the next $j$th rows using
-$\mS^{(i,j)}_{0,0}$ as pivot (see Eq.~(\ref{eq:Ri})), we split the
-computation of $\mR^{(i+j)}$ into two similar operations that map
-$\mR^{(0)}$ to $\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
+to $\begin{bmatrix} 0 & \mI_{i+j,i+j} \end{bmatrix}$ (see
+Eq.~(\ref{eq:Ri})) into two operations that respectively reduce the
+first $i$th rows using $\mA^{(i)}_{0,0}$ as pivot, then the next $j$th
+rows using $\mS^{(i,j)}_{0,0}$ as pivot, we split the computation of
+$\mR^{(i+j)}$ into two similar operations that map $\mR^{(0)}$ to
+$\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
 
 Finally, to solve Problem~\ref{pb:cauchy}, we need to detect when $\mA$ has
 generic rank profile. By construction, $\mS^{(i,j)}_{0,0}$ is the
@@ -948,20 +952,20 @@ cost drops to $O(\alpha^{\omega-2} mn)$, as claimed previously.
 
 \begin{algorithm}[t]
   \LinesNumbered \DontPrintSemicolon
-  \caption{Divide-And-Conquer algorithm $\DAC$ \label{algo:dac}}
+  \caption{Divide-And-Conquer algorithm $\DACp$ \label{algo:dac}}
 
-  \Input{Generators $(\mG,\mH)$ of $\mA$, threshold $n_0$}
+  \Input{Generators $(\mG,\mH)$ of $\mA$, threshold $\nu_0$}
   \Output{$r=\rank(\mA)$, generators of $\mA^{(r)}_{0,0}{}^{-1}$}
 
   $\mn = \min(m,n), \ i = \lceil \mn/2 \rceil, \ (\mY^{(0)},\mZ^{(0)}) =
   (\mG,\mH)$\;
 
-  \lIf{$\max(m,n) \leq n_0$}{\Return $\Iter(\mG,\mH, \alpha)$} 
+  \lIf{$\max(m,n) \leq \nu_0$}{\Return $\Iter(\mG,\mH, \alpha)$} 
   $(r_0,\mY^{(r_0,m-r_0)}_1,\mZ^{(r_0,n-r_0)}_1) = 
-  \DAC(\mY^{(0,i)}_0, \mZ^{(0,i)}_0,  n_0)$\;\label{line:dac0}
+  \DACp(\mY^{(0,i)}_0, \mZ^{(0,i)}_0,  \nu_0)$\;\label{line:dac0}
 
-  Recover Schur complement
-  gen. $(\mY^{(r_0,m-r_0)}_0,\mZ^{(r_0,n-r_0)}_0)$ $=(\mY',\mZ')$ from
+  Recover Schur compl. gen.
+  $(\mY^{(r_0,m-r_0)}_0,\mZ^{(r_0,n-r_0)}_0)=(\mY',\mZ')$ from
   $(\mY^{(r_0,m-r_0)}_1,\mZ^{(r_0,n-r_0)}_1)$ and
   $(\mY^{(0)},\mZ^{(0)})$
   \label{line:recoverfullgen0}\;
@@ -971,7 +975,7 @@ cost drops to $O(\alpha^{\omega-2} mn)$, as claimed previously.
     \lElse{\Return $(r_0,\mY^{(r_0)}_0,\mZ^{(r_0)}_0)$ }}
 
   $(r_1,\mY^{(r_2,m-r_1)}_1,\mZ^{(r_2,n-r_1)}_1) =
-  \DAC(\mY',\mZ', n_0), \ r_2=r_0+r_1$\label{line:dac1}\;
+  \DACp(\mY',\mZ', \nu_0), \ r_2=r_0+r_1$\label{line:dac1}\;
 
 
   \Return $r_2$ and $(\mY^{(r_2,m-r_2)}_1,\mZ^{(r_2,n-r_2)}_1)$
@@ -988,7 +992,7 @@ $\mA$ invertible, and that we explicitly check if $\mA$ satisfies the
 generic rank profile assumption.
 
 \smallskip\noindent{\bf \small Termination and correction.}
-Recursive calls to $\DAC$ on lines~\ref{line:dac0},~\ref{line:dac1}
+Recursive calls to $\DACp$ on lines~\ref{line:dac0},~\ref{line:dac1}
 will raise an error if the respective input matrices
 ${\mA^{(i)}_{0,0}}$ and its Schur complement
 $\mA^{(i)}_{1,1} - \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1}
@@ -1004,27 +1008,28 @@ $\mS^{(i+j)}$ if we know the generators
 $(\mY^{(i+j,m-j)}_1,\mZ^{(i+j,m-j)}_1)$ of $\mS^{(i,j)}_{0,0}{}^{-1}$
 and previous full generators $(\mY^{(i)},\mZ^{(i)})$ of $\mS^{(i)}$.
 Altogether, this boils down to $O(1)$ multiplications of Cauchy-like
-matrices (for which we have genertors of length $\alpha$) 
+matrices (for which we have generators of length $\alpha$) 
 by $\alpha$ vectors.
 
-In general, this multiplication $O(\alpha^2 \M(\mx) \log(\mx))$
-operations, with $\mx=\max(m,n)$. If if $\vu$ and $\vv$ are chosen as
+In general, this multiplication costs $O(\alpha^2 \M(\mx) \log(\mx))$
+operations, with $\mx=\max(m,n)$. If $\vu$ and $\vv$ are chosen as
 geometric progressions, the cost for the matrix-vectors multiplication
 drops to $O(\alpha^2 \M(\mx))$, implying similar saving for the total
 runtime. If $\vu$ and $\vv$ have the same ratio (if this is the case
 at the top-level, this will remain the case for all recursive calls),
-we saw that can save a  further constant factor.  Finally, for large values of
-$\alpha$, we can apply an algorithm given in~\cite{BoJeMoSc16}, which
-reduces the cost to $O(\alpha^{\omega-1} \M(\mx))$.
+we saw that can save a further constant factor.  Finally, for large
+values of $\alpha$, we can apply an algorithm given
+in~\cite{BoJeMoSc16}, which reduces the cost to
+$O(\alpha^{\omega-1} \M(\mx))$.
 
 On line~\ref{algo:testschur}, the Schur complement is zero if and only
 if $\mY'\, \mZ' = 0$. This is done by finding a minimal set of
-independent rows in $\mZ^{(\rho)}_1$ (this takes time
+independent rows in $\mZ'$ (this takes time
 $O(\alpha^{\omega-1} \mx)$) and multiplying their transposes by
-${\mY^{(\rho)}_1}$ (there are at most $\alpha$ such rows, so this
-takes time $O(\alpha^{\omega-1} \mx)$ as well).
+${\mY'}$ (there are at most $\alpha$ such rows, so this takes time
+$O(\alpha^{\omega-1} \mx)$ as well).
 
-Taking all recursive steps into account, the total cost of $\DAC$ is
+Taking all recursive steps into account, the total cost of $\DACp$ is
 withing a factor $\log(\mx)$ that of the Cauchy-like matrix-vectors
 multiplication discussed above.
 
@@ -1072,6 +1077,8 @@ value of $p$ used here is the FFT prime $p=82705526964617217=7^2
 multiplication is very efficient, our algorithm brings a substantial
 improvement.
 
+\todo{move label to top left}
+
 \includegraphics[width=7cm]{ratio-block-eschost-desktop.pdf}
 
 We consider next the divide-and-conquer algorithm. The key factor for
@@ -1098,12 +1105,12 @@ behaves essentially in the same manner, independently of $p$).
 \includegraphics[width=7cm]{ratio-mul-matrix-eschost-desktop.pdf}
 
 Taking these results into account, we determined empirically crossover
-values $n_0(\alpha)$ to end the recursion in the divide-and-conquer algorithm
+values $\nu_0(\alpha)$ to end the recursion in the divide-and-conquer algorithm
 and switch to the iterative algorithm. We expect 
-$n_0(\alpha)$ to grow with $\alpha$, since for a given $\alpha$, it behaves
+$\nu_0(\alpha)$ to grow with $\alpha$, since for a given $\alpha$, it behaves
 like the solution of $\alpha n^2 = \alpha^2 \M(n) \log(n)$ (assuming
 here we do not use fast linear algebra, for simplicity). The following
-table reports some values for $n_0$ (obtained by searching for $n_0$
+table reports some values for $\nu_0$ (obtained by searching for $\nu_0$
 in increments of $100$).  The threshold is higher for small primes,
 since such primes benefit more from our new iterative algorithm.
 
@@ -1197,15 +1204,16 @@ its inverse). We discuss algorithms that solve the equation $\mA \vx =
 \vb$ modulo $p^{t}$, where $t$ is a power of 2, and we estimate their
 complexity when $\mA$ is a structured matrix. 
 
-We take $C_\mA$ such that, for any $t$, given a vector $\vx$ with
+We take $\CA$ such that, for any $t$, given a vector $\vx$ with
 entries defined modulo $p^t$, we can compute $\mA \vx \bmod p^t$ in
-$O(C_\mA \mathscr{I}(t \log(p)))$ bit operations. Below, we will
+$O(\CA \I(t \log(p)))$ bit operations. Below, we will
 assume that $\mA$ is Cauchy-like as in~\eqref{eq:recA}, with vectors
-$\vu,\vv$ geometric progressions have the same ratio, and given by
-generators of length $\alpha$, so that we can take $C_\mA \in O(\alpha
-\M(n))$. We saw in the introduction that in some cases (for the
-calculation of algebraic approximants, for instance), better estimates
-are available.
+$\vu,\vv$ geometric progressions have the same ratio, and given
+by generators of length $\alpha$, so that we can take $\CA \in
+O(\alpha \M(n))$. We will see below that in some cases (for
+the calculation of algebraic approximants, for instance), better
+estimates are available. 
+
 
 We will focus on two approaches: a divide-and-conquer algorithm and
 Newton iteration, which both feature a running time linear in the
@@ -1214,30 +1222,38 @@ $t$ only when the entries of $\mA$ are assumed to be $O(1)$; if $\mA$
 has arbitrary entries, Dixon's algorithm takes quadratic time in $t$
 even using fast integer arithmetic). We start with the
 divide-and-conquer approach. Although this idea is entirely natural,
-we do not know of a suitable reference for it.
+we do not know of a suitable reference for it.  
 
-\smallskip\noindent{\textbf{DAC($\mA$, $b$, $p$, $t$)}}:
+\todo{What do you think of citing either BerthomieuLebreton'12 for
+  general linear system solving doing this DAC, or at least my thesis
+  that deals also with the case of structured matrices (just
+  toeplitz/hankel in fact)}
+
+
+\smallskip\noindent{\textbf{\DACQ($\mA$, $b$, $p$, $t$)}}:
 
 \noindent{\bf 0.} If $t = 1$, return $\mB  \vb$ mod $p$
 
-\noindent{\bf 1.} Compute $\vx_0 := $ DAC($\mA$, $\vb$, $p$, $t/2$)
+\noindent{\bf 1.} Compute $\vx_0 := $\DACQ($\mA$, $\vb$, $p$, $t/2$)
 
-\noindent{\bf 2.} Compute $\vr_0 := \mA  \vx_0 - \vb$ mod $p^t$ and $\vr_1 := r_0/ p^{t/2}$ 
+\noindent{\bf 2.} Compute
+$\vr_0 := \left( \mA \vx_0 - \vb\right) \bmod p^t$ and
+$\vr_1 := r_0/ p^{t/2}$
 
-\noindent{\bf 3.} Compute $\vx_1 := $ DAC($\mA$, $\vr_1$, $p$, $t/2$)
+\noindent{\bf 3.} Compute $\vx_1 := $\DACQ($\mA$, $\vr_1$, $p$, $t/2$)
 
 \noindent{\bf 4.} Return $\vx_0 - p^{t/2}  \vx_1$ mod $p^t$
 
 We assume that we have obtained generators of length $\alpha$ for
 $\mB$, for instance by applying the algorithm of the previous section.
 Thus, at the leaves of the recursion, each product $\mB \vb$ mod $p$
-can be compute using $O(\alpha \M(n) \mathscr{I}(\log(p)))$ bit
-operations. Using our assumption on $\mathscr{I}$, the total runtime
-is then $O(C_\mA \mathscr{I}(t\log(p)) \log(t) +\alpha \M(n)
-\mathscr{I}(\log(p)) t)$ bit operations; if we assume $p=O(1)$, this
-becomes $O(C_\mA \mathscr{I}(t) \log(t) +\alpha \M(n) t)$.  Using our
-upper bounds on $C_\mA$, this simplifies further as $O(\alpha \M(n)
-\mathscr{I}(t) \log(t))$.
+can be compute using $O(\alpha \M(n) \I(\log(p)))$ bit
+operations. Using our assumption on $\I$, the total runtime
+is then $O(\CA \I(t\log(p)) \log(t) +\alpha \M(n)
+\I(\log(p)) t)$ bit operations; if we assume $p=O(1)$, this
+becomes $O(\CA \I(t) \log(t) +\alpha \M(n) t)$.  Using our
+upper bounds on $\CA$, this simplifies further as $O(\alpha \M(n)
+\I(t) \log(t))$.
 
 %% \smallskip\noindent{\textbf{Dixon($\mA$, $b$, $p$, $t$)}}:
 %% \noindent{\bf 0.} Compute $\mM := \mA^{-1}$ (mod $p$)
@@ -1269,22 +1285,22 @@ above, which gives
 This time, we are multiplying matrices $\mA$ and $\mB_k$ (and their
 transposes) by matrices of size $n \times \alpha$, all computations
 being done modulo $p^{2^k+1}$. Each multiplication by {\em one} vector
-takes $O(\alpha \M(n) \mathscr{I}(2^k \log(p)))$ operations (even if
-$C_\mA$ can be taken less than $O(\alpha \M(n))$, the multiplications
+takes $O(\alpha \M(n) \I(2^k \log(p)))$ operations (even if
+$\CA$ can be taken less than $O(\alpha \M(n))$, the multiplications
 by $\mB_k$ remain a bottleneck). Since we have to multiply these
 matrices by $\alpha$ vectors, taking all steps into account, we arrive
-at a total of $O(\alpha^2 \M(n) \mathscr{I}(t))$ bit operations
+at a total of $O(\alpha^2 \M(n) \I(t))$ bit operations
 (assuming $p=O(1)$ for simplicity). Using the algorithm
 of~\cite{BoJeMoSc16}, we remark that this can be further reduced to
-$O(\alpha^{\omega-1} \M(n) \mathscr{I}(t))$, but this improvement was
+$O(\alpha^{\omega-1} \M(n) \I(t))$, but this improvement was
 not implemented.
 
 Altogether, because it computes (generators of) a whole inverse,
 Newton iteration is slower by a factor $\alpha$ (or slightly less, if
 we use~\cite{BoJeMoSc16}); on the other hand, it saves a factor of
 $\log(t)$. This is similar to what one observed when comparing these
-techiques for e.g. the solution of differential
-equations~\cite{aaaa,bbb}. 
+techniques for e.g. the solution of differential
+equations~\cite{aaaa,bbb}.
 
 Finally, it is worthwhile mentioning the cost of Chinese Remaindering
 techniques in an analogue context: instead of computing the solution
