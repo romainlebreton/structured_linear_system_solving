@@ -1253,7 +1253,7 @@ $\mB_{k+1}$ or $\mB_{k+1}^t$. This is done using the expression for
 $\mB_{k+1}$ above, which gives
 \begin{align*}
 \mX_{k+1} &= -(2\mB_k - \mB_k \mA \mB_k)\phantom{^t\,} \mG \bmod p^{2^{k+1}}\\
-\mY_{k+1} &= -(2\mB_k - \mB_k \mA \mB_k)^t\, \mH \bmod p^{2^{k+1}}.
+\mY_{k+1} &= \phantom{-}(2\mB_k - \mB_k \mA \mB_k)^t\, \mH \bmod p^{2^{k+1}}.
 \end{align*}
 This time, we are multiplying $\mA$ and $\mB_k$ (and their
 transposes) by matrices of size $n \times \alpha$, all computations
