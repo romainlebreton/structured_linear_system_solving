@@ -1362,6 +1362,24 @@ proportional to that of the algorithm for solving square systems used
 at line 3, that is, $O(\CA \I(t) \log(t) +\alpha \M(n) t)$
 or $O(\alpha^2 \M(n) \I(t))$ bit operations, if  $p=O(1)$.
 
+\subsection{Experimental Results}
+The timings in this section are measured on the same machine
+as section 3.4. The main goal of our experiment is to compare
+the runtimes for each algorithm and assess which one is the most
+efficient in practice. With these experiments, there are two main
+parameters: the number of blocks, and the size of each block. Although
+we also have control over the bit sizes of the input and output, our
+experiments show that the runtime grew predictably with respect to the
+increase in bit sizes. There are two graphs for both the general and
+algebraic case: on the left, we have five blocks, each with $n$ 
+columns, and on the right, we have $n$ blocks, each with 
+$n$ columns, where we let $n$ grow. Every matrix generated has exactly
+$n-1$ rows. We first examine the results for the general case.
+
+\includegraphics[width=7cm]{plots/compare-general.pdf}
+
+
+
 \bibliographystyle{plain} {\scriptsize \bibliography{structured}}
 
 

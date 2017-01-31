@@ -9,14 +9,14 @@ set style line 2 lt 1 lw 4 lc 7
 set style line 3 lt 0 lw 8 lc 8
 
 set multiplot 
-set title "n by small"
+set title "5 blocks with n columns"
 set size ratio 1.3
 set xrange [0:10000]
 set origin -0.45,0
 plot "testx5-bmc.dat" using 1:3 with linespoints title "bmc",\
      "testx5-naive.dat" using 1:3 with linespoints title "naive"
 
-set title "n by n"
+set title "n blocks with n columns"
 set ylabel ""
 set size ratio 1.3
 set xrange [0:10000]
