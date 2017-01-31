@@ -5,7 +5,8 @@
 \usepackage{bm}
 \usepackage{mathrsfs}
 \usepackage{enumerate}
-% \usepackage[colorlinks=true,linkcolor=cyan]{hyperref}
+\usepackage{setspace}
+
 
 \usepackage[lined,boxed,ruled,vlined]{algorithm2e}
 \SetKwInOut{Input}{Input}
@@ -73,14 +74,14 @@
 \newcommand{\M}{\ensuremath{\mathscr{M}}}
 \newcommand{\I}{\ensuremath{\mathscr{I}}}
 \newcommand{\CA}{\ensuremath{\mathscr{C}_\mA}}
-\newcommand{\P}{\ensuremath{\mathscr{P}}}
+\renewcommand{\P}{\ensuremath{\mathscr{P}}}
 
 \newcommand{\mx}{\ensuremath{\nu}}
 \newcommand{\mn}{\ensuremath{\mu}}
 
 \newcommand{\lm}{\ensuremath{\operatorname{lm}}}
 \newcommand{\rank}{\ensuremath{\operatorname{rank}}}
-\newcommand{\DACp}{\ensuremath{\mathsf{DAC}_p}}
+\newcommand{\DACp}{\ensuremath{\mathsf{DAC}}}
 \newcommand{\DACQ}{\ensuremath{\mathsf{DAC}_\Q}}
 \newcommand{\Iter}{\ensuremath{\mathsf{Iter}}}
 \newcommand{\Raise}{\textbf{raise} error}
@@ -118,9 +119,6 @@
 
 \title{Algorithms for structured linear systems and their implementation}
 
-\begin{document}
-
-\maketitle
 
 \begin{abstract}
   There exists a vast literature dedicated to algorithms for
@@ -134,6 +132,11 @@
   techniques and its practical behavior. We pay a special attention to
   particular cases such as the computation of algebraic approximants.
 \end{abstract}
+
+\begin{document}
+
+
+\maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -172,8 +175,8 @@ n_{s-1})$, and consists of $s$ lower triangular Toeplitz blocks. More
 generally, our goal in this paper is to compute efficiently elements
 in the kernel of {\em mosaic Toeplitz} matrices~\cite{HeAm88}, that
 is, $m \times n$ matrices $\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le
-  q}$ with a $p \times q$ block structure, each of the $pq$ blocks $\mT_{i,j}$
-being Toeplitz.
+  q}$ with a $p \times q$ block structure, each of the $pq$ blocks
+$\mT_{i,j}$ being Toeplitz.
 
 An $m \times n$ Toeplitz matrix
 $\mT=(t_{i-j})_{1\le i \le m, 1 \le j \le n}$ can be succinctly
@@ -183,43 +186,39 @@ multiplication of $\mT$ by a vector $\vb=[b_0~\cdots~b_{n-1}]^t$
 amounts to computing $P_\mT P_\vb \bmod x^{m+n-1}$ and keeping the
 coefficients of degrees $n-1,\dots,m+n-2$.  More generally, a mosaic
 Toeplitz $\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le q}$ can be
-described by a sequence of $pq$ such polynomials
+described by a sequence of $pq$  polynomials
 $\P=(P_{\mT_{i,j}})_{1 \le i \le p,1 \le j \le q}$, together
 with the sequences $I=(m_1,\dots,m_p)$ and $J=(n_1,\dots,n_q)$ giving
-the row-sizes, resp.\ column-sizes of the blocks. Then, our main
-problem is the following.
+the row-sizes and column-sizes of the blocks. Then, our main
+problem is as follows.
 
 \begin{pbm}\label{pb:mosaic}
-  Given polynomials $\P$ and integers $I,J$ as above, 
+  Given $\P$ and integers $I,J$ as above, 
   defining a mosaic Toeplitz matrix $\mT$, find a non-zero
   vector in the kernel of $\mT$.
 \end{pbm}
 We consider two situations, first over an arbitrary field $\K$,
-counting all operations in $\K$ at unit cost (this is a good model for
-computations over finite fields), then specifically over $\Q$, taking
+counting all operations in $\K$ at unit cost, then over $\Q$, taking
 bit-size into account. In all this paper, we closely follow the
 existing formalism of {\em structured matrix computations}; the
 algorithms in this paper are following previous work by
 Morf~\cite{Morf80}, Bitmead-Anderson~\cite{BiAn80}, Kailath and
 co-authors~\cite{KaKuMo79,KaSa99}, Pan~\cite{Pan90,Pan92},
-Kaltofen~\cite{Kaltofen94}, Cardinal~\cite{Cardinal99}, etc.  We
-complement the existing literature as follows:
-\begin{itemize}
-\item we describe an improved ``fast'' algorithm (of quadratic
-  complexity with respect to the matrix size), that makes use of fast
-  matrix multiplication;
-\item we define a class of ``Cauchy-like'' matrices (see definitions
-  below) for which the matrix-vector product is faster (by a constant
-  factor) than previous designs;
-\item we show how Pan's technique of ``multiplicative transformation''
-  of operators outputs matrices that have generic rank profile (with
-  high probability), so that further regularization is not needed in
-  general;
-\item for matrices defined over $\Q$, we introduce a
-  divide-and-conquer algorithm as an alternative to Newton iteration,
-  and we show how this algorithm can be improved in the case of
-  algebraic approximation.
-\end{itemize}
+Kaltofen~\cite{Kaltofen94}, Cardinal~\cite{Cardinal99}, etc.
+
+We complement the existing literature as follows. First, we define a
+class of ``Cauchy-like'' matrices (see definitions below) for which
+the matrix-vector product is faster by a constant factor than previous
+designs. Next, we show how Pan's technique of ``multiplicative
+transformation'' of operators results in matrices that have generic
+rank profile (with high probability), so that further regularization
+is not needed in general. We then describe an improved ``fast''
+algorithm (of quadratic complexity with respect to the matrix size),
+that makes use of fast matrix multiplication; finally, for matrices
+defined over $\Q$, we introduce a divide-and-conquer algorithm as an
+alternative to Newton iteration, and we show how it can be improved in
+the case of algebraic approximation.
+
 Another contribution of this paper is a discussion of the design and
 practical performance of a C++ implementation of these algorithms.  To
 our knowledge, only a few papers address these methods from the
@@ -240,13 +239,12 @@ over $\Q$, we show that our divide-and-conquer algorithm outperforms
 Newton iteration consistently, and we demonstrate significant
 speed-ups for the case of algebraic approximants.
 
-This paper is organized as follows. We start in
-Section~\ref{sec:basics} with a review of basic results on structured
-matrices, including a discussion of transformation of operators and
-regularization. Section~\ref{sec:abstract} describes algorithms
-applicable in a unit cost model, with in particular a new algorithm
-that uses fast matrix multiplication, and a discussion of the
-practical performance of these algorithms. Finally,
+We start in Section~\ref{sec:basics} with a review of basic results on
+structured matrices, including a discussion of transformation of
+operators and regularization. Section~\ref{sec:abstract} describes
+algorithms applicable in a unit cost model, with in particular a new
+algorithm that uses fast matrix multiplication, and a discussion of
+the practical performance of these algorithms. Finally,
 Section~\ref{sec:lifting} presents lifting algorithms for structured
 matrices, and the corresponding implementation.
 
@@ -258,7 +256,7 @@ matrices, and the corresponding implementation.
 
 This section reviews background material on structured matrices; for a
 more comprehensive treatment, we refer the reader to~\cite{Pan01}.
-In this section, $\K$ denotes our base field.
+
 
 \smallskip\noindent{\bf \small Overview.}  Developed
 in~\cite{KaKuMo79}, the {\it displacement operator} approach
@@ -274,14 +272,14 @@ displacement operator
   \phi: \mA & \mapsto & \left( \mZ_m \mA - \mA \mZ_n \right) = 
                         (\mA \downarrow) - (\mA \leftarrow)
 \end{eqnarray*}
-where the lower shift matrix $\mZ_n \in \K^{n \times n}$ is the matrix
+where the $n \times n$ lower shift matrix $\mZ_n$ is the matrix
 with ones below the diagonal.  The displacement rank of a Toeplitz
 matrix for this operator is at most two; the displacement rank of a
 mosaic Toeplitz with a $p \times q$ block structure is at most $p+q$.
 
 The key idea of most algorithms for structured matrices is summarized
 by Pan's motto~\cite{Pan01}: compress, operate, decompress. Indeed,
-for $\mA$ of size $m \times n$ over $\K$, if $\nabla(\mA)$ has
+for $\mA$ of size $m \times n$ over a field $\K$, if $\nabla(\mA)$ has
 rank~$\alpha$, it can be represented using few elements through {\it
   $\nabla$-generators}, that is, two matrices $(\mG,\mH)$ in
 $\K^{m\times \alpha} \times \K^{n\times \alpha}$, with $\nabla(\mA) =
@@ -299,7 +297,7 @@ matrices, as we will see that this particular structure is quite
 convenient to work with.
 
 For a sequence $\vu=(u_1,\dots,u_m)$ in $\K^m$, let $\mD_\vu \in
-\K^{m\times m}$ be the diagonal matrix with diagonal entries
+\K^{m\times m}$ be the diagonal matrix with entries
 $u_1,\dots,u_m$. Then, given $\vu$ as above and $\vv$ in $\K^n$, we will
 consider the operator $\nabla_{\vu,\vv}: \mA \in \K^{m\times n} \mapsto \mD_\vu
 \mA - \mA \mD_\vv$; {\em Cauchy-like} matrices (with respect to the
@@ -364,11 +362,10 @@ hold. Using the Cantor-Kaltofen algorithm~\cite{CaKa91}, we can take
 $\M(d)\in O(d \log(d)\log\log(d))$. We let $\omega$ be a feasible
 exponent for linear algebra, in the sense that matrices of size $n$
 can be multiplied in $O(n^\omega)$ base ring operations over any ring;
-the best bound to date is $\omega < 2.38$~\cite{CoWi90, LeGall14}.
-The notation $\Otilde{\,}$ indicates that we omit polylogarithmic
-terms. Among the linear algebra operations whose cost reduces to matrix
-multiplication, we will have to compute rank and rank
-profile~\cite{IbMoHu82}.
+the best bound to date is $\omega < 2.38$~\cite{CoWi90, LeGall14}.  We
+will have to compute rank and rank profile of dense matrices; the cost
+reduces to that of matrix multiplication~\cite{IbMoHu82}. The notation
+$\Otilde{\,}$ indicates that we omit polylogarithmic terms.
 
 Matrix-vector multiplication with $\mC_{\vu,\vv}$ reduces to degree
 $n$ polynomial interpolation at the points $\vv$ and evaluation at the
@@ -376,14 +373,15 @@ points $\vu$. Using fast polynomial evaluation and interpolation, this
 can be done in time $O(\M(\mx)\log(\mx))$, with $\mx=\max(m,n)$; thus, we
 can multiply matrix $\mA$ of~\eqref{eq:recA} by a vector in time
 $O(\alpha \M(\mx)\log(\mx))\subset \Otilde{\alpha \mx}$.
-
 In~\cite[Theorem~4.7.3]{Pan01}, Pan shows that if the entries of both
 $\vu$ and $\vv$ are in {\em geometric progression}, one can reduce the
 cost of the matrix-vector multiplication by $\mC_{\vu,\vv}$ to
 $O(\M(\mx))$, since polynomial evaluation or interpolation at $n$
-points in geometric progression can be done in time $O(\M(n))$;
-similarly, multiplication by $\mA$ as above takes time
+points in geometric progression can be done in time $O(\M(n))$~\cite{Bluestein70,BoSc05};
+then, multiplication by $\mA$ as above takes time
 $O(\alpha\M(\mx))$.
+
+\vspace{-2mm}
 
 \begin{remark}\label{rmk:factor3}
 We propose here a refinement of this idea, that allows us to
@@ -407,12 +405,12 @@ we can take it out of the sum. Hence, we replaced $\alpha$ evaluations
 Toeplitz matrices, each of which can be done in a single polynomial
 multiplication. The cost for a matrix-vector product by $\mA$ remains
 $O(\alpha \M(\mx))$, but the constant in the big-O is lower: for $m=n$,
-using middle product techniques~\cite{HaQuZi04,BoLeSc03,BoSc05}, the
+using middle product techniques~\cite{HaQuZi04,BoLeSc03}, the
 cost goes down from $3\alpha \M(\mx) +O(\alpha \mx)$ to $\alpha \M(\mx)
 +O(\alpha \mx)$. 
 \end{remark}
 
-If one needs to multiply $\mA$ as above by {\em several} vectors,
+If one needs to multiply $\mA$ by {\em several} vectors,
 further improvements are possible: we mention without giving details
 an algorithm from~\cite{BoJeMoSc16}, that itself
 follows~\cite{BoJeSc08}, and which makes it possible to multiply $\mA$
@@ -421,7 +419,7 @@ $O(\alpha^2 \M(\mx))$, by reduction to a sequence of polynomial matrix
 multiplications.
 
 \smallskip\noindent{\bf \small Reduction from mosaic Toeplitz to Cauchy structure.}
-We said above that our primary interest lies in mosaic
+Our primary interest lies in mosaic
 Toep\-litz matrices. An important insight of Pan~\cite{Pan90} shows
 that one can reduce questions about Toeplitz-like matrices to ones
 about Cauchy-like matrices (and conversely, if one wishes to), for a
@@ -455,8 +453,8 @@ $\phi$-generators of $\mT$, so let us start with those. If
 $\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le q}$ is mosaic Toeplitz of
 size $m \times n$, with $\mT_{i,j}$ of size $m_i \times n_j$, we
 define the following.
-\begin{itemize}
-\item For $1 \le i \le p$, let $\mT_{i,*}$ be the block matrix
+
+ For $1 \le i \le p$, let $\mT_{i,*}$ be the block matrix
   $[\mT_{i,1}~\cdots~\mT_{i,q}]$.  Let $\eta_i$ be the first row of
   $\mT_{i,*}$, shifted left once, let $\eta'_i$ be the last row of
   $\mT_{i,*}$, and finally let $\vh_i=(\eta'_{i-1}-\eta_i)$ (for
@@ -464,18 +462,15 @@ define the following.
   $n$. If $\ve_{i,n}$ denotes the row-vector of dimension $n$ with
   only a one at index $i$, we also let $\vg_{i}$ be the transpose of
   $\ve_{m_1 + \cdots +m_{i-1}+1,m}$.
-  
-\item For $1 \le j \le q$, define $\mT_{*,j}$ similarly to
-  $\mT_{i,*}$; $\gamma_j$ and $\gamma'_j$ are its first and last
-  columns, with now a downward shift for $\gamma'_j$; in addition,
-  their entry of index $m_1 + \cdots + m_j$ are set to zero. Then, we
-  define $\vg_{p+j}=(\gamma'_{j}-\gamma_{j+1})$ ($\gamma_{q+1}$ is
-  set to zero).  We also let $\vh_{p+j}=\ve_{n_1 + \cdots +n_j,n}$.
-\end{itemize}
-With these definitions, the matrices
-$\mG=\left< \vg_1 | \dots | \vg_{p+q} \right>$ and
-$\mH= \left<\vh^t_1 | \dots | \vh^t_{p+q} \right>$ are $\phi$-generators of
-$\mT$.
+For $1 \le j \le q$, define $\mT_{*,j}$ similarly to $\mT_{i,*}$;
+ $\lambda_j$ and $\lambda'_j$ are its first and last columns, with now
+ a downward shift for $\lambda'_j$; in addition, their entry of index
+ $m_1 + \cdots + m_j$ are set to zero. We define
+ $\vg_{p+j}=(\lambda'_{j}-\lambda_{j+1})$ ($\lambda_{q+1}$ is set to
+ zero) and let $\vh_{p+j}=\ve_{n_1 + \cdots +n_j,n}$.  With
+ these definitions,  the matrices $\mG=\langle \vg_1
+ | \dots | \vg_{p+q} \rangle$ and $\mH= \langle\vh^t_1 | \dots |
+ \vh^t_{p+q} \rangle$ are $\phi$-generators of $\mT$.
 
 To obtain $\mA$, we conjugate $\mT$ by Vandermonde matrices, since $
 \mD_{\vu} \mV_{\vu} - \mV_{\vu} \mZ_m$ and $ \mW_{\vv} \mD_{\vv} -
@@ -484,14 +479,15 @@ respectively $(\vu^m)^t \, \ve_{m,m}$ and $(\ve_{1,n})^t \, \vv^n$,
 where $\vu^m = \begin{bmatrix} u_1^m & \cdots & u_n^m \end{bmatrix}$,
 and similarly for $\vv^n$. As a
 consequence, since $\phi(\mT)=\mG \mH^t$, we have
-\begin{eqnarray}
-  \nabla_{\vu, \vv} \left( \mA \right) & = & \mD_{\vu}  \mV_{\vu} 
+\begin{align}\label{eq:gentoetogencau}
+  \nabla_{\vu, \vv} \left( \mA \right) & =  \mD_{\vu}  \mV_{\vu} 
   \mT  \mW_{\vv} - \mV_{\vu}  \mT  \mW_{\vv}  \mD_{\vv} \nonumber \\
-  & = & \mV_{\vu}  \left( \mZ  \mT - \mT  \mZ \right) \mW_{\vv} 
-  \label{eq:gentoetogencau}\\
-  &   & + (\vu^m)^t \, \ve_{m,m}  \mT  \mW_{\vv} 
-        - \mV_{\vu}  \mT  (\ve_{1,n})^t \, \vv^n . \nonumber 
-\end{eqnarray}
+  & =  \mV_{\vu}\, \phi(\mT)\, \mW_{\vv} 
+  %% \\
+  %% &   &
+  + (\vu^m)^t \, \ve_{m,m}  \mT  \mW_{\vv} 
+        - \mV_{\vu}  \mT  (\ve_{1,n})^t \, \vv^n. 
+\end{align}
 This motivates the following definitions.
 \begin{itemize}
 \item For $1 \le i \le p$, let $\vh'_i=\vh_i \mW_\vv$ and also let $\vg'_{i}$ be
@@ -505,14 +501,14 @@ This motivates the following definitions.
   $-\mV_\vu \mT$, and $\vh_{p+q+2} = \vv^n$.
 \end{itemize}
 %
-It follows from Eq.~(\ref{eq:gentoetogencau}) that
-$\mG'= \left< \vg'_1 | \dots | \vg'_{p+q+2}\right>$, and $\mH'$ with
-columns that are the transpose of $\vh'_1,\dots,\vh'_{p+q+2}$, are
+By Eq.~(\ref{eq:gentoetogencau}),
+$\mG'= \langle \vg'_1 | \dots | \vg'_{p+q+2}\rangle$, and $\mH'
+= \langle {\vh'_1}^t | \dots | {\vh'_{p+q+2}}^t\rangle$ are
 $\nabla_{\vu,\vv}$-generators of $\mA$ of length $p+q+2$ (whereas
 $\mT$ has $\phi$-generators of length $p+q$). The bottleneck in the
 computation of $\mG'$ and $\mH'$ are $p$ left-products by $\mW_\vv$
 and $q$ products by $\mV_\vu$.  If all entries of $\vu$ and $\vv$ are
-in geometric progression this takes time $O(p \M(n) + q \M(m))$.
+in geometric progression, it takes time $O(p \M(n) + q \M(m))$.
 
 \smallskip\noindent{\bf \small Regularization.}  In our algorithms for
 Cauchy-like matrices, we will assume that the input matrix has {\em
@@ -538,21 +534,21 @@ $\mC_{\vv,\vb}$.
 
 \smallskip
 
-We now point out a simpler property, involving only  $\mA = \mV_\vu\, \mT\,
+We now prove a useful property, involving only  $\mA = \mV_\vu\, \mT\,
 \mW_\vv$ as above. For the rest of this paragraph, we assume that the
 entries of $\vu$ and $\vv$ are indeterminates over $\K$, and we show
-that $\mA$ has generic rank profile; this will imply that the same
-property holds for a generic choice of $\vu,\vv$ with entries in
+that $\mA$ has generic rank profile; this will imply the same
+property for a generic choice of $\vu,\vv$ with entries in
 $\K$. This construction is clearly favorable over the one above, since
 it involves no extra computation on $\mA$.
 
 Following the proof of~\cite[Theorem~5.6.2]{Pan01}, we can use the
 Cauchy-Binet formula to express the minors of $\mA$ in terms of those
-of $\mV_\vu$, $\mT$ and $\mW_\vv$ as follows. Let $i \le {\rm
+of $\mV_\vu$, $\mT$ and $\mW_\vv$. Let $i \le {\rm
   rank}(\mT)$ and let $I=\{1,\dots,i\}$. The determinant $\delta_i$ of
 the $i$th leading principal minor of $\mA$ is the sum over all
 $J=\{j_1,\dots,j_i\} \subset \{1,\dots,m\}$ and $K=\{k_1,\dots,k_i\}
-\subset \{1,\dots,n\}$ of the terms $\alpha_{I,J}\, \beta_{J,K}\,
+\subset \{1,\dots,n\}$ of  $\alpha_{I,J}\, \beta_{J,K}\,
 \gamma_{K,I}$, where $\alpha_{I,J}$ is the determinant of
 $(\mV_\vu)_{I,J}$, $\beta_{J,K}$ is the determinant of $\mT_{J,K}$,
 and $\gamma_{K,I}$ is the determinant of $(\mW_\vv)_{K,I}$.
@@ -570,8 +566,8 @@ rank greater of equal to $i$, at least one of its $i$th minor $\beta_{J,K}$ does
 not vanish. Let $J_{\max},K_{\max}$ be the pair of subsets that maximizes
 $\vu^J \vv^K$ amongst those for which $\beta_{J,K} \neq 0$. Then we must have
 $\lm(\det(\mA_{I,I})) = \vu^{J_{\max}} \vv^{K_{\max}}$, which shows that
-$\det(\mA_{I,I})$ is non-zero. Note that the partial degrees in all variables
-of $\det(\mA_{I,I})$ is at most $\max(n,m)$. 
+$\det(\mA_{I,I})$ is non-zero. The partial degree of $\det(\mA_{I,I})$ in any variable
+ is at most $\max(n,m)$. 
 
 \todo{See if we can derive anything for geometric sequences $\vu, \vv$
   with the same ratio}
@@ -589,14 +585,13 @@ solve a linear system, the algorithms do slightly more: they compute
 the inverse of a given matrix (or of a maximal minor thereof); this is
 similar to what happens for dense matrices, where it is not known how
 to solve linear systems with an exponent better than $\omega$.
-
-The main question of this section is the following; remark that the
+Then, the main question of this section is the following (the
 assumptions on the vectors $\vu,\vv$ are slightly stronger than the
-one required for $\nabla_{\vu,\vv}$ to be invertible.
+one required for $\nabla_{\vu,\vv}$ to be invertible). 
 \begin{pbm}\label{pb:cauchy}
-  Consider vectors $\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$,
+  Consider $\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$,
   such that $(\vu,\vv)$ has $m+n$ distinct entries. Given
-  $\nabla_{\vu,\vv}$-generators of length $\alpha$ for a matrix $\mA$
+  $\nabla_{\vu,\vv}$-generators of length $\alpha$ for $\mA$
   in $\K^{m \times n}$, with $\alpha \le \min(m,n)$, do the following:
   \begin{itemize}
   \item if $\mA$ does not have generic rank profile, raise an error,
@@ -609,19 +604,19 @@ one required for $\nabla_{\vu,\vv}$ to be invertible.
 To solve an instance of Problem~\ref{pb:mosaic}, with input matrix
 $\mT$, we apply the transformation of the previous section, to obtain
 a Cauchy-like matrix $\mA = \mV_\vu \mT \mW_{\vv}$. We compute
-generators of $\mA_{r}^{-1}$, where $\mA_r$ is a maximal leading minor
+generators of $\mA_{r}^{-1}$, where $\mA_r$ is the maximal leading minor
 of $\mA$, and we return a vector $\vb$ of the form
 $\vb=\mW_{\vv}[(-\mA_r^{-1}\vc)^t ~ \vc^t]^t$, where $\vc$ is a random
 vector.
 
 
 There exist two major classes of algorithms for handling
-Problem~\ref{pb:cauchy}, iterative ones, of cost that grows like $mn$
-(for fixed $\alpha$), and algorithms using divide-and-conquer
-techniques, of quasi-linear cost in $m+n$. We stress that having a
+Problem~\ref{pb:cauchy}, iterative ones, of cost  $\Theta(mn)$
+(for fixed $\alpha$), and  divide-and-conquer
+algorithms, of quasi-linear cost in $m+n$. We stress that having a
 fast quadratic-time algorithm is actually crucial in practice: as is
 the case for the Half-GCD, fast linear algebra algorithms, etc, the
-quasi-linear algorithm will fall back on the quadratic one for input
+divide-and-conquer  algorithm will fall back on the iterative one for input
 sizes under a certain threshold, and the performance of the latter
 will be an important factor in the overall runtime.
 
@@ -637,10 +632,10 @@ in time $O(\alpha n^2)$, in the case where $m=n$ and $\mA$ is
 invertible (but without the rank profile assumption); he credits the
 origin of this algorithm to Kailath~\cite[\S1.10]{KaSa99}, who dealt
 with symmetric matrices.  Our algorithm follows the same pattern, but
-reduces the cost to $O(\alpha^{\omega-2} n^2)$.
+reduces the cost to $O(\alpha^{\omega-2} mn)$.
 
 In Section~\ref{ssec:MBA-C}, we review divide-and-conquer
-techniques. Kaltofen~\cite{Kaltofen94} gave a divide-and-conquer
+techniques. Kalt\-ofen~\cite{Kaltofen94} gave a divide-and-conquer
 algorithm that solves the analogue of Problem~\ref{pb:cauchy} for
 Toeplitz-like matrices, lifting assumptions of (strong)
 non-singularity needed in the original Morf and Bitmead-Anderson
@@ -663,22 +658,21 @@ order to apply Remark~\ref{rmk:factor3}.
 \subsection{Cauchy generators of the inverse}\label{ssec:genofinv}
 
 Let $(\mG,\mH) \in \K^{m\times \alpha} \times \K^{n\times \alpha}$ be
-$\nabla_{\vu,\vv}$-generators of a matrix $\mA$ with respect to the
-operator $\nabla_{\vu,\vv}$, with $\vu=(u_1,\dots,u_m)$ and
+$\nabla_{\vu,\vv}$-generators of a matrix $\mA$, with $\vu=(u_1,\dots,u_m)$ and
 $\vv=(v_1,\dots,v_n)$. Let further $r$ be the rank of $\mA$. Our goal
 is to decide if $\mA$ has generic rank profile, and if so, to return
 generators $(\mY,\mZ) \in \K^{r\times \alpha} \times \K^{r\times
   \alpha}$ of the inverse of the leading principal minor of $\mA$.
+Below, we write $\mn=\min(m,n)$. 
 
-
-Let $\mn=\min(m,n)$. For $0\leq i \leq \mn$, write
+For $0\leq i \leq \mn$, write
 $
-\mA=\begin{bmatrix}
-    \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \\[1mm]
-    \mA^{(i)}_{1,0} & \mA^{(i)}_{1,1}
-  \end{bmatrix}\!\!.
+\mA=\left [\begin{smallmatrix}
+    \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1}\ \\[1mm]
+    \mA^{(i)}_{1,0} & \mA^{(i)}_{1,1}\
+  \end{smallmatrix} \right].
 $
-If ${\mA^{(i)}_{0,0}}$ is invertible, we define, similarly to~\cite{Cardinal99},
+If ${\mA^{(i)}_{0,0}}$ is invertible, set
 $$
 \mS^{(i)} = 
 \begin{bmatrix} 
@@ -693,23 +687,24 @@ $$
   -{\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1}
   &  
   {\mA^{(i)}_{0,0}}{}^{-1} 
-\end{bmatrix}.
+\end{bmatrix}
 $$
-(the order of block rows and columns we use differs
-from that reference.) We see that $( \mS^{(i)})_{i=0\dots \mn}$ form a sequence of
-matrices starting from $\mA=\mS^{(0)}$ and ending at
+(this 
+is similar to~\cite{Cardinal99}, where
+the order of block rows and columns was however different). The sequence of
+matrices $( \mS^{(i)})_{i=0\dots \mn}$  starts from $\mA=\mS^{(0)}$ and ends at
 $\mA^{-1}=\mS^{(\mn)}$, at least when $\mA$ is square and invertible. To
 understand where these matrices come from, we introduce the matrix
-$ \mR^{(0)} = \begin{bmatrix}
+$ \mR^{(0)} = \left [\begin{smallmatrix}
   \mA \\
   \mI_{\mn, n}
-\end{bmatrix} 
+\end{smallmatrix} \right ]
 $
 in $\K^{(m + \mn) \times n} $, where $\mI_{\mn, n} \in \K^{\mn \times n}$ is
 the rectangular matrix with ones on the main diagonal. If one applies to
 $\mR^{(0)}$ the column operations that reduce its first $i$th rows
-$\begin{bmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{bmatrix}$ to
-$\begin{bmatrix} 0 & \mI_{i,i} \end{bmatrix}$ using $\mA^{(i)}_{0,0}$
+$\left[ \begin{smallmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{smallmatrix} \right ]$ to
+$\left [\begin{smallmatrix} 0 & \mI_{i,i} \end{smallmatrix} \right ]$  using $\mA^{(i)}_{0,0}$
 as pivot, we get
 \begin{equation}\label{eq:Ri}
 \mR^{(i)} =
@@ -723,20 +718,19 @@ as pivot, we get
   & 
   \mA_{0, 0}^{(i)} \phantom{}^{- 1} \\
  \mI_{n - i,n-i} & 0
-\end{bmatrix}
+\end{bmatrix},
 \end{equation}
-where $\mP$ is a cyclic permutation matrix than moves the rows up by one place.
+$\mP$ being a cyclic permutation matrix than moves the rows up once.
 
 Given integers $a,b$, $\vu_{a:b}$ denotes the sequence
-$(u_a,\dots,u_b)$ (and similarly for $\vv_{a:b}$); we then define
+$(u_a,\dots,u_b)$, and similarly for $\vv_{a:b}$; we then define
 $\vu^{(i)}=(\vu_{i+1:m},\vv_{1:i})$ and
 $\vv^{(i)}=(\vv_{i+1:n},\vu_{1:i})$.
 A key result for the sequel is Lemma~\ref{lemma:cpj-cm}, which
-is~\cite[Proposition~1]{Cardinal99}; it gives formulae for
+is~\cite[Proposition~1]{Cardinal99}; it gives 
 $\nabla_{\vu^{(i)},\vv^{(i)}}$-generators of $\mS^{(i)}$ (remark that
 this operator is invertible, in view of our assumption on $\vu$ and
-$\vv$).  Define the matrices $(\mY^{(i)},
-\mZ^{(i)})$ of $\mS^{(i)}$ by decomposing $\mG,\mH$ as
+$\vv$).  For $i$ as above, decompose $\mG,\mH$ as
 \[
  \mG=\begin{bmatrix} 
    \mG^{(i)}_0 \\ \mG^{(i)}_1
@@ -745,7 +739,7 @@ $\vv$).  Define the matrices $(\mY^{(i)},
         \mH^{(i)}_0 \\    \mH^{(i)}_1 
   \end{bmatrix}
 \]
-with $\mG^{(i)}_0, \mH^{(i)}_0 \in \K^{i \times \alpha}$ and defining
+with $\mG^{(i)}_0, \mH^{(i)}_0 \in \K^{i \times \alpha}$ and define
 $(\mY^{(0)},\mZ^{(0)})=(\mG,\mH)$ and 
 \[
 \!\!\mY^{(i)}\!=\! 
@@ -762,7 +756,7 @@ $(\mY^{(0)},\mZ^{(0)})=(\mG,\mH)$ and
 \begin{lemma}\label{lemma:cpj-cm}
  $(\mY^{(i)},\mZ^{(i)})$ are $\nabla_{\vu^{(i)},\vv^{(i)}}$-generators for $\mS^{(i)}$.
 \end{lemma}
-If $\mA$ has generic rank profile, then Lemma~\ref{lemma:cpj-cm} shows
+If $\mA$ has generic rank profile, Lemma~\ref{lemma:cpj-cm} shows
 that for $r=\rank(\mA)$, $(\mY^{(r)}_0,\mZ^{(r)}_0)$ are
 $\nabla_{\vv',\vu'}$-generators for ${\mA^{(r)}_{0,0}}{}^{-1}$, for
 $\vu',\vv'$ as in Problem~\ref{pb:cauchy}, so they solve our problem.
@@ -775,28 +769,24 @@ $\mZ^{(i)}$ into blocks
 \mS^{(i)} = \begin{bmatrix} 
 \mS^{(i,j)}_{0,0} & \mS^{(i,j)}_{0,1} \\
 \mS^{(i,j)}_{1,0} & \mS^{(i,j)}_{1,1}
-\end{bmatrix},  
+\end{bmatrix},\  
 \mY^{(i)} = 
 \begin{bmatrix}
   \mY^{(i,j)}_0 \\\mY^{(i,j)}_1
-\end{bmatrix},
+\end{bmatrix},\ 
 \mZ^{(i)} = 
 \begin{bmatrix}
   \mZ^{(i,j)}_0 \\\mZ^{(i,j)}_1
 \end{bmatrix}
 \end{equation*}
 with $\mS^{(i,j)}_{0,0} \in \K^{j \times j}$ and
-$\mY^{(i,j)}_0, \mZ^{(i,j)}_0 \in \K^{j \times \alpha}$. Also decompose 
-%
+$\mY^{(i,j)}_0, \mZ^{(i,j)}_0 \in \K^{j \times \alpha}$, write
 $\vu^{(i)} = 
-\big[ \vu^{(i,j)}_0 \  \vu^{(i,j)}_1 \big]
-$ 
-%
+[\begin{smallmatrix} \vu^{(i,j)}_0 \  \vu^{(i,j)}_1 
+  \end{smallmatrix} ]$ 
 with $\vu^{(i,j)}_0 \in \K^j$ and the same for $\vv^{(i)}$.
 Operations that derive $\mS^{(i+j)}$ from
-$\mS^{(j)}$ and $\mS^{(i)}$ from $\mS^{(0)}$ are similar, and a direct
-calculation shows that
-%
+$\mS^{(j)}$ and $\mS^{(i)}$ from $\mS^{(0)}$ are similar; a direct calculation shows
 \begin{equation}
 \label{eq:Si+j}
 \mS^{(i+j)} = 
@@ -808,23 +798,22 @@ calculation shows that
   -{\mS^{(i,j)}_{0,0}}{}^{-1} \mS^{(i,j)}_{0,1}
   &  
   {\mS^{(i,j)}_{0,0}}{}^{-1} 
-\end{bmatrix}
+\end{bmatrix}.
 \end{equation}
-which implies the following formulae on the generators
+This implies the following formulae on the generators:
 \begin{align}
 \mY^{(i+j,m-j)}_1&= -{\mS^{(i,j)}_{0,0}}{}^{-1} \,\mY^{(i,j)}_0,\quad
-\mZ^{(i+j,n-j)}_1= {\mS^{(i,j)}_{0,0}}^{-t} \,\mZ^{(i,j)}_0 \nonumber\\
+\mZ^{(i+j,n-j)}_1= {\mS^{(i,j)}_{0,0}}^{-t} \,\mZ^{(i,j)}_0, \nonumber\\
 \mY^{(i+j,m-j)}_0&=-\mS^{(i,j)}_{1,0} \,\mY^{(i+j,m-j)}_1 + \mY^{(i,j)}_1,\label{eq:Yi+j}\\
 \mZ^{(i+j,n-j)}_0&=-{\mS^{(i,j)}_{0,1}}{}^t \,\mZ^{(i+j,n-j)}_1 + \mZ^{(i,j)}_1 \nonumber;
 \end{align}
 %
 this generalizes previous formulae for $(\mY^{(i)},\mZ^{(i)})$.  The
-intuition behind Eq.~(\ref{eq:Yi+j}) is that by decomposing the column
+idea behind Eq.~(\ref{eq:Yi+j}) is that by decomposing the column
 operations that reduce
-$\begin{bmatrix} \mA^{(i+j)}_{0,0} & \mA^{(i+j)}_{0,1} \end{bmatrix}$
-to $\begin{bmatrix} 0 & \mI_{i+j,i+j} \end{bmatrix}$ (see
-Eq.~(\ref{eq:Ri})) into two operations that respectively reduce the
-first $i$th rows using $\mA^{(i)}_{0,0}$ as pivot, then the next $j$th
+$[\begin{smallmatrix} \mA^{(i+j)}_{0,0} & \mA^{(i+j)}_{0,1} \end{smallmatrix}]$
+to $[\begin{smallmatrix} 0 & \mI_{i+j,i+j} \end{smallmatrix}]$~(see Eq.\eqref{eq:Ri}) into two operations that respectively reduce the
+first $i$th rows using $\mA^{(i)}_{0,0}$ as pivot, then the next $j$
 rows using $\mS^{(i,j)}_{0,0}$ as pivot, we split the computation of
 $\mR^{(i+j)}$ into two similar operations that map $\mR^{(0)}$ to
 $\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
@@ -849,6 +838,7 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
 \subsection{A faster iterative algorithm}\label{ssec:quad}
 
 \begin{algorithm}[t]
+\setstretch{0.1}
   \LinesNumbered \DontPrintSemicolon
   \caption{Iterative algorithm $\Iter$ for Problem~\ref{pb:cauchy} \label{algo:iter}}
 
@@ -861,9 +851,7 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
     $j = \min (\beta,\bar{r}-i)$\;
     Recover $\mS^{(i,j)}_{0,0}$ from its generators $(\mY^{(i,j)}_0,\mZ^{(i,j)}_0)$\;
     Compute the rank $\rho$, rank profile, inverse of $\mS^{(i,j)}_{0,0}$\; \label{line:rankprof}
-    \If{$\mS^{(i,j)}_{0,0}$ does not have generic rank profile}{
-      \Raise\;
-    }
+    \lIf{$\mS^{(i,j)}_{0,0}$ does not have generic rank profile}{\Raise}
     \lIf{$\rho<j$}{$j=\rho,\ \bar{r}=i+\rho$}
     Recover $\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$ 
     from their generator\; \label{line:rowcol}
@@ -883,11 +871,11 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
 
 We describe in Algorithm~\ref{algo:iter} a quadratic-time iterative
 algorithm for Problem~\ref{pb:cauchy}; we will use a step size
-$\beta \in \{1,\dots,\alpha\}$, given as a parameter.  Note that the
+$\beta \in \{1,\dots,\alpha\}$, given as a parameter.  The
 formulae that computes $(\mY^{(i+j)},\mZ^{(i+j)})$ from
 $(\mY^{(i)},\mZ^{(i)})$ only involves $\mS^{(i,j)}_{0,0}{}^{-1}$,
-$\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$. So
-Algorithm~\ref{algo:iter}, line~\ref{line:rowcol} recovers
+$\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$; hence,
+line~\ref{line:rowcol} recovers
 $\mS^{(i,j)}_{0,1}$ from its
 $\nabla_{\vu^{(i,j)}_0, \vv^{(i,j)}_1}$-generators
 $(\mY^{(i,j)}_0,\mZ^{(i,j)}_1)$ and the same for $\mS^{(i,j)}_{1,0}$.
@@ -905,14 +893,14 @@ invertible and has generic rank profile, we use
 Lemma~\ref{lemma:update} to determine if $\mA^{(i+j)}_{0,0}$ has the
 same properties.
 
-The while loop exits on one of two conditions that both ensures that
+The loop exits on one of two conditions that both ensures that
 $\bar{r} = \max\{ r \ |\ \forall j \leq r, \det(\mA^{(j)}_{0,0}) \neq
 0 \}$.
 Either $\rank(\mS^{(i,j)}_{0,0})$ is always $j$ (then $i$ will
 eventually reach $\bar{r}=\mn$), or $\rank(\mS^{(i,j)}_{0,0})<j$ at some
 point and after setting $\bar{r}=i+\rank( \mS^{(i,j)}_{0,0})$, we
 have $\det(\mA^{(\ell)}_{0,0}) \neq 0$ for all $\ell \leq \bar{r}$
-and $\det(\mA^{(\bar{r}+1)}_{0,0}) = 0$, and the while loop exits
+and $\det(\mA^{(\bar{r}+1)}_{0,0}) = 0$; we exit the while loop
 right after.
 
 After the while loop, it remains to test if $\rank(\mA) = \bar{r}$
@@ -944,13 +932,14 @@ line~\ref{line:recoverwhole}, so that the whole running time is
 $O(\beta^{\omega-3} \alpha mn)$. The algorithm of~\cite{Mouilleron08}
 uses $\beta=1$, for which the cost is $O(\alpha mn)$; choosing
 $\beta=\alpha$, we benefit from fast matrix multiplication, as the
-cost drops to $O(\alpha^{\omega-2} mn)$, as claimed previously.
+cost drops to $O(\alpha^{\omega-2} mn)$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{The divide-and-conquer algorithm}\label{ssec:MBA-C}
 
 \begin{algorithm}[t]
+\setstretch{0.1}
   \LinesNumbered \DontPrintSemicolon
   \caption{Divide-And-Conquer algorithm $\DACp$ \label{algo:dac}}
 
@@ -986,8 +975,8 @@ cost drops to $O(\alpha^{\omega-2} mn)$, as claimed previously.
 
 
 We finally review the divide-and-conquer approach to solving
-Problem~\ref{pb:cauchy}. The algorithm proceed essentially
-following~\cite{JeMo10}, with the minor difference that do not assume
+Problem~\ref{pb:cauchy}. The algorithm essentially
+follows~\cite{JeMo10}, with the minor difference that do not assume
 $\mA$ invertible, and that we explicitly check if $\mA$ satisfies the
 generic rank profile assumption.
 
@@ -1011,23 +1000,21 @@ Altogether, this boils down to $O(1)$ multiplications of Cauchy-like
 matrices (for which we have generators of length $\alpha$) 
 by $\alpha$ vectors.
 
-In general, this multiplication costs $O(\alpha^2 \M(\mx) \log(\mx))$
-operations, with $\mx=\max(m,n)$. If $\vu$ and $\vv$ are chosen as
+In general, this costs $O(\alpha^2 \M(\mx) \log(\mx))$
+operations, with $\mx=\max(m,n)$. If $\vu$ and $\vv$ are 
 geometric progressions, the cost for the matrix-vectors multiplication
-drops to $O(\alpha^2 \M(\mx))$, implying similar saving for the total
-runtime. If $\vu$ and $\vv$ have the same ratio (if this is the case
-at the top-level, this will remain the case for all recursive calls),
-we saw that can save a further constant factor.  Finally, for large
-values of $\alpha$, we can apply an algorithm given
-in~\cite{BoJeMoSc16}, which reduces the cost to
-$O(\alpha^{\omega-1} \M(\mx))$.
-
+drops to $O(\alpha^2 \M(\mx))$. If $\vu$ and $\vv$ have the same ratio
+(if this is the case at the top-level, this will remain the case for
+all recursive calls), we saw in Remark~\ref{rmk:factor3} that can save
+a further constant factor.  For large values of $\alpha$, we
+can apply an algorithm given in~\cite{BoJeMoSc16}, which reduces the
+cost to $O(\alpha^{\omega-1} \M(\mx))$.
 On line~\ref{algo:testschur}, the Schur complement is zero if and only
-if $\mY'\, \mZ' = 0$. This is done by finding a minimal set of
+if $\mY'\, \mZ' = 0$. This is tested by finding a minimal set of
 independent rows in $\mZ'$ (this takes time
 $O(\alpha^{\omega-1} \mx)$) and multiplying their transposes by
-${\mY'}$ (there are at most $\alpha$ such rows, so this takes time
-$O(\alpha^{\omega-1} \mx)$ as well).
+${\mY'}$. There are at most $\alpha$ such rows, so this takes time
+$O(\alpha^{\omega-1} \mx)$ as well.
 
 Taking all recursive steps into account, the total cost of $\DACp$ is
 withing a factor $\log(\mx)$ that of the Cauchy-like matrix-vectors
@@ -1037,45 +1024,45 @@ multiplication discussed above.
 
 \subsection{Experimental results}
 
-We have implemented the algorithms described so far, together with all
+We implemented the algorithms described so far, together with all
 subroutines they rely on, in a C++ library available at
-\url{gitsomething}. Our implementation is based on Shoup's
+\todo{git}. Our implementation is based on Shoup's
 NTL~\cite{Shoup95,NTL} version 10.3.0, and is dedicated to word-size
 primes (NTL's \texttt{lzz\_p} class); the divide-and-conquer algorithm
 of Subsection~\ref{ssec:MBA-C} actually requires FFT primes.  In all
 that follows, timings are measured on an Intel i7-4790 CPU with 32 GB
 RAM; only one thread is used throughout. 
 
-The main goal of our experiments is to assess whether fast matrix
+Some goals of our experiments are to assess whether fast matrix
 multiplication can bring practical improvements that reflect the
 theoretical ones, what are reasonable crossover points between
 iterative and divide-and-conquer algorithms, and what is the range of
 applicability of these structured methods compared to dense linear
 algebra.  Thus, we focused on comparisons between our own
-implementations of the techniques seen so far, and did not attempt
-comparisons with other systems.
+implementations of the various techniques seen so far, and did not
+attempt comparisons with other systems.
 
 The main building blocks we need are fast polynomial and matrix
 computations. NTL already implements very efficient FFT-based
-polynomial arithmetic; matrix multiplication over small fields (for $p
-< 2^{23}$) is now extremely efficient, comparable to reference
+polynomial arithmetic; matrix multiplication over small fields $\Z/p\Z$, for $p
+< 2^{23}$, is now extremely efficient, comparable to reference
 implementations such as FFLAS-FFPACK~\cite{fflas-ffpack}. On top of
 this, we implemented a fast polynomial matrix multiplication, that
 relies on the cyclotomic TFT of~\cite{ArSc15}. 
 
 We first discuss Problem~\ref{pb:cauchy}. Our first tests compare our
-new $O(\alpha^{\omega-2} n^2)$ algorithm to the previous one, with
-runtime $O(\alpha n^2)$. Except for very small values of $n$, say $n <
-50$, for which the behavior fluctuates rapidly, we found that the new
-algorithm becomes more efficient for rather small values of $\alpha$:
-our crossover points are $\alpha=8$ or $9$ for primes less than
-$2^{23}$, and $\alpha=13$ or $14$ for larger word-size primes. The
-following graph shows the time ratio between the algorithm
-of~\cite{Mouilleron08} and our algorithm, for $\alpha=30$; the larger
-value of $p$ used here is the FFT prime $p=82705526964617217=7^2
-2^{54}+1$. We see that for small primes, for which matrix
-multiplication is very efficient, our algorithm brings a substantial
-improvement.
+new $O(\alpha^{\omega-2} n^2)$ algorithm to that
+of~\cite{Mouilleron08}, with runtime $O(\alpha n^2)$. Except for very
+small values of $n$, say $n < 50$, for which the behavior fluctuates
+rapidly, we found that the new algorithm becomes more efficient for
+rather small values of $\alpha$: our crossover points are $\alpha=8$
+or $9$ for primes less than $2^{23}$, and $\alpha=13$ or $14$ for
+larger word-size primes. The following graph shows the time ratio
+between the algorithm of~\cite{Mouilleron08} and our algorithm, for
+$\alpha=30$; the larger value of $p$ used here is the FFT prime
+$p=82705526964617217=7^2 2^{54}+1$. We see that for small primes, for
+which matrix multiplication is very efficient, our algorithm brings a
+substantial improvement.
 
 \todo{move label to top left}
 
@@ -1084,11 +1071,10 @@ improvement.
 We consider next the divide-and-conquer algorithm. The key factor for
 the efficiency of this algorithm is the cost of multiplying an $n
 \times n$ Cauchy-like matrix of displacement rank $\alpha$ by $\alpha$
-vectors. We compare the approach of cost $O(\alpha^2 \M(n))$, for
-vectors $\vu,\vv$ in geometric progression with the same ratio, to the
-algorithm of~\cite{BoJeMoSc16}, with cost $O(\alpha^{\omega-1}
-\M(n))$, with a view of determining for what values of $\alpha$ (if
-any) the latter becomes useful. 
+vectors. We compare the approach of cost $O(\alpha^2 \M(n))$ of
+Remark~\ref{rmk:factor3} to the algorithm of~\cite{BoJeMoSc16}, with
+cost $O(\alpha^{\omega-1} \M(n))$, with a view of determining for what
+values of $\alpha$ (if any) the latter becomes useful.
 
 For the former algorithm, because we are able to cache several forward
 FFTs, we found it slightly more advantageous to forego the cyclotomic
@@ -1149,11 +1135,12 @@ Cauchy-like case. Putting the problem into Cauchy form by means of the
 formulae of Eq.~(\ref{eq:gentoetogencau}) accounts for a small
 fraction of the total runtime: between 5\% and 10\% for small $\alpha$
 (say $\alpha < 10$), and less than 5\% for larger values of $\alpha$,
-in all instances we considered.  In the thousands of experiments we used
-for our tests, for matrix sizes such as $n \ge 5000$ and small primes
-such as $p=65537$, we observed some instances where the Cauchy matrix
-did not have generic rank profile. This never happened for larger 
-values of $p$, having more than $50$ bits.
+in all instances we considered.  
+
+In the thousands of experiments we made, for matrix
+sizes such as $n \ge 5000$ and small primes such as $p=65537$, we
+observed some instances where the Cauchy matrix did not have generic
+rank profile. This never happened for $p$ having more than $50$ bits.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1162,27 +1149,26 @@ values of $p$, having more than $50$ bits.
 \section{Modular techniques}\label{sec:lifting}
 
 We now address Problem~\ref{pb:mosaic} in the particular case where
-$\K=\Q$; without loss of generality, we assume that the entries of
-$\mT$ are integers. 
-
-Several {\em modular algorithms} are available to solve dense linear
-systems over $\Q$. A first option relies on the Chinese Remainder
-Theorem, solving the system modulo several primes $p_1,p_2,\dots$
-before reconstructing the solution, making sure to ensure consistency
-of the modular solutions when ${\rm ker}(\mT)$ has dimension more than
-$1$. Other approaches such as Dixon's algorithm~\cite{Dixon82}, Newton
-iteration or divide-and-conquer algorithms use one prime $p$, and lift
-the solution modulo powers of $p$.
+$\K=\Q$. Several {\em modular algorithms} are available to solve dense
+linear systems over $\Q$. A first option relies on the Chinese
+Remainder Theorem, solving the system modulo several primes
+$p_1,p_2,\dots$ before reconstructing the solution, making sure to
+ensure consistency of the modular solutions when ${\rm ker}(\mT)$ has
+dimension more than $1$. Other approaches such as Dixon's
+algorithm~\cite{Dixon82}, Newton iteration or divide-and-conquer
+algorithms use one prime $p$, and lift the solution modulo powers of
+$p$.
 
 Newton iteration for structured matrices goes back to Pan's
 article~\cite{Pan92} (for Toeplitz-like matrices), and is explained in
 detail in~\cite[Chapter~7]{Pan01}. To the best of our knowledge, the
 other approaches mentioned above have not been discussed in the
-literature on structured matrices. Our goal in this section is to
-first briefly present some of these techniques and analyze their
-complexity for the problem at hand; we will then discuss their
-practical performance. We will highlight in particular the case of
-algebraic approximants, for which we are able to obtain significant
+literature on structured matrices, save for the second author's PhD
+thesis~\cite{Lebreton12}. Our goal in this section is to first
+briefly present some of these techniques and analyze their complexity
+for the problem at hand; we will then discuss their practical
+performance. We will highlight in particular the case of algebraic
+approximants, for which we are able to obtain significant
 improvements.
 
 In what follows, we denote by $\mathscr{I}:\mathbb{N}
@@ -1197,57 +1183,56 @@ non-decreasing.
 
 \subsection{Solving square systems by lifting}
 
-In this subsection, we are given a prime power $p^t$, an $n \times n$
-matrix $\mA$ and a vector $\vb$, both with entries modulo $p^t$, and
-we assume that $\mA$ is invertible modulo $p^t$ (we denote by $\mB$
-its inverse). We discuss algorithms that solve the equation $\mA \vx =
-\vb$ modulo $p^{t}$, where $t$ is a power of 2, and we estimate their
-complexity when $\mA$ is a structured matrix. 
+In this subsection, we are given a prime power $p^t$, where $t$ is a
+power of 2, an $n \times n$ matrix $\mA$ and a vector $\vb$, both with
+entries modulo $p^t$, and we assume that $\mA$ is invertible modulo
+$p^t$, with inverse $\mB$. We discuss algorithms that
+solve the equation $\mA \vx = \vb$, and we estimate
+their complexity when $\mA$ is a structured matrix.
 
 We take $\CA$ such that, for any $t$, given a vector $\vx$ with
 entries defined modulo $p^t$, we can compute $\mA \vx \bmod p^t$ in
-$O(\CA \I(t \log(p)))$ bit operations. Below, we will
-assume that $\mA$ is Cauchy-like as in~\eqref{eq:recA}, with vectors
-$\vu,\vv$ geometric progressions have the same ratio, and given
-by generators of length $\alpha$, so that we can take $\CA \in
-O(\alpha \M(n))$. We will see below that in some cases (for
-the calculation of algebraic approximants, for instance), better
-estimates are available. 
+$O(\CA \I(t \log(p)))$ bit operations. Below, we will assume that
+$\mA$ is Cauchy-like as Remark~\ref{rmk:factor3}, and given by
+generators of length $\alpha$, so that we can take $\CA \in O(\alpha
+\M(n))$. We will see below that in the case of algebraic approximants,
+better estimates are available.
+
+We consider two approaches: a divide-and-conquer algorithm and Newton
+iteration, which both feature a running time linear in the target
+precision $t$ (the runtime of Dixon's algorithm is linear in $t$ only
+when the entries of $\mA$ are assumed to be $O(1)$; if $\mA$ has
+arbitrary entries, Dixon's algorithm takes quadratic time in $t$ even
+using fast integer arithmetic).  We start with the divide-and-conquer
+approach. A version of it is in~\cite{BeLe12} for dense matrices; the
+PhD thesis~\cite{Lebreton12} describes this algorithm for
+Toeplitz-like matrices.
 
 
-We will focus on two approaches: a divide-and-conquer algorithm and
-Newton iteration, which both feature a running time linear in the
-target precision $t$ (the runtime of Dixon's algorithm is linear in
-$t$ only when the entries of $\mA$ are assumed to be $O(1)$; if $\mA$
-has arbitrary entries, Dixon's algorithm takes quadratic time in $t$
-even using fast integer arithmetic). We start with the
-divide-and-conquer approach. Although this idea is entirely natural,
-we do not know of a suitable reference for it.  
+\begin{algorithm}[h]
+\setstretch{0.1}
+  \LinesNumbered \DontPrintSemicolon
+  \caption{Divide-And-Conquer algorithm $\DACQ$ \label{algo:dacQ}}
 
-\todo{What do you think of citing either BerthomieuLebreton'12 for
-  general linear system solving doing this DAC, or at least my thesis
-  that deals also with the case of structured matrices (just
-  toeplitz/hankel in fact)}
+  \Input{$\mA$, $\mB$ $\vb$, $p$, $t$ as above}
+  \Output{a solution of  $\mA \vx = \vb$ mod $p^t$}
 
+\lIf{$t = 1$}{\Return $\mB \, \vb$ mod $p$}
 
-\smallskip\noindent{\textbf{\DACQ($\mA$, $b$, $p$, $t$)}}:
+Compute $\vx_0 = $\DACQ($\mA$, $\vb$, $p$, $t/2$)\;
 
-\noindent{\bf 0.} If $t = 1$, return $\mB  \vb$ mod $p$
+Compute $\vr_0 = \left( \mA \vx_0 - \vb\right) \bmod p^t$ and
+$\vr_1 = r_0/ p^{t/2}$\;
 
-\noindent{\bf 1.} Compute $\vx_0 := $\DACQ($\mA$, $\vb$, $p$, $t/2$)
+Compute $\vx_1 = $\DACQ($\mA$, $\vr_1$, $p$, $t/2$)\;
 
-\noindent{\bf 2.} Compute
-$\vr_0 := \left( \mA \vx_0 - \vb\right) \bmod p^t$ and
-$\vr_1 := r_0/ p^{t/2}$
+\Return $\vx_0 - p^{t/2}  \vx_1$ mod $p^t$
+\end{algorithm}
 
-\noindent{\bf 3.} Compute $\vx_1 := $\DACQ($\mA$, $\vr_1$, $p$, $t/2$)
-
-\noindent{\bf 4.} Return $\vx_0 - p^{t/2}  \vx_1$ mod $p^t$
-
-We assume that we have obtained generators of length $\alpha$ for
+Assume that we have obtained generators of length $\alpha$ for
 $\mB$, for instance by applying the algorithm of the previous section.
 Thus, at the leaves of the recursion, each product $\mB \vb$ mod $p$
-can be compute using $O(\alpha \M(n) \I(\log(p)))$ bit
+can be computed using $O(\alpha \M(n) \I(\log(p)))$ bit
 operations. Using our assumption on $\I$, the total runtime
 is then $O(\CA \I(t\log(p)) \log(t) +\alpha \M(n)
 \I(\log(p)) t)$ bit operations; if we assume $p=O(1)$, this
@@ -1255,34 +1240,23 @@ becomes $O(\CA \I(t) \log(t) +\alpha \M(n) t)$.  Using our
 upper bounds on $\CA$, this simplifies further as $O(\alpha \M(n)
 \I(t) \log(t))$.
 
-%% \smallskip\noindent{\textbf{Dixon($\mA$, $b$, $p$, $t$)}}:
-%% \noindent{\bf 0.} Compute $\mM := \mA^{-1}$ (mod $p$)
-%% \noindent{\bf 1.} Compute $x_0 := \mM  b$ (mod $p$)
-%% \noindent{\bf 2.} for $i \in [1, t-1]$:
-%% \begin{itemize}
-%% 	\item Compute $b := (b - \mA  x_{i-1}) \mathbin{/} p$ 
-%% 	\item Compute $x_i := \mM  b$ (mod $p$)
-%% \end{itemize}
-%% \smallskip\smallskip\noindent{\bf 3.} Return $\sum_{i=0}^{t-1} p^i  x_i $
-
 We turn next to Newton iteration. The matrix form of Newton iteration
-computes the inverses $\mB_k=\mA^{-1} \bmod p^{2^k}$ by means of the
-relation $\mB_{k+1} = 2\mB_k - \mB_k \mA \mB_k \bmod p^{2^{k+1}}$;
-once they are known, we deduce the solution to our system by means
-of a matrix-vector product.
+computes the inverses $\mB_k=\mA^{-1} \bmod p^{2^k}$ by $\mB_{k+1} =
+2\mB_k - \mB_k \mA \mB_k \bmod p^{2^{k+1}}$; once they are known, we
+deduce the solution to our system by means of a matrix-vector product.
 
 Let $(\mG,\mH)$ be generators for $\mA$. Pan's insight was to use the
-relation above to compute $(\mX,\mY)=(-\mB \mG,\mB^{t}\mH)$, which are
-generators for $\mB$. Given $(\mX_k,\mY_k)=(\mX,\mY) \bmod p^{2^k}$,
-we can reconstruct $\mB_k$, but to deduce $(\mX_{k+1},\mY_{k+1})$, we
-actually have to multiply $\mG$ and $\mH$ by $\mB_{k+1}$ (or its
-transpose). This is done by using the expression for $\mB_{k+1}$ 
-above, which gives
+relation above to compute the generators $(\mX,\mY)=(-\mB
+\mG,\mB^{t}\mH)$ for $\mB$. Given $(\mX_k,\mY_k)=(\mX,\mY) \bmod
+p^{2^k}$, we can reconstruct $\mB_k$, but to deduce
+$(\mX_{k+1},\mY_{k+1})$, we have to multiply $\mG$ and $\mH$ by
+$\mB_{k+1}$ or $\mB_{k+1}^t$. This is done using the expression for
+$\mB_{k+1}$ above, which gives
 \begin{align*}
 \mX_{k+1} &= -(2\mB_k - \mB_k \mA \mB_k)\mG \bmod p^{2^{k+1}}\\
 \mY_{k+1} &= -(2\mB_k - \mB_k \mA \mB_k)^t\, \mH \bmod p^{2^{k+1}}.
 \end{align*}
-This time, we are multiplying matrices $\mA$ and $\mB_k$ (and their
+This time, we are multiplying $\mA$ and $\mB_k$ (and their
 transposes) by matrices of size $n \times \alpha$, all computations
 being done modulo $p^{2^k+1}$. Each multiplication by {\em one} vector
 takes $O(\alpha \M(n) \I(2^k \log(p)))$ operations (even if
@@ -1300,16 +1274,16 @@ Newton iteration is slower by a factor $\alpha$ (or slightly less, if
 we use~\cite{BoJeMoSc16}); on the other hand, it saves a factor of
 $\log(t)$. This is similar to what one observed when comparing these
 techniques for e.g. the solution of differential
-equations~\cite{aaaa,bbb}.
+equations~\cite{BoChOlSaScSc07,BoChLeSaSc12}.
 
 Finally, it is worthwhile mentioning the cost of Chinese Remaindering
 techniques in an analogue context: instead of computing the solution
 modulo the $2^k$-th power of a single prime $p$, we might want to 
-solve the system modulo $2^k$ primes of the same magnitude. 
+solve the system modulo $t=2^k$ primes of the same magnitude. 
 If we assume that $\mA$ remains invertible with generic rank profile modulo 
 all these primes, and all these primes are $O(1)$, the runtime
-is now $O(\alpha^{\omega-1} \M(n) \log(n) t)$, using the results 
-in the previous section.
+is now $O(\alpha^{\omega-1} \M(n) \log(n) t)$, by the results 
+of Section~\ref{sec:abstract}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1324,33 +1298,69 @@ and we do not know how to find it efficiently. Hence, we rely on the
 transformation to the Cauchy structure / regularization technique
 of Section~\ref{sec:basics}.
 
-Over $\Q$, this approach has a certain shortcoming. The output is a
+Over $\Q$, this approach has a certain shortcoming: the output is a
 vector $\vb$ of the form $\vb=\mW_{\vv}[(-\mA_r^{-1}\vc)^t ~
   \vc^t]^t$, with $\mA=\mV_\vu \mT \mW_{\vv}$, $\mA_r^{-1}$ a maximal
-minor of it and $\vc$ a random vector. Due to the preconditionning,
-the entries of $\vb$ are expected of large height (larger than what we
-may expect for a solution of $\mT$).
-
-When ${\rm ker}(\mT)$ has dimension $1$, we are not affected by this
+minor of it and $\vc$ a random vector, and due to the
+preconditionning, the entries of $\vb$ are expected to be of large
+height (larger than what we may expect for a solution of $\mT$). When
+${\rm ker}(\mT)$ has dimension $1$, we are not affected by this
 issue. Indeed, in this case, all solutions are of the form $\lambda
 \vb_0$, for some vector $\vb_0 \in \Z^n$ whose bit-size can be bounded
 only in terms of $\mT$ (for instance by means of Siegel's
 lemma). Hence, it suffices to compute the solution $\vb$ of the
 regularized system modulo a large enough integer $N$ and normalize it
 by setting one of its entries to $1$; this gives us the normalization
-of $\vb_0 \bmod N$. In addition, $\mT$ having nullity $1$ also makes
-Chinese Remainder techniques easy to apply, since after the
-normalization above, one can simply apply the Chinese Remainder
-Theorem to all entries of the modular solutions we computed.
+of $\vb_0 \bmod N$. 
 
 This idea could be extended to the case of an arbitrary nullspace
 dimension, but it would be tantamount to computing and lifting a whole
-nullspace basis. Instead, we chose to reduce the nullspace dimension by
-adding a new block of equations, 
+nullspace basis. Instead, we chose to reduce the nullspace dimension
+by adding a new of equations, as discussed below; when ${\rm
+  ker}(\mT)$ has moderate dimension, this barely affects the overall
+runtime (for particular applications to algebraic approximants,
+another solution is described below).
 
+For simplicity, we discuss here a version of the algorithm that may
+run forever in unlucky cases. We choose a prime $p$ and compute
+$\nabla_{\vu,\vv}$-generators for $\mA = \mV_\vu \mT \mW_{\vv}$ (mod
+$p$), for $\vu,\vv$ as in Remark~\ref{rmk:factor3}. We call the
+algorithm of the previous section, in order to determine the rank of
+$\mA$; if $\mA$ does not have generic rank profile, choose another
+$\vu,\vv$. After an expected $O(1)$ attempts, we obtain the rank of
+$\mA$ (as a matrix over $\mathbb{F}_p$), and thus the dimension $s$ of
+its nullspace. If $s$ is greater than one, we add a block of Toeplitz
+matrices having $s-1$ rows to $\mT$, with small random entries, and
+update $\mA$ accordingly. We expect the new matrix $\mT$ to have
+nullspace dimension $1$ (otherwise, add another block of equations).
 
-
-
+Let $d={\rm rank}(\mT)$, $\mA_{d}$ be the $d \times d$ top-left
+submatrix of $\mA$, and $\vb_d$ be a vector of the first $d$ entries
+of the last column $\vb$ of $\mA$. We assume that $\mA$ has generic
+rank profile, so that $\mA_{d}$ is invertible.  We compute $\vx =
+\mA_d^{-1} \vb_d$ (mod $p$) and $\vy = \mW_\vv [x_1, \cdots, x_d,
+  -1]^t$ (mod $p$). Finally, we normalize $\vy$ by dividing it by its
+first non-zero entry, and we set $t=1$.
+While we either cannot apply rational reconstruction to the entries of
+$y$, or after applying rational reconstruction to $\vy$ we have $\mM
+\vy \ne 0$, we do the following:
+\begin{enumerate}
+\item set $t = 2t$ and update $\mA_{d}$ and $\vb_d$ (mod $p^t$);
+\item compute $\vr = \mA_d \vx - \vb_d$ (mod $p^t$) and $\vr_1 = \vr / p^{t/2}$;
+\item call one of the algorithms in the previous subection to find $\vx'$ such
+  that $\mA_d  \vx' = \vr_1$ (mod $p^{t/2}$);
+\item set $\vx = \vx - p^{t/2} \vx'$, $\vy =
+  \mW_\vv [x_1,\cdots,x_d,-1]^t$ (mod $p^{t}$), and divide  $\vy$
+  by its first non-zero entry.
+\end{enumerate}
+A complete analysis of this algorithm would quantify the primes of bad
+reduction, and give bounds that allow us to stop lifting the solutions
+if we reduced modulo such a bad prime; we leave this to future work.
+Assuming the lifting algorithm stops, we have obtained a solution to
+our system. Due to the doubling nature of this procedure, the runtime is 
+proportional to that of the algorithm for solving square systems used 
+at line 3, that is, $O(\CA \I(t) \log(t) +\alpha \M(n) t)$
+or $O(\alpha^2 \M(n) \I(t))$ bit operations, if  $p=O(1)$.
 
 \bibliographystyle{plain} {\scriptsize \bibliography{structured}}
 
