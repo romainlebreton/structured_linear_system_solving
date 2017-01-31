@@ -1185,28 +1185,27 @@ non-decreasing.
 In this subsection, we are given a prime power $p^t$, where $t$ is a
 power of 2, an $n \times n$ matrix $\mA$ and a vector $\vb$, both with
 entries modulo $p^t$, and we assume that $\mA$ is invertible modulo
-$p^t$, with inverse $\mB$. We discuss algorithms that
-solve the equation $\mA \vx = \vb$, and we estimate
-their complexity when $\mA$ is a structured matrix.
+$p^t$, with inverse $\mB$. We discuss algorithms that solve the
+equation $\mA \vx = \vb$, and we estimate their complexity when $\mA$
+is a structured matrix. To simplify the cost analysis, we assume here
+that $p=O(1)$.
 
-We take $\CA$ such that, for any $t$, we can compute
-$\mA \vx \bmod p^t$ in $O(\CA \I(t \log(p)))$ bit operations, given a
-vector $\vx$ with entries defined modulo $p^t$. Below, we will assume
-that $\mA$ is Cauchy-like as in Remark~\ref{rmk:factor3}, and given by
-generators of length $\alpha$, so that we can take
-$\CA \in O(\alpha \M(n))$. We will see below that in the case of
-algebraic approximants, better estimates are available.
+We take $\CA$ such that, for any $t$, we can compute $\mA \vx \bmod
+p^t$ in $O(\CA \I(t))$ bit operations, given a vector $\vx$ with
+entries defined modulo $p^t$. Below, we will assume that $\mA$ is
+Cauchy-like as in Remark~\ref{rmk:factor3}, and given by generators of
+length $\alpha$, so that we can take $\CA \in O(\alpha \M(n))$. We
+will see below that in the case of algebraic approximants, better
+estimates are available.
 
 We consider two approaches: a divide-and-conquer algorithm and Newton
 iteration, which both feature a running time linear in the target
-precision $t$ (the runtime of Dixon's algorithm is linear in $t$ only
-when the entries of $\mA$ are assumed to be $O(1)$; if $\mA$ has
-arbitrary entries, Dixon's algorithm takes quadratic time in $t$ even
-using fast integer arithmetic).  We start with the divide-and-conquer
-approach. A version of it is in~\cite{BeLe12} for dense matrices; the
-PhD thesis~\cite{Lebreton12} describes this algorithm for
-Toeplitz-like matrices.
+precision $t$.  We start with the divide-and-conquer approach. A
+version of it is in~\cite{BeLe12} for dense matrices; the PhD
+thesis~\cite{Lebreton12} describes this algorithm for Toeplitz-like
+matrices.
 
+\vspace{-1mm}
 
 \begin{algorithm}[h]
 \setstretch{0.1}
@@ -1228,16 +1227,15 @@ Compute $\vx_1 = $\DACQ($\mA$, $\vr_1$, $\mB$, $p$, $t/2$)\;
 \Return $\vx_0 - p^{t/2}  \vx_1$ mod $p^t$
 \end{algorithm}
 
-Assume that we have obtained generators of length $\alpha$ for
-$\mB$, for instance by applying the algorithm of the previous section.
-Thus, at the leaves of the recursion, each product $\mB \vb$ mod $p$
-can be computed using $O(\alpha \M(n) \I(\log(p)))$ bit
-operations. Using our assumption on $\I$, the total runtime
-is then $O(\CA \I(t\log(p)) \log(t) +\alpha \M(n)
-\I(\log(p)) t)$ bit operations; if we assume $p=O(1)$, this
-becomes $O(\CA \I(t) \log(t) +\alpha \M(n) t)$.  Using our
-upper bounds on $\CA$, this simplifies further as $O(\alpha \M(n)
-\I(t) \log(t))$.
+\vspace{-2mm}
+
+Assume that we have obtained generators of length $\alpha$ for $\mB$,
+for instance by applying the algorithm of the previous section.  Thus,
+at the leaves of the recursion, each product $\mB \vb$ mod $p$ can be
+computed using $O(\alpha \M(n) $ bit operations. Using our assumption
+on $\I$, the total runtime is then $O(\CA \I(t) \log(t) +\alpha \M(n)
+t)$ bit operations. Using our upper bounds on $\CA$, this simplifies
+further as $O(\alpha \M(n) \I(t) \log(t))$.
 
 We turn next to Newton iteration. The matrix form of Newton iteration
 computes the inverses $\mB_k=\mA^{-1} \bmod p^{2^k}$ by $\mB_{k+1} =
@@ -1255,18 +1253,17 @@ $\mB_{k+1}$ above, which gives
 \mX_{k+1} &= -(2\mB_k - \mB_k \mA \mB_k)\phantom{^t\,} \mG \bmod p^{2^{k+1}}\\
 \mY_{k+1} &= \phantom{-}(2\mB_k - \mB_k \mA \mB_k)^t\, \mH \bmod p^{2^{k+1}}.
 \end{align*}
-This time, we are multiplying $\mA$ and $\mB_k$ (and their
-transposes) by matrices of size $n \times \alpha$, all computations
-being done modulo $p^{2^{k+1}}$. Each multiplication by {\em one} vector
-takes $O(\alpha \M(n) \I(2^k \log(p)))$ operations (even if
-$\CA$ can be taken less than $O(\alpha \M(n))$, the multiplications
-by $\mB_k$ remain a bottleneck). Since we have to multiply these
-matrices by $\alpha$ vectors, taking all steps into account, we arrive
-at a total of $O(\alpha^2 \M(n) \I(t))$ bit operations
-(assuming $p=O(1)$ for simplicity). Using the algorithm
+This time, we are multiplying $\mA$ and $\mB_k$ (and their transposes)
+by matrices of size $n \times \alpha$, all computations being done
+modulo $p^{2^{k+1}}$. Each multiplication by {\em one} vector takes
+$O(\alpha \M(n) \I(2^k))$ operations (even if $\CA$ can be taken less
+than $O(\alpha \M(n))$, the multiplications by $\mB_k$ remain a
+bottleneck). Since we have to multiply these matrices by $\alpha$
+vectors, taking all steps into account, we arrive at a total of
+$O(\alpha^2 \M(n) \I(t))$ bit operations. Using the algorithm
 of~\cite{BoJeMoSc16}, we remark that this can be further reduced to
-$O(\alpha^{\omega-1} \M(n) \I(t))$, but this improvement was
-not implemented.
+$O(\alpha^{\omega-1} \M(n) \I(t))$, but this improvement was not
+implemented.
 
 Altogether, because it computes (generators of) a whole inverse,
 Newton iteration is slower by a factor $\alpha$ (or slightly less, if
@@ -1274,15 +1271,6 @@ we use~\cite{BoJeMoSc16}); on the other hand, it saves a factor of
 $\log(t)$. This is similar to what one observed when comparing these
 techniques for e.g. the solution of differential
 equations~\cite{BoChOlSaScSc07,BoChLeSaSc12}.
-
-Finally, it is worthwhile mentioning the cost of Chinese Remaindering
-techniques in an analogue context: instead of computing the solution
-modulo the $2^k$-th power of a single prime $p$, we might want to 
-solve the system modulo $t=2^k$ primes of the same magnitude. 
-If we assume that $\mA$ remains invertible with generic rank profile modulo 
-all these primes, and all these primes are $O(1)$, the runtime
-is now $O(\alpha^{\omega-1} \M(n) \log(n) t)$, by the results 
-of Section~\ref{sec:abstract}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1306,19 +1294,17 @@ height (larger than what we may expect for a solution of $\mT$). When
 ${\rm ker}(\mT)$ has dimension $1$, we are not affected by this
 issue. Indeed, in this case, all solutions are of the form $\lambda
 \vb_0$, for some vector $\vb_0 \in \Z^n$ whose bit-size can be bounded
-only in terms of $\mT$ (for instance by means of Siegel's
-lemma). Hence, it suffices to compute the solution $\vb$ of the
+only in terms of $\mT$. Hence, it suffices to compute the solution $\vb$ of the
 regularized system modulo a large enough integer $N$ and normalize it
 by setting one of its entries to $1$; this gives us the normalization
 of $\vb_0 \bmod N$. 
 
 This idea could be extended to the case of an arbitrary nullspace
-dimension, but it would be tantamount to computing and lifting a whole
-nullspace basis. Instead, we chose to reduce the nullspace dimension
-by adding a new of equations, as discussed below; when ${\rm
-  ker}(\mT)$ has moderate dimension, this barely affects the overall
-runtime (for particular applications to algebraic approximants,
-another solution is described below).
+dimension, but it would be tantamount to lifting a whole nullspace
+basis. Instead, we will reduce the nullspace dimension by adding a new
+of equations; when ${\rm ker}(\mT)$ has moderate dimension, this
+barely affects the overall runtime (for particular applications to
+algebraic approximants, another solution is described below).
 
 For simplicity, we discuss here a version of the algorithm that may
 run forever in unlucky cases. We choose a prime $p$ and compute
@@ -1334,14 +1320,14 @@ update $\mA$ accordingly. We expect the new matrix $\mT$ to have
 nullspace dimension $1$ (otherwise, add another block of equations).
 
 Let $d={\rm rank}(\mT)$, $\mA_{d}$ be the $d \times d$ top-left
-submatrix of $\mA$, and $\vb_d$ be a vector of the first $d$ entries
-of the last column $\vb$ of $\mA$. We assume that $\mA$ has generic
+submatrix of $\mA$, and $\vb_d$ be the vector of the first $d$ entries
+of the last column of $\mA$. We assume that $\mA$ has generic
 rank profile, so that $\mA_{d}$ is invertible.  We compute $\vx =
 \mA_d^{-1} \vb_d$ (mod $p$) and $\vy = \mW_\vv [x_1, \cdots, x_d,
-  -1]^t$ (mod $p$). Finally, we normalize $\vy$ by dividing it by its
+  -1]^t$ (mod $p$),  we normalize $\vy$ by dividing it by its
 first non-zero entry, and we set $t=1$.
 While we either cannot apply rational reconstruction to the entries of
-$y$, or after applying rational reconstruction to $\vy$ we have $\mM
+$\vy$, or after applying rational reconstruction to $\vy$ we have $\mT
 \vy \ne 0$, we do the following:
 \begin{enumerate}
 \item set $t = 2t$ and update $\mA_{d}$ and $\vb_d$ (mod $p^t$);
@@ -1356,24 +1342,81 @@ A complete analysis of this algorithm would quantify the primes of bad
 reduction, and give bounds that allow us to stop lifting the solutions
 if we reduced modulo such a bad prime; we leave this to future work.
 Assuming the lifting algorithm stops, we have obtained a solution to
-our system. Due to the doubling nature of this procedure, the runtime is 
-proportional to that of the algorithm for solving square systems used 
-at line 3, that is, $O(\CA \I(t) \log(t) +\alpha \M(n) t)$
-or $O(\alpha^2 \M(n) \I(t))$ bit operations, if  $p=O(1)$.
+our system. Due to the doubling nature of this procedure, the runtime
+is proportional to that of the algorithm for solving square systems
+used at line 3, plus the cost of rational
+reconstruction. The former is $O(\CA \I(t) \log(t) +\alpha \M(n) t)$ bit
+operations using divide-and-conquer, and $O(\alpha^2 \M(n) \I(t))$ or
+$O(\alpha^{\omega-1} \M(n) \I(t))$ using Newton iteration; the latter 
+is $O(n \I(t) \log(t))$.
+
+Finally, we mention the cost of Chinese Remaindering techniques:
+instead of computing the solution modulo the $t$-th power of a single
+prime $p$, we might want to solve the system modulo $t$ primes of the
+same magnitude.  If we assume that $\mA$ remains invertible with
+generic rank profile modulo all these primes, and all these primes are
+$O(1)$, the runtime for solving the systems is now $O(\alpha^{2} \M(n)
+\log(n) t)$ or $O(\alpha^{\omega-1} \M(n) \log(n) t)$, by the results
+of Section~\ref{sec:abstract} (to this, we have to add the cost $O(n
+\I(t) \log(t))$ of Chinese Remaindering and rational reconstruction).
+
+
+We conclude this subsection with a discussion of an important
+particular case, the computation of algebraic approximants. We are
+given a power series $f$ in $\Q[[x]]$, together with degree bounds
+$d,e$; our goal is to compute a polynomial $P \in \Q[x,y]$, with
+$\deg(P,x) \le d$ $\deg(P,y) \le e$, such that $P(x,f) = 0$.
+For any $\sigma \ge 0$, finding $P$ with the above degree bounds and
+such that $P(x,f) = 0 \bmod x^\sigma$ is a Hermite-Pad\'e
+approximation problem of a very special kind (all input series are
+powers of $f$). To our knowledge, no algorithm in the framework of
+Section~\ref{sec:abstract} is able to exploit this extra structure;
+however, in the case of computations over $\Q$, we will now see that
+improvements are possible.
+
+First, we show how to simplify the reduction to nullity 1.
+Th\'eo\-r\`eme~7.15 in~\cite{BoChGiLeLeSaSc17} shows that if such a
+$P$ exists and is irreducible, then any $Q \in \Q[x,y]$ with the same
+degree bounds as above and such that $Q(x,f) = 0 \bmod x^{2de}$ is a
+multiple of $P$. From this, one deduces easily that if we compute {\em
+  two} such polynomials $Q_1,Q_2$, their GCD will generically be $P$
+itself. This fact will remain true modulo all primes $p$ except a
+finite number (although $P \bmod p$ may not be irreducible anymore);
+hence, we can (probabilistically) find $P \bmod p$ by computing two
+solutions $Q_1,Q_2$ to the above Hermite-Pad\'e problem modulo $p$ and
+taking their GCD. If we assume further that no term of $P$ vanishes
+modulo $p$, this reveals the support of $P$. We can then refine
+the degree bounds in our Hermite-Pad\'e problem, which in turn reduces
+the nullity of  matrix $\mT$ to $1$.
+
+Next, we show how to speed-up algorithm $\DACQ$ in this case. The
+block-Toeplitz matrix $\mT$ of our Hermite-Pad\'e problem has
+displacement rank $\alpha = O(e)$, with $e+1$ Sylvester blocks having
+$O(d)$ columns and $(de)$ rows; as a result, the naive estimate on the
+cost of the matrix-vector product by matrix $\mA = \mV_\vu \mT
+\mW_\vv$ is $\CA=O(e \M(de))$. However, we can reduce this cost using
+baby-steps / giant steps techniques: the bivariate modular composition
+algorithm of~\cite{NuZi04} shows that we can do matrix-vector product
+by $\mT$ using $O(e^{1/2} \M(de) + e^{(\omega+1)/2} \M(d))$
+operations; since multiplications by $\mV_\vu$ and $\mW_\vv$ take
+$O(\M(de))$, we obtain the improved estimate $\CA=O(e^{1/2} \M(de) +
+e^{(\omega+1)/2} \M(d))$ in this case. To our knowledge, algorithm
+$\DACQ$ is the only algorithm that can take into account the extra
+structure of algebraic approximants.
 
 \subsection{Experimental Results}
-The timings in this section are measured on the same machine
-as section 3.4. The main goal of our experiment is to compare
-the runtimes for each algorithm and assess which one is the most
-efficient in practice. With these experiments, there are two main
-parameters: the number of blocks, and the size of each block. Although
-we also have control over the bit sizes of the input and output, our
+The timings in this section are measured on the same machine as
+section 3.4. The main goal of our experiment is to compare the
+runtimes for each algorithm and assess which one is the most efficient
+in practice. With these experiments, there are two main parameters:
+the number of blocks, and the size of each block. Although we also
+have control over the bit sizes of the input and output, our
 experiments show that the runtime grew predictably with respect to the
 increase in bit sizes. There are two graphs for both the general and
-algebraic case: on the left, we have five blocks, each with $n$ 
-columns, and on the right, we have $n$ blocks, each with 
-$n$ columns, where we let $n$ grow. Every matrix generated has exactly
-$n-1$ rows. We first examine the results for the general case.
+algebraic case: on the left, we have five blocks, each with $n$
+columns, and on the right, we have $n$ blocks, each with $n$ columns,
+where we let $n$ grow. Every matrix generated has exactly $n-1$
+rows. We first examine the results for the general case.
 
 \includegraphics[width=7cm]{plots/compare-general.pdf}
 
