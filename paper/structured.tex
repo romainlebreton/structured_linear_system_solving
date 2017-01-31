@@ -658,21 +658,21 @@ order to apply Remark~\ref{rmk:factor3}.
 \subsection{Cauchy generators of the inverse}\label{ssec:genofinv}
 
 Let $(\mG,\mH) \in \K^{m\times \alpha} \times \K^{n\times \alpha}$ be
-$\nabla_{\vu,\vv}$-generators of a matrix $\mA$, with $\vu=(u_1,\dots,u_m)$ and
-$\vv=(v_1,\dots,v_n)$. Let further $r$ be the rank of $\mA$. Our goal
-is to decide if $\mA$ has generic rank profile, and if so, to return
-generators $(\mY,\mZ) \in \K^{r\times \alpha} \times \K^{r\times
-  \alpha}$ of the inverse of the leading principal minor of $\mA$.
-Below, we write $\mn=\min(m,n)$. 
+$\nabla_{\vu,\vv}$-generators of a matrix $\mA$, with
+$\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$. Let further $r$ be
+the rank of $\mA$. Our goal is to decide if $\mA$ has generic rank
+profile, and if so, to return generators
+$(\mY,\mZ) \in \K^{r\times \alpha} \times \K^{r\times \alpha}$ of the
+inverse of the leading principal minor of $\mA$.  Below, we write
+$\mn=\min(m,n)$.
 
 For $0\leq i \leq \mn$, write
-$
-\mA=\left [\begin{smallmatrix}
+$ \mA=\left [\begin{smallmatrix}
     \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1}\ \\[1mm]
     \mA^{(i)}_{1,0} & \mA^{(i)}_{1,1}\
-  \end{smallmatrix} \right].
-$
-If ${\mA^{(i)}_{0,0}}$ is invertible, set
+  \end{smallmatrix} \right]$
+with $\mA^{(i)}_{0,0} \in \K^{i \times i}$.  If ${\mA^{(i)}_{0,0}}$ is
+invertible, set
 $$
 \mS^{(i)} = 
 \begin{bmatrix} 
@@ -731,14 +731,15 @@ is~\cite[Proposition~1]{Cardinal99}; it gives
 $\nabla_{\vu^{(i)},\vv^{(i)}}$-generators of $\mS^{(i)}$ (remark that
 this operator is invertible, in view of our assumption on $\vu$ and
 $\vv$).  For $i$ as above, decompose $\mG,\mH$ as
-\[
- \mG=\begin{bmatrix} 
+$
+\mG=\left [\begin{smallmatrix} 
    \mG^{(i)}_0 \\ \mG^{(i)}_1
-  \end{bmatrix},\ 
-  \mH=\begin{bmatrix} 
+\end{smallmatrix}\right ],\ 
+  \mH=
+\left [\begin{smallmatrix}
         \mH^{(i)}_0 \\    \mH^{(i)}_1 
-  \end{bmatrix}
-\]
+\end{smallmatrix}\right ]
+$
 with $\mG^{(i)}_0, \mH^{(i)}_0 \in \K^{i \times \alpha}$ and define
 $(\mY^{(0)},\mZ^{(0)})=(\mG,\mH)$ and 
 \[
@@ -975,7 +976,7 @@ cost drops to $O(\alpha^{\omega-2} mn)$.
 
 
 We finally review the divide-and-conquer approach to solving
-Problem~\ref{pb:cauchy}. The algorithm essentially
+Problem~\ref{pb:cauchy}. Algorithm~\ref{algo:dac} essentially
 follows~\cite{JeMo10}, with the minor difference that do not assume
 $\mA$ invertible, and that we explicitly check if $\mA$ satisfies the
 generic rank profile assumption.
@@ -1063,8 +1064,6 @@ $\alpha=30$; the larger value of $p$ used here is the FFT prime
 $p=82705526964617217=7^2 2^{54}+1$. We see that for small primes, for
 which matrix multiplication is very efficient, our algorithm brings a
 substantial improvement.
-
-\todo{move label to top left}
 
 \includegraphics[width=7cm]{ratio-block-eschost-desktop.pdf}
 
@@ -1190,13 +1189,13 @@ $p^t$, with inverse $\mB$. We discuss algorithms that
 solve the equation $\mA \vx = \vb$, and we estimate
 their complexity when $\mA$ is a structured matrix.
 
-We take $\CA$ such that, for any $t$, given a vector $\vx$ with
-entries defined modulo $p^t$, we can compute $\mA \vx \bmod p^t$ in
-$O(\CA \I(t \log(p)))$ bit operations. Below, we will assume that
-$\mA$ is Cauchy-like as Remark~\ref{rmk:factor3}, and given by
-generators of length $\alpha$, so that we can take $\CA \in O(\alpha
-\M(n))$. We will see below that in the case of algebraic approximants,
-better estimates are available.
+We take $\CA$ such that, for any $t$, we can compute
+$\mA \vx \bmod p^t$ in $O(\CA \I(t \log(p)))$ bit operations, given a
+vector $\vx$ with entries defined modulo $p^t$. Below, we will assume
+that $\mA$ is Cauchy-like as in Remark~\ref{rmk:factor3}, and given by
+generators of length $\alpha$, so that we can take
+$\CA \in O(\alpha \M(n))$. We will see below that in the case of
+algebraic approximants, better estimates are available.
 
 We consider two approaches: a divide-and-conquer algorithm and Newton
 iteration, which both feature a running time linear in the target
@@ -1214,17 +1213,17 @@ Toeplitz-like matrices.
   \LinesNumbered \DontPrintSemicolon
   \caption{Divide-And-Conquer algorithm $\DACQ$ \label{algo:dacQ}}
 
-  \Input{$\mA$, $\mB$ $\vb$, $p$, $t$ as above}
+  \Input{$\mA$, $\vb$, $\mB \bmod p$, $p$, $t$ as above}
   \Output{a solution of  $\mA \vx = \vb$ mod $p^t$}
 
 \lIf{$t = 1$}{\Return $\mB \, \vb$ mod $p$}
 
-Compute $\vx_0 = $\DACQ($\mA$, $\vb$, $p$, $t/2$)\;
+Compute $\vx_0 = $\DACQ($\mA$, $\vb$, $\mB$, $p$, $t/2$)\;
 
 Compute $\vr_0 = \left( \mA \vx_0 - \vb\right) \bmod p^t$ and
 $\vr_1 = r_0/ p^{t/2}$\;
 
-Compute $\vx_1 = $\DACQ($\mA$, $\vr_1$, $p$, $t/2$)\;
+Compute $\vx_1 = $\DACQ($\mA$, $\vr_1$, $\mB$, $p$, $t/2$)\;
 
 \Return $\vx_0 - p^{t/2}  \vx_1$ mod $p^t$
 \end{algorithm}
@@ -1253,12 +1252,12 @@ $(\mX_{k+1},\mY_{k+1})$, we have to multiply $\mG$ and $\mH$ by
 $\mB_{k+1}$ or $\mB_{k+1}^t$. This is done using the expression for
 $\mB_{k+1}$ above, which gives
 \begin{align*}
-\mX_{k+1} &= -(2\mB_k - \mB_k \mA \mB_k)\mG \bmod p^{2^{k+1}}\\
-\mY_{k+1} &= -(2\mB_k - \mB_k \mA \mB_k)^t\, \mH \bmod p^{2^{k+1}}.
+\mX_{k+1} &= -(2\mB_k - \mB_k \mA \mB_k)\phantom{^t\,} \mG \bmod p^{2^{k+1}}\\
+\mY_{k+1} &= \phantom{-}(2\mB_k - \mB_k \mA \mB_k)^t\, \mH \bmod p^{2^{k+1}}.
 \end{align*}
 This time, we are multiplying $\mA$ and $\mB_k$ (and their
 transposes) by matrices of size $n \times \alpha$, all computations
-being done modulo $p^{2^k+1}$. Each multiplication by {\em one} vector
+being done modulo $p^{2^{k+1}}$. Each multiplication by {\em one} vector
 takes $O(\alpha \M(n) \I(2^k \log(p)))$ operations (even if
 $\CA$ can be taken less than $O(\alpha \M(n))$, the multiplications
 by $\mB_k$ remain a bottleneck). Since we have to multiply these
