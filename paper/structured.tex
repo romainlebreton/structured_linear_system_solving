@@ -569,8 +569,8 @@ $\lm(\det(\mA_{I,I})) = \vu^{J_{\max}} \vv^{K_{\max}}$, which shows that
 $\det(\mA_{I,I})$ is non-zero. The partial degree of $\det(\mA_{I,I})$ in any variable
  is at most $\max(n,m)$. 
 
-\todo{See if we can derive anything for geometric sequences $\vu, \vv$
-  with the same ratio}
+%% \todo{See if we can derive anything for geometric sequences $\vu, \vv$
+%%   with the same ratio}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -592,14 +592,13 @@ one required for $\nabla_{\vu,\vv}$ to be invertible).
   Consider $\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$,
   such that $(\vu,\vv)$ has $m+n$ distinct entries. Given
   $\nabla_{\vu,\vv}$-generators of length $\alpha$ for $\mA$
-  in $\K^{m \times n}$, with $\alpha \le \min(m,n)$, do the following:
-  \begin{itemize}
-  \item if $\mA$ does not have generic rank profile, raise an error,
-  \item else, return $\nabla_{\vv',\vu'}$-generators for the inverse
+  in $\K^{m \times n}$, with $\alpha \le \min(m,n)$, do the following.
+
+  If $\mA$ does not have generic rank profile, raise an error;
+  else, return $\nabla_{\vv',\vu'}$-generators for the inverse
     of the leading principal minor $\mA_r$ of $\mA$ of order $r$, with
-    $\vv'=(v_1,\dots,v_r)$ and $\vu'=(u_1,\dots,u_r)$, where
+    $\vv'=(v_1,\dots,v_r)$, $\vu'=(u_1,\dots,u_r)$ and
     $r={\rm rank}(\mA)$.
-\end{itemize}
 \end{pbm}
 To solve an instance of Problem~\ref{pb:mosaic}, with input matrix
 $\mT$, we apply the transformation of the previous section, to obtain
@@ -825,9 +824,9 @@ Schur complement of ${\mA^{(i)}_{0,0}}$, seen as a submatrix of
 $\mA^{(i+j)}_{0,0}$. This implies the following result.
 %
 \begin{lemma}\label{lemma:update}
-  Assume that $\mA^{(i)}_{0,0}$ is invertible and has generic rank
-  profile.
-  $\mA^{(i+j)}_{0,0}$ has generic rank profile if and only if
+ If $\mA^{(i)}_{0,0}$ is invertible and has generic rank
+  profile,
+  $\mA^{(i+j)}_{0,0}$ has generic rank profile iff
   $\mS^{(i,j)}_{0,0}$ does, and
   ${\rm rank}(\mA^{(i+j)}_{0,0})=i+{\rm rank}(\mS^{(i,j)}_{0,0})$. 
 \end{lemma}
@@ -837,6 +836,10 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{A faster iterative algorithm}\label{ssec:quad}
+
+
+\setlength{\textfloatsep}{0pt}
+\setlength{\intextsep}{1\baselineskip}
 
 \begin{algorithm}[t]
 \setstretch{0.1}
@@ -881,17 +884,16 @@ $\mS^{(i,j)}_{0,1}$ from its
 $\nabla_{\vu^{(i,j)}_0, \vv^{(i,j)}_1}$-generators
 $(\mY^{(i,j)}_0,\mZ^{(i,j)}_1)$ and the same for $\mS^{(i,j)}_{1,0}$.
 
-\smallskip\noindent{\bf \small Termination and correction.}
-The correction of the algorithm is based on the fact that $\mA$ has
+%% \smallskip\noindent{\bf \small Termination and correction.}
+Correction of the algorithm is based on the fact that $\mA$ has
 generic rank profile if and only if
 $\rank(\mA) = \max\{ r \ |\  \forall \ell \leq r, \det(\mA^{(\ell)}_{0,0}) \neq
 0 \}$.
-
 The while loop of the algorithm will find the maximal leading
 principal minor of $\mA$ that is non-zero and has generic rank
 profile. If at some step $i$, we know that $\mA^{(i)}_{0,0}$ is
 invertible and has generic rank profile, we use
-Lemma~\ref{lemma:update} to determine if $\mA^{(i+j)}_{0,0}$ has the
+Lemma~\ref{lemma:update} to test if $\mA^{(i+j)}_{0,0}$ has the
 same properties.
 
 The loop exits on one of two conditions that both ensures that
@@ -908,21 +910,22 @@ After the while loop, it remains to test if $\rank(\mA) = \bar{r}$
 which is done by checking that the Schur complement of
 $\mA^{(\bar{r})}_{0,0}$ in $\mA$ is zero.
 
-\smallskip\noindent{\bf \small Complexity.} Computing the rank profile
+%% \smallskip\noindent{\bf \small Complexity.} 
+
+Computing the rank profile
 in line~\ref{line:rankprof} costs $O(\beta^\omega)$.  Using block
-matrix multiplication in Eq.~\eqref{eq:recA2}, we can recover the
+matrix multiplication in Eq.~\eqref{eq:recA2}, we recover the
 matrices of line~\ref{line:rowcol} in time
-$O(\beta^{\omega-2} \alpha (m+n))$ since $j \le \beta \le \alpha$.  To
+$O(\beta^{\omega-2} \alpha (m+n))$, since $j \le \beta \le \alpha$.  To
 compute $\mY^{(i+j)}$ on line~\ref{line:nextgen}, we first compute
 $\mS^{(i,j)}_{0,0}{}^{-1}$ in time $O(\beta^{\omega})$,
 $\mS^{(i,j)}_{0,0}{}^{-1} \mY^{(i,j)}_1$ in time
 $O(\beta^{\omega-1} \alpha)$; then all other operations take time
 $O(\beta^{\omega-2} \alpha m)$.  Similarly, computing $\mZ^{(i+j)}$
-takes time $O(\beta^{\omega-2} \alpha n)$.  Recovering the whole
-matrix $\mS^{(\bar{r})}$ on line~\ref{line:recoverwhole} from its
+takes time $O(\beta^{\omega-2} \alpha n)$.  We recover  $\mS^{(\bar{r})}$ on line~\ref{line:recoverwhole} from its
 $\nabla_{\vu^{(\bar{r})},\vv^{(\bar{r})}}$-generators
-$(\mY^{(\bar{r})},\mZ^{(\bar{r})})$ is done by means
-of~\eqref{eq:recA2} with a cost $O(\alpha^{\omega-2} mn)$ using block
+$(\mY^{(\bar{r})},\mZ^{(\bar{r})})$  by means
+of~\eqref{eq:recA2}, with a cost $O(\alpha^{\omega-2} mn)$ using block
 matrix multiplication.
 
 One iteration of the while loop costs
@@ -981,16 +984,15 @@ follows~\cite{JeMo10}, with the minor difference that do not assume
 $\mA$ invertible, and that we explicitly check if $\mA$ satisfies the
 generic rank profile assumption.
 
-\smallskip\noindent{\bf \small Termination and correction.}
-Recursive calls to $\DACp$ on lines~\ref{line:dac0},~\ref{line:dac1}
-will raise an error if the respective input matrices
-${\mA^{(i)}_{0,0}}$ and its Schur complement
-$\mA^{(i)}_{1,1} - \mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1}
-\mA^{(i)}_{0,1}$
-are not in generic position, so we assume that we are not in that
-case. Then the correction proof is similar to that in Section~\ref{ssec:quad}.
-
-\smallskip\noindent{\bf \small Complexity.} Computations of
+%% \smallskip\noindent{\bf \small Termination and correction.}
+Recursive calls on lines~\ref{line:dac0},~\ref{line:dac1}
+will raise an error if the respective input matrix
+${\mA^{(i)}_{0,0}}$ and its Schur complement $\mA^{(i)}_{1,1} -
+\mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1}$ are not in
+generic position, so we assume that we are not in that case; then, the
+correction proof is similar to that in Section~\ref{ssec:quad}.
+%% \smallskip\noindent{\bf \small Complexity.} 
+Computations of
 lines~\ref{line:recoverfullgen0},~\ref{line:recoverfullgen1} are of
 the same essence; using Eq.~\eqref{eq:Si+j} and \eqref{eq:Yi+j}, we
 recover the full generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of
@@ -1006,20 +1008,20 @@ operations, with $\mx=\max(m,n)$. If $\vu$ and $\vv$ are
 geometric progressions, the cost for the matrix-vectors multiplication
 drops to $O(\alpha^2 \M(\mx))$. If $\vu$ and $\vv$ have the same ratio
 (if this is the case at the top-level, this will remain the case for
-all recursive calls), we saw in Remark~\ref{rmk:factor3} that can save
+all recursive calls),  by Remark~\ref{rmk:factor3}, we can save
 a further constant factor.  For large values of $\alpha$, we
-can apply an algorithm given in~\cite{BoJeMoSc16}, which reduces the
+can also apply an algorithm given in~\cite{BoJeMoSc16}, which reduces the
 cost to $O(\alpha^{\omega-1} \M(\mx))$.
+
 On line~\ref{algo:testschur}, the Schur complement is zero if and only
 if $\mY'\, \mZ' = 0$. This is tested by finding a minimal set of
 independent rows in $\mZ'$ (this takes time
 $O(\alpha^{\omega-1} \mx)$) and multiplying their transposes by
 ${\mY'}$. There are at most $\alpha$ such rows, so this takes time
 $O(\alpha^{\omega-1} \mx)$ as well.
-
 Taking all recursive steps into account, the total cost of $\DACp$ is
-withing a factor $\log(\mx)$ that of the Cauchy-like matrix-vectors
-multiplication discussed above.
+ a factor $\log(\mx)$ times that of the Cauchy-like matrix
+products.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1043,13 +1045,13 @@ algebra.  Thus, we focused on comparisons between our own
 implementations of the various techniques seen so far, and did not
 attempt comparisons with other systems.
 
-The main building blocks we need are fast polynomial and matrix
-computations. NTL already implements very efficient FFT-based
-polynomial arithmetic; matrix multiplication over small fields $\Z/p\Z$, for $p
-< 2^{23}$, is now extremely efficient, comparable to reference
+The main subroutines we need are polynomial and matrix
+computations. NTL already offers efficient FFT-based polynomial
+arithmetic; matrix multiplication over small fields $\Z/p\Z$, for $p <
+2^{23}$, is now extremely efficient, comparable to reference
 implementations such as FFLAS-FFPACK~\cite{fflas-ffpack}. On top of
-this, we implemented a fast polynomial matrix multiplication, that
-relies on the cyclotomic TFT of~\cite{ArSc15}. 
+this, we implemented a fast polynomial matrix multiplication, using
+the cyclotomic TFT of~\cite{ArSc15}.
 
 We first discuss Problem~\ref{pb:cauchy}. Our first tests compare our
 new $O(\alpha^{\omega-2} n^2)$ algorithm to that
@@ -1075,11 +1077,10 @@ Remark~\ref{rmk:factor3} to the algorithm of~\cite{BoJeMoSc16}, with
 cost $O(\alpha^{\omega-1} \M(n))$, with a view of determining for what
 values of $\alpha$ (if any) the latter becomes useful.
 
-For the former algorithm, because we are able to cache several forward
-FFTs, we found it slightly more advantageous to forego the cyclotomic
-TFT and simply use NTL's FFT. As a consequence, the runtime of the
-first algorithm displays the typical FFT staircaise behavior. This in turn
-implies that as $n$ grows, the crossover value for $\alpha$
+For the former algorithm, because we are able to cache several FFTs,
+we found it slightly more advantageous to use NTL's FFT rather than
+TFTs. The runtime of the first algorithm then displays the typical FFT
+staircaise behavior, so that as $n$ grows, the crossover value for $\alpha$
 fluctuates, roughly between $30$ and $55$. The following graph shows
 the time ratio between the algorithm of~\cite{BoJeMoSc16} and the
 direct one, for $\alpha=60$; at best, the new algorithm wins by a
@@ -1087,19 +1088,22 @@ factor of 2. The results do not depend much on the nature of the prime
 (since polynomial arithmetic is a significant part of the runtime, and
 behaves essentially in the same manner, independently of $p$).
 
-\includegraphics[width=7cm]{ratio-mul-matrix-eschost-desktop.pdf}
+\includegraphics[width=7cm,height=4.1cm]{ratio-mul-matrix-eschost-desktop.pdf}
 
-Taking these results into account, we determined empirically crossover
-values $\nu_0(\alpha)$ to end the recursion in the divide-and-conquer algorithm
-and switch to the iterative algorithm. We expect 
-$\nu_0(\alpha)$ to grow with $\alpha$, since for a given $\alpha$, it behaves
-like the solution of $\alpha n^2 = \alpha^2 \M(n) \log(n)$ (assuming
-here we do not use fast linear algebra, for simplicity). The following
-table reports some values for $\nu_0$ (obtained by searching for $\nu_0$
-in increments of $100$).  The threshold is higher for small primes,
-since such primes benefit more from our new iterative algorithm.
+Using these results, we determined empirical crossover values
+$\nu_0(\alpha)$ to end the recursion in the divide-and-conquer
+algorithm and switch to the iterative algorithm. We expect
+$\nu_0(\alpha)$ to grow with $\alpha$, since it
+behaves like the solution of $\alpha n^2 = \alpha^2 \M(n) \log(n)$
+(assuming here we do not use fast linear algebra, for simplicity). The
+following table reports some values for $\nu_0$ (obtained by searching
+for $\nu_0$ in increments of $100$).  The threshold is higher for
+small primes, since such primes benefit more from our new iterative
+algorithm.
 
-\begin{center}
+\vspace{1mm}
+
+\centerline{
 {\small
 \begin{tabular}{|c||c|c|c|c|c|c|c|}\hline
   $\alpha$ & 1 & 5 & 10 & 15 & 20 & 25 &30 \\\hline\hline
@@ -1107,19 +1111,21 @@ $p=65537$  & 400 &400 &500  &1000  &2000  &3300  &4200 \\\hline
 $p\simeq 2^{59}$  & 200 & 400 & 400 & 700 & 1300 & 1600 & 2000\\\hline
 \end{tabular}
 }
-\end{center}
+}
 
-These values being set, we can then show runtimes for solving
-Problem~\ref{pb:cauchy} modulo both $p=65537$ and
-$p=8827055\-26964617217$, for increasing values of $n$; we use
-$\alpha=5$ and $\alpha=50$, and we also display the runtime of a dense
-matrix inversion in the same size. For a very small displacement rank
+\vspace{1mm}
+
+
+These values being set, we show runtimes for solving
+Problem~\ref{pb:cauchy} modulo $p=65537$ and
+$p=8827055\-26964617217$, for increasing values of $n$, with
+$\alpha=5$ and $\alpha=50$; we also show the runtime of a dense
+matrix inversion in the same size. For a small displacement rank
 such as $\alpha=5$, the runtime is essentially the same for these two
-primes; with $\alpha=50$, we observe a difference between these two
-primes, by a factor of up to 3. In any case, there is a clear gain
+primes; with $\alpha=50$, we observe a difference, by a factor of up to 3. In any case, there is a clear gain
 over dense methods.
 
-\includegraphics[width=8cm]{large_n-eschost-desktop.pdf}
+\includegraphics[width=8cm,height=4.4cm]{large_n-eschost-desktop.pdf}
 
 We also determined, for a given value of $n$, the crossover value
 $\alpha_0$ above which dense linear algebra becomes faster than
@@ -1170,13 +1176,12 @@ performance. We will highlight in particular the case of algebraic
 approximants, for which we are able to obtain significant
 improvements.
 
-In what follows, we denote by $\mathscr{I}:\mathbb{N}
-\to \mathbb{R}$ a function such that integers of bit size at most $d$
-can be multiplied in $\mathscr{I}(d)$ bit operations; using FFT
-techniques, we can take $\mathscr{I}(d)=O(d \log(d) \log\log(d))$ or
-$\mathscr{I}(d)=d \log(d) 2^{O(\log^*(d))}$~\cite{ScSt71,Furer07}. As
-in~\cite{GaGe13}, we assume that $d\mapsto \mathscr{I}(d)/d$ is
-non-decreasing.  
+We denote by $\mathscr{I}:\mathbb{N} \to \mathbb{R}$ a function such
+that integers of bit size at most $d$ can be multiplied in
+$\mathscr{I}(d)$ bit operations; we can take $\mathscr{I}(d)=O(d
+\log(d) \log\log(d))$ or $\mathscr{I}(d)=d \log(d)
+2^{O(\log^*(d))}$~\cite{ScSt71,Furer07}. As in~\cite{GaGe13}, we
+assume that $d\mapsto \mathscr{I}(d)/d$ is non-decreasing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1256,13 +1261,13 @@ $\mB_{k+1}$ above, which gives
 This time, we are multiplying $\mA$ and $\mB_k$ (and their transposes)
 by matrices of size $n \times \alpha$, all computations being done
 modulo $p^{2^{k+1}}$. Each multiplication by {\em one} vector takes
-$O(\alpha \M(n) \I(2^k))$ operations (even if $\CA$ can be taken less
-than $O(\alpha \M(n))$, the multiplications by $\mB_k$ remain a
-bottleneck). Since we have to multiply these matrices by $\alpha$
+$O(\alpha \M(n) \I(2^k))$ operations (even if $\CA$ is less
+than $O(\alpha \M(n))$, multiplications by $\mB_k$ are the
+bottleneck). Since we  multiply these matrices by $\alpha$
 vectors, taking all steps into account, we arrive at a total of
 $O(\alpha^2 \M(n) \I(t))$ bit operations. Using the algorithm
-of~\cite{BoJeMoSc16}, we remark that this can be further reduced to
-$O(\alpha^{\omega-1} \M(n) \I(t))$, but this improvement was not
+of~\cite{BoJeMoSc16}, this can be further reduced to
+$O(\alpha^{\omega-1} \M(n) \I(t))$; this improvement was not
 implemented.
 
 Altogether, because it computes (generators of) a whole inverse,
@@ -1341,14 +1346,14 @@ $\vy$, or after applying rational reconstruction to $\vy$ we have $\mT
 A complete analysis of this algorithm would quantify the primes of bad
 reduction, and give bounds that allow us to stop lifting the solutions
 if we reduced modulo such a bad prime; we leave this to future work.
-Assuming the lifting algorithm stops, we have obtained a solution to
-our system. Due to the doubling nature of this procedure, the runtime
-is proportional to that of the algorithm for solving square systems
-used at line 3, plus the cost of rational
-reconstruction. The former is $O(\CA \I(t) \log(t) +\alpha \M(n) t)$ bit
-operations using divide-and-conquer, and $O(\alpha^2 \M(n) \I(t))$ or
-$O(\alpha^{\omega-1} \M(n) \I(t))$ using Newton iteration; the latter 
-is $O(n \I(t) \log(t))$.
+In any case, if the lifting stops, we have obtained a
+solution to our system. Due to the doubling nature of this procedure,
+the runtime is proportional to that of the algorithm for solving
+square systems used at line 3, plus the cost of rational
+reconstruction. The former is $O(\CA \I(t) \log(t) +\alpha \M(n) t)$
+bit operations using divide-and-conquer, and $O(\alpha^2 \M(n) \I(t))$
+or $O(\alpha^{\omega-1} \M(n) \I(t))$ using Newton iteration; the
+latter is $O(n \I(t) \log(t))$.
 
 Finally, we mention the cost of Chinese Remaindering techniques:
 instead of computing the solution modulo the $t$-th power of a single
@@ -1361,7 +1366,7 @@ of Section~\ref{sec:abstract} (to this, we have to add the cost $O(n
 \I(t) \log(t))$ of Chinese Remaindering and rational reconstruction).
 
 
-We conclude this subsection with a discussion of an important
+We conclude this subsection with an important
 particular case, the computation of algebraic approximants. We are
 given a power series $f$ in $\Q[[x]]$, together with degree bounds
 $d,e$; our goal is to compute a polynomial $P \in \Q[x,y]$, with
@@ -1370,8 +1375,8 @@ For any $\sigma \ge 0$, finding $P$ with the above degree bounds and
 such that $P(x,f) = 0 \bmod x^\sigma$ is a Hermite-Pad\'e
 approximation problem of a very special kind (all input series are
 powers of $f$). To our knowledge, no algorithm in the framework of
-Section~\ref{sec:abstract} is able to exploit this extra structure;
-however, in the case of computations over $\Q$, we will now see that
+Section~\ref{sec:abstract} can exploit this extra structure;
+in the case of computations over $\Q$, we will now see that
 improvements are possible.
 
 First, we show how to simplify the reduction to nullity 1.
@@ -1400,9 +1405,11 @@ algorithm of~\cite{NuZi04} shows that we can do matrix-vector product
 by $\mT$ using $O(e^{1/2} \M(de) + e^{(\omega+1)/2} \M(d))$
 operations; since multiplications by $\mV_\vu$ and $\mW_\vv$ take
 $O(\M(de))$, we obtain the improved estimate $\CA=O(e^{1/2} \M(de) +
-e^{(\omega+1)/2} \M(d))$ in this case. To our knowledge, algorithm
-$\DACQ$ is the only algorithm that can take into account the extra
-structure of algebraic approximants.
+e^{(\omega+1)/2} \M(d))$ in this case. Algorithm $\DACQ$ is the only
+algorithm we know of that  takes into account the extra structure of
+algebraic approximants; we expect that similar improvements are
+possible for {\em differential approximants}, using the evaluation
+algorithm of~\cite{BoSc09}.
 
 \subsection{Experimental Results}
 The timings in this section are measured on the same machine as
