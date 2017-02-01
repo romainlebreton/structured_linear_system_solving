@@ -1421,7 +1421,16 @@ rows. We first examine the results for the general case.
 \includegraphics[width=7cm]{plots/compare-general.pdf}
 
 Here we fix the size of the input to be 10 bit integers, so the
-number of lifting steps needed depends purely on $n$. 
+number of lifting steps needed depends just on $n$. For $\DACQ$ and
+Newton iteration, the sharp increases indicate an additional lifting 
+step as modular operations grow progressively more expensive at
+each level. Although Newton iteration should theoretically be competitive with $\DACQ$ when the number of blocks is small,
+Newton iteration is more affected by slow integer multiplication since it computes matrix-matrix products rather than matrix-vector 
+products as done by $\DACQ$, which explains why the spikes are sharper.
+CRT seems to be somewhat competitive with $\DACQ$ when the number of
+blocks is small, but is significantly worse when the number of blocks
+grow.
+
 
 \includegraphics[width=7cm]{plots/compare-algebraic.pdf}
 
