@@ -1,6 +1,7 @@
-set xlabel "n"
+set xlabel "n" offset 33, 1.5
 set ylabel "ratio naive / BJMS16"
 set terminal pdf
+set rmargin 6
 
 set out outfile
 set style line 1 lt 1 lw 8 lc 4
