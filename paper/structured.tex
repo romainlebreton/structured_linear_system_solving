@@ -1,12 +1,9 @@
 \documentclass[sigconf]{acmart}
-% \documentclass{sig-alternate}
 
-% \usepackage{amsthm}
 \usepackage{bm}
 \usepackage{mathrsfs}
 \usepackage{enumerate}
 \usepackage{setspace}
-
 
 \usepackage[lined,boxed,ruled,vlined]{algorithm2e}
 \SetKwInOut{Input}{Input}
@@ -142,6 +139,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-5px}
 \section{Introduction}
 
 In this paper, we discuss linear algebra algorithms inspired by the
@@ -191,18 +189,21 @@ $\P=(P_{\mT_{i,j}})_{1 \le i \le p,1 \le j \le q}$, together
 with the sequences $I=(m_1,\dots,m_p)$ and $J=(n_1,\dots,n_q)$ giving
 the row-sizes and column-sizes of the blocks. Then, our main
 problem is as follows.
-
+%
+\vspace{-5px}
 \begin{pbm}\label{pb:mosaic}
   Given $\P$ and integers $I,J$ as above, 
   defining a mosaic Toeplitz matrix $\mT$, find a non-zero
   vector in the kernel of $\mT$.
 \end{pbm}
+\vspace{-5px}
+%
 We consider two situations, first over an arbitrary field $\K$,
 counting all operations in $\K$ at unit cost, then over $\Q$, taking
 bit-size into account. In all this paper, we closely follow the
-existing formalism of {\em structured matrix computations}; the
-algorithms in this paper are following previous work by
-Morf~\cite{Morf80}, Bitmead-Anderson~\cite{BiAn80}, Kailath and
+existing formalism of {\em structured matrix computations} developed
+in previous work by Morf~\cite{Morf80},
+Bitmead-Anderson~\cite{BiAn80}, Kailath and
 co-authors~\cite{KaKuMo79,KaSa99}, Pan~\cite{Pan90,Pan92},
 Kaltofen~\cite{Kaltofen94}, Cardinal~\cite{Cardinal99}, etc.
 
@@ -252,6 +253,7 @@ matrices, and the corresponding implementation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-5px}
 \section{Basic results}\label{sec:basics}
 
 This section reviews background material on structured matrices; for a
@@ -268,10 +270,12 @@ called the \textit{displacement rank} of $\mA$ with respect to
 $\nabla$. A prominent example is the family of so-called {\em
   Toeplitz-like} matrices, which are structured for the Toeplitz
 displacement operator
+% \vspace{-1px}
 \begin{eqnarray*}
   \phi: \mA & \mapsto & \left( \mZ_m \mA - \mA \mZ_n \right) = 
                         (\mA \downarrow) - (\mA \leftarrow)
 \end{eqnarray*}
+%\vspace{-1px}
 where the $n \times n$ lower shift matrix $\mZ_n$ is the matrix
 with ones below the diagonal.  The displacement rank of a Toeplitz
 matrix for this operator is at most two; the displacement rank of a
@@ -312,10 +316,8 @@ $\nabla_{\vu,\vv}$-generators $(\mG,\mH)$ of length $\alpha$ for $\mA$, we can r
 \mD_{\vg_i} 
 \mC_{\vu,\vv}\,\mD_{\vh_i},\ \ \ 
 \mC_{\vu,\vv}=\begin{bmatrix}
-\frac 1{u_1-v_1} & \cdots & \frac 1{u_1-v_n}\\
-\vdots & & \vdots \\
-\frac 1{u_m-v_1} & \cdots & \frac 1{u_m-v_n}
-\end{bmatrix}, 
+\frac 1{u_i-v_j}
+\end{bmatrix}_{\substack{1 \leq i \leq m\\1 \leq j \leq n}},
 \end{equation}
 where $\vg_i$ and $\vh_i$ are the $i$th columns of respectively $\mG$
 and~$\mH$, and  matrix $\mC_{\vu,\vv}$ is known as a {\em Cauchy
@@ -389,14 +391,16 @@ save a constant factor in runtime: we require that $\vu$ and $\vv$ be
 geometric progressions with {\em the same ratio} $\tau$. Then, the
 cauchy matrix $\mC_{\vu,\vv}$ has entries $1/(u_i -
 v_j) = 1/(u_1 \tau^{i-1} - v_1 \tau^{j-1})$, so it can be factored as
-$$\mC_{\vu,\vv}=\mD_{\tau^{-1}}
+\vspace{-3px}
+$$
+\mC_{\vu,\vv}=\mD_{\tau^{-1}}
 \begin{bmatrix}
-\frac 1{u_1 - v_1} & \frac 1{u_1 - v_1 \tau} & \cdots & \frac 1{u_1-v_1 \tau^{n-1}}\\
-\frac 1{u_1 - v_1 \tau^{-1}}  & \frac 1{u_1 - v_1} & \cdots & \frac 1{u_1-v_1 \tau^{n-2}}\\
-\vdots & & \vdots \\
-\frac 1{u_1 - v_1 \tau^{1-m}}  & \frac 1{u_1 - v_1 \tau^{2-m}} & \cdots & \frac 1{u_1-v_1 \tau^{n-m}}
-\end{bmatrix},$$
-where $\mD_{\tau^{-1}}$ is diagonal with entries
+\frac{1}{u_1 - v_1 \tau^{j-i}}
+\end{bmatrix}_{\substack{1 \leq i \leq m\\1 \leq j \leq n}},
+$$
+
+\vspace{-3px}
+\noindent where $\mD_{\tau^{-1}}$ is diagonal with entries
 $(1,\tau^{-1},\tau^{-2},\dots,\tau^{1-m})$, and where the right-hand matrix
 is Toeplitz. In the reconstruction formula~\eqref{eq:recA}, the
 diagonal matrix $\mD_\tau$ commutes with all matrices $\mD_{g_i}$, so
@@ -427,26 +431,19 @@ moderate cost overhead. In this paragraph, we give details on
 this transformation, following~\cite[Chapter~4.8]{Pan01}.
 
 To a vector $\vu$ in $\K^m$, let us further associate the
-corresponding Vandermonde matrices $\mV_\vu, \mW_\vu \in \K^{m \times
-  m}$
-$$
-\mV_\vu = 
-\begin{bmatrix}
-  1 & u_1 & \cdots & u_1^{m - 1}\\
-  \vdots & \vdots &  & \vdots\\
-  1 & u_m & \cdots & u_m^{m - 1}
-\end{bmatrix},
-\mW_\vu = 
-\begin{bmatrix}
-  u_1^{m - 1} & \cdots & u_m^{m - 1}\\
-  \vdots &  & \vdots\\
-  u_1 & \cdots & u_m\\
-  1 & \cdots & 1
-\end{bmatrix}.
-$$
+corresponding Vandermonde matrices
+$
+\mV_\vu = \left[\begin{smallmatrix}
+u_i^{j-1}
+\end{smallmatrix}\right]_{1 \leq i,j \leq m},
+\mW_\vu = \left[\begin{smallmatrix}
+u_j^{m-i}
+\end{smallmatrix}\right]_{1 \leq i,j \leq m}.
+$
+%
 For $\vu$ as above, $\vv$ in $\K^n$ and $\mT$ in $\K^{m\times n}$, we
-let $\mA = \mV_\vu\, \mT\, \mW_\vv$; we now prove that if $\mT$ is Toeplitz-like,
- $\mA$ is Cauchy-like. 
+let $\mA = \mV_\vu\, \mT\, \mW_\vv$; we now prove that if $\mT$ is
+Toeplitz-like, $\mA$ is Cauchy-like.
 
 The $\nabla_{\vu,\vv}$-generators of $\mA$ depend on the
 $\phi$-generators of $\mT$, so let us start with those. If
@@ -480,30 +477,26 @@ where $\vu^m = \begin{bmatrix} u_1^m & \cdots & u_n^m \end{bmatrix}$,
 and similarly for $\vv^n$. As a
 consequence, since $\phi(\mT)=\mG \mH^t$, we have
 \begin{align}\label{eq:gentoetogencau}
-  \nabla_{\vu, \vv} \left( \mA \right) & =  \mD_{\vu}  \mV_{\vu} 
-  \mT  \mW_{\vv} - \mV_{\vu}  \mT  \mW_{\vv}  \mD_{\vv} \nonumber \\
+  \nabla_{\vu, \vv} \left( \mA \right) 
+  % & =  \mD_{\vu}  \mV_{\vu} \mT  \mW_{\vv} - \mV_{\vu}  \mT  \mW_{\vv}  \mD_{\vv} \nonumber \\
   & =  \mV_{\vu}\, \phi(\mT)\, \mW_{\vv} 
   %% \\
   %% &   &
   + (\vu^m)^t \, \ve_{m,m}  \mT  \mW_{\vv} 
         - \mV_{\vu}  \mT  (\ve_{1,n})^t \, \vv^n. 
 \end{align}
-This motivates the following definitions.
-\begin{itemize}
-\item For $1 \le i \le p$, let $\vh'_i=\vh_i \mW_\vv$ and also let $\vg'_{i}$ be
-  the column of $\mV_\vu$ of index $m_1 + \cdots +m_{i-1}+1$.
-  
-\item For $1 \le j \le q$, define $\vg'_{p+j} = \mV_\vu \vg_{p+j}$ and also let
-  $\vh'_{p+j}$ be the row of index $n_1 + \cdots +n_j$ in $\mW_\vv$.
+This motivates the following definitions. For $1 \le i \le p$, let
+$\vh'_i=\vh_i \mW_\vv$ and also let $\vg'_{i}$ be the column of
+$\mV_\vu$ of index $m_1 + \cdots +m_{i-1}+1$.For $1 \le j \le q$,
+define $\vg'_{p+j} = \mV_\vu \vg_{p+j}$ and also let $\vh'_{p+j}$ be
+the row of index $n_1 + \cdots +n_j$ in $\mW_\vv$.  We define
+$\vg_{p+q+1} = (\vu^m)^t$, and $\vh_{p+q+1}$ as the last row of
+$\mT \mW_\vv$; we also define $\vg_{p+q+2}$ as the first column of
+$-\mV_\vu \mT$, and $\vh_{p+q+2} = \vv^n$.
 
-\item We define $\vg_{p+q+1} = (\vu^m)^t$, and $\vh_{p+q+1}$ as the last row of
-  $\mT \mW_\vv$; we also define $\vg_{p+q+2}$ as the first column of
-  $-\mV_\vu \mT$, and $\vh_{p+q+2} = \vv^n$.
-\end{itemize}
-%
 By Eq.~(\ref{eq:gentoetogencau}),
-$\mG'= \langle \vg'_1 | \dots | \vg'_{p+q+2}\rangle$, and $\mH'
-= \langle {\vh'_1}^t | \dots | {\vh'_{p+q+2}}^t\rangle$ are
+$\mG'= \langle \vg'_1 | \dots | \vg'_{p+q+2}\rangle$, and
+$\mH' = \langle {\vh'_1}^t | \dots | {\vh'_{p+q+2}}^t\rangle$ are
 $\nabla_{\vu,\vv}$-generators of $\mA$ of length $p+q+2$ (whereas
 $\mT$ has $\phi$-generators of length $p+q$). The bottleneck in the
 computation of $\mG'$ and $\mH'$ are $p$ left-products by $\mW_\vv$
@@ -576,6 +569,7 @@ $\det(\mA_{I,I})$ is non-zero. The partial degree of $\det(\mA_{I,I})$ in any va
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-5px}
 \section{Over an abstract field}\label{sec:abstract}
 
 In this section, we work over a field $\K$, and we explain how to
@@ -588,6 +582,8 @@ to solve linear systems with an exponent better than $\omega$.
 Then, the main question of this section is the following (the
 assumptions on the vectors $\vu,\vv$ are slightly stronger than the
 one required for $\nabla_{\vu,\vv}$ to be invertible). 
+%
+% \vspace{-5px}
 \begin{pbm}\label{pb:cauchy}
   Consider $\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$,
   such that $(\vu,\vv)$ has $m+n$ distinct entries. Given
@@ -600,6 +596,8 @@ one required for $\nabla_{\vu,\vv}$ to be invertible).
     $\vv'=(v_1,\dots,v_r)$, $\vu'=(u_1,\dots,u_r)$ and
     $r={\rm rank}(\mA)$.
 \end{pbm}
+% \vspace{-5px}
+%
 To solve an instance of Problem~\ref{pb:mosaic}, with input matrix
 $\mT$, we apply the transformation of the previous section, to obtain
 a Cauchy-like matrix $\mA = \mV_\vu \mT \mW_{\vv}$. We compute
@@ -654,6 +652,7 @@ order to apply Remark~\ref{rmk:factor3}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-5px}
 \subsection{Cauchy generators of the inverse}\label{ssec:genofinv}
 
 Let $(\mG,\mH) \in \K^{m\times \alpha} \times \K^{n\times \alpha}$ be
@@ -761,7 +760,7 @@ that for $r=\rank(\mA)$, $(\mY^{(r)}_0,\mZ^{(r)}_0)$ are
 $\nabla_{\vv',\vu'}$-generators for ${\mA^{(r)}_{0,0}}{}^{-1}$, for
 $\vu',\vv'$ as in Problem~\ref{pb:cauchy}, so they solve our problem.
 It remains to explain how to compute these matrices.
-
+%
 Let $i,j$ be non-negative integers with $0 \le i+j \le \mn$, and
 ${\mA^{(i)}_{0,0}}$ invertible. Decompose $\mS^{(i)}$, $\mY^{(i)}$ and
 $\mZ^{(i)}$ into blocks
@@ -835,10 +834,11 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% \vspace{-5px}
 \subsection{A faster iterative algorithm}\label{ssec:quad}
 
 
-\setlength{\textfloatsep}{0pt}
+\setlength{\textfloatsep}{3pt}
 \setlength{\intextsep}{1\baselineskip}
 
 \begin{algorithm}[t]
@@ -885,26 +885,26 @@ $\nabla_{\vu^{(i,j)}_0, \vv^{(i,j)}_1}$-generators
 $(\mY^{(i,j)}_0,\mZ^{(i,j)}_1)$ and the same for $\mS^{(i,j)}_{1,0}$.
 
 %% \smallskip\noindent{\bf \small Termination and correction.}
-Correction of the algorithm is based on the fact that $\mA$ has
-generic rank profile if and only if
-$\rank(\mA) = \max\{ r \ |\  \forall \ell \leq r, \det(\mA^{(\ell)}_{0,0}) \neq
-0 \}$.
+For the correction of the algorithm, note that $\mA$ has generic rank
+profile iff the rank of $\mA$ is
+$r_{\max}=\max\{ r \ |\ \forall \ell \leq r, \det(\mA^{(\ell)}_{0,0})
+\neq 0 \}$.
 The while loop of the algorithm will find the maximal leading
 principal minor of $\mA$ that is non-zero and has generic rank
 profile. If at some step $i$, we know that $\mA^{(i)}_{0,0}$ is
 invertible and has generic rank profile, we use
-Lemma~\ref{lemma:update} to test if $\mA^{(i+j)}_{0,0}$ has the
-same properties.
+Lemma~\ref{lemma:update} to test if $\mA^{(i+j)}_{0,0}$ has the same
+properties.
 
 The loop exits on one of two conditions that both ensures that
-$\bar{r} = \max\{ r \ |\ \forall j \leq r, \det(\mA^{(j)}_{0,0}) \neq
-0 \}$.
-Either $\rank(\mS^{(i,j)}_{0,0})$ is always $j$ (then $i$ will
-eventually reach $\bar{r}=\mn$), or $\rank(\mS^{(i,j)}_{0,0})<j$ at some
-point and after setting $\bar{r}=i+\rank( \mS^{(i,j)}_{0,0})$, we
-have $\det(\mA^{(\ell)}_{0,0}) \neq 0$ for all $\ell \leq \bar{r}$
-and $\det(\mA^{(\bar{r}+1)}_{0,0}) = 0$; we exit the while loop
-right after.
+$\bar{r} = r_{\max}$.  Either $\rank(\mS^{(i,j)}_{0,0})$ is always $j$
+%(then $i$ will eventually reach $\bar{r}=\mn$)
+, or
+$\rank(\mS^{(i,j)}_{0,0})<j$ at some point and after setting
+$\bar{r}=i+\rank( \mS^{(i,j)}_{0,0})$, we have
+$\det(\mA^{(\ell)}_{0,0}) \neq 0$ for all $\ell \leq \bar{r}$ and
+$\det(\mA^{(\bar{r}+1)}_{0,0}) = 0$; we exit the while loop right
+after.
 
 After the while loop, it remains to test if $\rank(\mA) = \bar{r}$
 which is done by checking that the Schur complement of
@@ -940,6 +940,7 @@ cost drops to $O(\alpha^{\omega-2} mn)$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-5px}
 \subsection{The divide-and-conquer algorithm}\label{ssec:MBA-C}
 
 \begin{algorithm}[t]
@@ -1013,18 +1014,18 @@ a further constant factor.  For large values of $\alpha$, we
 can also apply an algorithm given in~\cite{BoJeMoSc16}, which reduces the
 cost to $O(\alpha^{\omega-1} \M(\mx))$.
 
-On line~\ref{algo:testschur}, the Schur complement is zero if and only
-if $\mY'\, \mZ' = 0$. This is tested by finding a minimal set of
+On line~\ref{algo:testschur}, the Schur complement is zero iff
+$\mY'\, \mZ' = 0$. This is tested by finding a minimal set of
 independent rows in $\mZ'$ (this takes time
 $O(\alpha^{\omega-1} \mx)$) and multiplying their transposes by
 ${\mY'}$. There are at most $\alpha$ such rows, so this takes time
-$O(\alpha^{\omega-1} \mx)$ as well.
-Taking all recursive steps into account, the total cost of $\DACp$ is
- a factor $\log(\mx)$ times that of the Cauchy-like matrix
-products.
+$O(\alpha^{\omega-1} \mx)$ as well.  Taking all recursive steps into
+account, the total cost of $\DACp$ is a factor $\log(\mx)$ times that
+of the Cauchy-like matrix products.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-5px}
 \subsection{Experimental results}
 
 We implemented the algorithms described so far, together with all
@@ -1151,6 +1152,7 @@ rank profile. This never happened for $p$ having more than $50$ bits.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-5px}
 \section{Modular techniques}\label{sec:lifting}
 
 We now address Problem~\ref{pb:mosaic} in the particular case where
@@ -1185,6 +1187,7 @@ assume that $d\mapsto \mathscr{I}(d)/d$ is non-decreasing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-5px}
 \subsection{Solving square systems by lifting}
 
 In this subsection, we are given a prime power $p^t$, where $t$ is a
@@ -1210,9 +1213,8 @@ version of it is in~\cite{BeLe12} for dense matrices; the PhD
 thesis~\cite{Lebreton12} describes this algorithm for Toeplitz-like
 matrices.
 
-\vspace{-1mm}
-
-\begin{algorithm}[h]
+% \vspace{-1mm}
+\begin{algorithm}[b]
 \setstretch{0.1}
   \LinesNumbered \DontPrintSemicolon
   \caption{Divide-And-Conquer algorithm $\DACQ$ \label{algo:dacQ}}
@@ -1231,8 +1233,7 @@ Compute $\vx_1 = $\DACQ($\mA$, $\vr_1$, $\mB$, $p$, $t/2$)\;
 
 \Return $\vx_0 - p^{t/2}  \vx_1$ mod $p^t$
 \end{algorithm}
-
-\vspace{-2mm}
+% \vspace{-2mm}
 
 Assume that we have obtained generators of length $\alpha$ for $\mB$,
 for instance by applying the algorithm of the previous section.  Thus,
@@ -1279,6 +1280,7 @@ equations~\cite{BoChOlSaScSc07,BoChLeSaSc12}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\vspace{-5px}
 \subsection{Solving Problem~\ref{pb:mosaic}}
 
 The techniques above allow us to solve instances of
@@ -1411,6 +1413,7 @@ algebraic approximants; we expect that similar improvements are
 possible for {\em differential approximants}, using the evaluation
 algorithm of~\cite{BoSc09}.
 
+\vspace{-5px}
 \subsection{Experimental Results}
 The timings in this section are measured on the same machine as
 section 3.4. The main goal of our experiment is to compare the
@@ -1445,7 +1448,7 @@ but \textbf{BMC} uses the bivariate modular composition described in
 section 4.2. We can see a significant difference between the two
 algorithms as the size of the matrix grows.
 
-\bibliographystyle{plain} {\bibliography{structured}}
+\bibliographystyle{plain} {\tiny \bibliography{structured}}
 
 
 \end{document}
