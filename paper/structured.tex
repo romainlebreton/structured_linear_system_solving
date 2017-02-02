@@ -1189,6 +1189,7 @@ assume that $d\mapsto \mathscr{I}(d)/d$ is non-decreasing.
 
 \vspace{-5px}
 \subsection{Solving square systems by lifting}
+\label{ssec:liftsquare}
 
 In this subsection, we are given a prime power $p^t$, where $t$ is a
 power of 2, an $n \times n$ matrix $\mA$ and a vector $\vb$, both with
@@ -1328,23 +1329,29 @@ nullspace dimension $1$ (otherwise, add another block of equations).
 
 Let $d={\rm rank}(\mT)$, $\mA_{d}$ be the $d \times d$ top-left
 submatrix of $\mA$, and $\vb_d$ be the vector of the first $d$ entries
-of the last column of $\mA$. We assume that $\mA$ has generic
-rank profile, so that $\mA_{d}$ is invertible.  We compute $\vx =
-\mA_d^{-1} \vb_d$ (mod $p$) and $\vy = \mW_\vv [x_1, \cdots, x_d,
-  -1]^t$ (mod $p$),  we normalize $\vy$ by dividing it by its
-first non-zero entry, and we set $t=1$.
-While we either cannot apply rational reconstruction to the entries of
-$\vy$, or after applying rational reconstruction to $\vy$ we have $\mT
-\vy \ne 0$, we do the following:
-\begin{enumerate}
-\item set $t = 2t$ and update $\mA_{d}$ and $\vb_d$ (mod $p^t$);
-\item compute $\vr = \mA_d \vx - \vb_d$ (mod $p^t$) and $\vr_1 = \vr / p^{t/2}$;
-\item call one of the algorithms in the previous subection to find $\vx'$ such
-  that $\mA_d  \vx' = \vr_1$ (mod $p^{t/2}$);
-\item set $\vx = \vx - p^{t/2} \vx'$, $\vy =
-  \mW_\vv [x_1,\cdots,x_d,-1]^t$ (mod $p^{t}$), and divide  $\vy$
-  by its first non-zero entry.
-\end{enumerate}
+of the last column of $\mA$. We assume that $\mA$ has generic rank
+profile, so that $\mA_{d}$ is invertible.  We compute
+$\vx = \mA_d^{-1} \vb_d$ (mod $p$) and
+$\vy = \mW_\vv [x_1, \cdots, x_d, -1]^t$ (mod $p$), we normalize $\vy$
+by dividing it by its first non-zero entry, and we set $t=1$.  While
+we either cannot apply rational reconstruction to the entries of
+$\vy$, or after applying rational reconstruction to $\vy$ we have
+$\mT \vy \ne 0$, we do the following: set $t = 2t$, update modulo
+$p^t$ the quantities $\mA_{d}$, $\vb_d$, $\vx$ (use one of the
+algorithms of Section~\ref{ssec:liftsquare}) and $\vy$, and divide
+$\vy$ by its first non-zero entry.
+
+% \begin{enumerate}
+% \item set $t = 2t$ and update $\mA_{d}$ and $\vb_d$ (mod $p^t$);
+% \item compute $\vr = \mA_d \vx - \vb_d$ (mod $p^t$) and
+%   $\vr_1 = \vr / p^{t/2}$;
+% \item call one of the algorithms in the previous subsection to find
+%   $\vx'$ such that $\mA_d \vx' = \vr_1$ (mod $p^{t/2}$);
+% \item set $\vx = \vx - p^{t/2} \vx'$,
+%   $\vy = \mW_\vv [x_1,\cdots,x_d,-1]^t$ (mod $p^{t}$), and divide
+%   $\vy$ by its first non-zero entry.
+% \end{enumerate}
+
 A complete analysis of this algorithm would quantify the primes of bad
 reduction, and give bounds that allow us to stop lifting the solutions
 if we reduced modulo such a bad prime; we leave this to future work.
@@ -1372,7 +1379,7 @@ We conclude this subsection with an important
 particular case, the computation of algebraic approximants. We are
 given a power series $f$ in $\Q[[x]]$, together with degree bounds
 $d,e$; our goal is to compute a polynomial $P \in \Q[x,y]$, with
-$\deg(P,x) \le d$ $\deg(P,y) \le e$, such that $P(x,f) = 0$.
+$\deg(P,x) \le d$, $\deg(P,y) \le e$, such that $P(x,f) = 0$.
 For any $\sigma \ge 0$, finding $P$ with the above degree bounds and
 such that $P(x,f) = 0 \bmod x^\sigma$ is a Hermite-Pad\'e
 approximation problem of a very special kind (all input series are
@@ -1385,16 +1392,22 @@ First, we show how to simplify the reduction to nullity 1.
 Th\'eo\-r\`eme~7.15 in~\cite{BoChGiLeLeSaSc17} shows that if such a
 $P$ exists and is irreducible, then any $Q \in \Q[x,y]$ with the same
 degree bounds as above and such that $Q(x,f) = 0 \bmod x^{2de}$ is a
-multiple of $P$. From this, one deduces easily that if we compute {\em
-  two} such polynomials $Q_1,Q_2$, their GCD will generically be $P$
-itself. This fact will remain true modulo all primes $p$ except a
-finite number (although $P \bmod p$ may not be irreducible anymore);
-hence, we can (probabilistically) find $P \bmod p$ by computing two
-solutions $Q_1,Q_2$ to the above Hermite-Pad\'e problem modulo $p$ and
-taking their GCD. If we assume further that no term of $P$ vanishes
-modulo $p$, this reveals the support of $P$. We can then refine
-the degree bounds in our Hermite-Pad\'e problem, which in turn reduces
-the nullity of  matrix $\mT$ to $1$.
+multiple of $P$. 
+\\
+%
+\todo{R: When I read Th\'eo\-r\`eme~7.15 in~\cite{BoChGiLeLeSaSc17}, I
+  am convinced that there is a small mistake and that we need $Q(x,f) = 0 \bmod x^{2de+1}$. What do you think ?}
+%
+From this, one deduces easily that if we compute \emph{two} such
+polynomials $Q_1,Q_2$, their GCD will generically be $P$ itself. This
+fact will remain true modulo all primes $p$ except a finite number
+(although $P \bmod p$ may not be irreducible anymore); hence, we can
+(probabilistically) find $P \bmod p$ by computing two solutions
+$Q_1,Q_2$ to the above Hermite-Pad\'e problem modulo $p$ and taking
+their GCD. If we assume further that no term of $P$ vanishes modulo
+$p$, this reveals the support of $P$. We can then refine the degree
+bounds in our Hermite-Pad\'e problem, which in turn reduces the
+nullity of matrix $\mT$ to $1$.
 
 Next, we show how to speed-up algorithm $\DACQ$ in this case. The
 block-Toeplitz matrix $\mT$ of our Hermite-Pad\'e problem has
