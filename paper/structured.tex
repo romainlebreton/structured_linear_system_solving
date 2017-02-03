@@ -1434,10 +1434,11 @@ runtimes for each algorithm and assess which one is the most efficient
 in practice. With these experiments, there are two main parameters:
 the number of blocks, and the size of each block. Although we also
 have control over the bit sizes of the input and output, our
-experiments show that the runtime grew predictably with respect to the
+experiments show that the runtime grows predictably with respect to the
 increase in bit sizes. There are two graphs for both the general and
 algebraic case: on the left, we have five blocks, each with $n$
-columns, and on the right, we have $n$ blocks, each with $n$ columns. Every matrix generated has exactly $n-1$
+columns, and on the right, we have $n$ blocks, each with $n$ columns. 
+Every matrix generated has exactly $n-1$
 rows. We first examine the results for the general case.
 
 \includegraphics[width=7cm]{plots/compare-general.pdf}
@@ -1446,20 +1447,23 @@ Here we fix the size of the input to be 10 bit integers, so the
 number of lifting steps needed depends just on $n$. For $\DACQ$ and
 Newton iteration, the sharp increases indicate an additional lifting 
 step as modular operations grow progressively more expensive at
-each level. Although Newton iteration should theoretically be competitive with $\DACQ$ when the number of blocks is small,
-Newton iteration is affected more by slow integer multiplication since it computes matrix-matrix products rather than matrix-vector 
-products as done by $\DACQ$, which explains why the spikes are sharper.
-CRT seems to be somewhat competitive with $\DACQ$ when the number of
-blocks is small, but is significantly worse when the number of blocks
-grow. Next, we examine the algebraic case.
+each level. Although Newton iteration should theoretically be competitive with $\DACQ$ when the 
+number of blocks is small, Newton iteration is affected more by slow integer multiplication since 
+it computes matrix-matrix products rather than matrix-vector products as done by $\DACQ$. 
+The slowness of computing matrix products is significant because it is the bottleneck in both algorithms. 
+CRT, on the other hand, seems to be competitive with $\DACQ$ when $\alpha$ is small but is significantly worse as $\alpha$
+grows since CRT is not linear in $\alpha$ while $\DACQ$ is. Next, we examine the algebraic case.
 
 \includegraphics[width=7cm]{plots/compare-algebraic.pdf}
 
-Here the output size is fixed to 1000 bit integers.
-The naive algorithm and \textbf{BMC} are both the $\DACQ$ algorithm,
-but \textbf{BMC} uses the bivariate modular composition described in
-section 4.2. We can see a significant difference between the two
-algorithms as the size of the matrix grows.
+Since we expect the coefficients of the closed form of a generating series to be smaller
+than the coefficients of the series itself, we can better control the behaviour of the algorithms
+by choosing the bit size of the output rather than the input. In these tests, the output was fixed
+to be 1000 bit integers.
+The naive algorithm is the $\DACQ$ algorithm from the general case; 
+\textbf{BMC} is also the $\DACQ$ algorithm, but it uses the bivariate 
+modular composition described in section 4.2. We can see a significant difference 
+between the two algorithms as the size of the matrix grows.
 
 \bibliographystyle{plain} {\tiny \bibliography{structured}}
 
