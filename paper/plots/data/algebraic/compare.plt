@@ -1,5 +1,5 @@
 set xlabel "size"
-set ylabel "time"
+set ylabel "time in sec."
 set terminal pdf
 set size ratio 2
 
@@ -7,6 +7,7 @@ set out "compare-algebraic.pdf"
 set style line 1 lt 1 lw 8 lc 4
 set style line 2 lt 1 lw 4 lc 7
 set style line 3 lt 0 lw 8 lc 8
+set key left top
 
 set multiplot 
 set title "5 blocks with n columns"

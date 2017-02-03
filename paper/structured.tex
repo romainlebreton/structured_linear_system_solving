@@ -390,7 +390,7 @@ $O(\alpha\M(\mx))$.
 We propose here a refinement of this idea, that allows us to
 save a constant factor in runtime: we require that $\vu$ and $\vv$ be
 geometric progressions with {\em the same ratio} $\tau$. Then, the
-cauchy matrix $\mC_{\vu,\vv}$ has entries $1/(u_i -
+Cauchy matrix $\mC_{\vu,\vv}$ has entries $1/(u_i -
 v_j) = 1/(u_1 \tau^{i-1} - v_1 \tau^{j-1})$, so it can be factored as
 \vspace{-3px}
 $$
@@ -521,7 +521,7 @@ entries of $\vx$ and $\vy$, of degree at most $\mn=\min(m,n)$ in each
 block of variables, such that the non-vanishing of $\Delta$ implies
 that $\mA'$ has generic rank profile (that theorem is stated for
 square matrices, but the result holds in the rectangular case as
-well).  The downside of this contruction is that it requires to
+well).  The downside of this construction is that it requires to
 compute a pair of generators of length $p+q+4$ for $\mA'$, involving
 the multiplication of $\mG'$ and $\mH'$ by $\mC_{\va,\vu}$ and
 $\mC_{\vv,\vb}$.
@@ -1035,19 +1035,19 @@ of the Cauchy-like matrix products.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \vspace{-5px}
-\subsection{Experimental results}
+\subsection{Experimental results}\label{ssec:exp1}
 
 We implemented the algorithms described so far, together with all
 subroutines they rely on, in a C++ library available at
-\todo{Temporary adress could be
-  \url{https://seafile.lirmm.fr/f/01b53dc420/?raw=1} until we decide
-  where to put it ? Right now, plots and .dat files are in the zip
-  file. Should I remove them ? }. Our implementation is based on
+  \url{https://seafile.lirmm.fr/f/01b53dc420/?raw=1}. Our implementation is based on
 Shoup's NTL~\cite{Shoup95,NTL} version 10.3.0, and is dedicated to
 word-size primes (NTL's \texttt{lzz\_p} class); the divide-and-conquer
 algorithm of Subsection~\ref{ssec:MBA-C} actually requires FFT primes.
 In all that follows, timings are measured on an Intel i7-4790 CPU with
 32 GB RAM; only one thread is used throughout.
+
+% \todo{we decide where to put it ? Right now, plots and .dat files are
+%   in the zip file. Should I remove them ? }
 
 Some goals of our experiments are to assess whether fast matrix
 multiplication can bring practical improvements that reflect the
@@ -1093,7 +1093,7 @@ values of $\alpha$ (if any) the latter becomes useful.
 For the former algorithm, because we are able to cache several FFTs,
 we found it slightly more advantageous to use NTL's FFT rather than
 TFTs. The runtime of the first algorithm then displays the typical FFT
-staircaise behavior, so that as $n$ grows, the crossover value for $\alpha$
+staircase behavior, so that as $n$ grows, the crossover value for $\alpha$
 fluctuates, roughly between $30$ and $55$. The following graph shows
 the time ratio between the algorithm of~\cite{BoJeMoSc16} and the
 direct one, for $\alpha=60$; at best, the new algorithm wins by a
@@ -1294,7 +1294,7 @@ equations~\cite{BoChOlSaScSc07,BoChLeSaSc12}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \vspace{-5px}
-\subsection{Solving Problem~\ref{pb:mosaic}}
+\subsection{Solving Problem~\ref{pb:mosaic}}\label{ssec:liftQ}
 
 The techniques above allow us to solve instances of
 Problem~\ref{pb:mosaic}, that is, find nullspace elements for a
@@ -1317,7 +1317,7 @@ $\vb=\mW_{\vv}
 %
 , with $\mA=\mV_\vu \mT \mW_{\vv}$, $\mA^{(r)}_{0,0}$ a maximal minor
 of it and $\vc$ a random vector in $\K^{n-r}$, and due to the
-preconditionning, the entries of $\vb$ are expected to be of large
+preconditioning, the entries of $\vb$ are expected to be of large
 height (larger than what we may expect for a solution of $\mT$). When
 ${\rm ker}(\mT)$ has dimension $1$, we are not affected by this
 issue. Indeed, in this case, all solutions are of the form
@@ -1428,12 +1428,8 @@ nullity of matrix $\mT$ to $1$.
 Next, we show how to speed-up algorithm $\DACQ$ in this case. The
 block-Toeplitz matrix $\mT$ of our Hermite-Pad\'e problem has
 displacement rank $\alpha = O(e)$, with $e+1$ Sylvester blocks having
-$O(d)$ columns and $(de)$ rows; 
-%
-\todo{$(de)$ or $O(de)$ rows?}
-%
-as a result, the naive estimate on the
-cost of the matrix-vector product by matrix $\mA = \mV_\vu \mT
+$O(d)$ columns and $O(de)$ rows; as a result, the naive estimate on
+the cost of the matrix-vector product by matrix $\mA = \mV_\vu \mT
 \mW_\vv$ is $\CA=O(e \M(de))$. However, we can reduce this cost using
 baby-steps / giant steps techniques: the bivariate modular composition
 algorithm of~\cite{NuZi04} shows that we can do matrix-vector product
@@ -1441,51 +1437,84 @@ by $\mT$ using $O(e^{1/2} \M(de) + e^{(\omega+1)/2} \M(d))$
 operations; since multiplications by $\mV_\vu$ and $\mW_\vv$ take
 $O(\M(de))$, we obtain the improved estimate $\CA=O(e^{1/2} \M(de) +
 e^{(\omega+1)/2} \M(d))$ in this case. Algorithm $\DACQ$ is the only
-algorithm we know of that  takes into account the extra structure of
+algorithm we know of that takes into account the extra structure of
 algebraic approximants; we expect that similar improvements are
 possible for {\em differential approximants}, using the evaluation
 algorithm of~\cite{BoSc09}.
 
 \vspace{-5px}
 \subsection{Experimental Results}
+
 The timings in this section are measured on the same machine as
-section 3.4. The main goal of our experiment is to compare the
-runtimes for each algorithm and assess which one is the most efficient
-in practice. With these experiments, there are two main parameters:
-the number of blocks, and the size of each block. Although we also
-have control over the bit sizes of the input and output, our
-experiments show that the runtime grows predictably with respect to the
-increase in bit sizes. There are two graphs for both the general and
-algebraic case: on the left, we have five blocks, each with $n$
-columns, and on the right, we have $n$ blocks, each with $n$ columns. 
-Every matrix generated has exactly $n-1$
-rows. We first examine the results for the general case.
-\todo{Time in sec ? 
-Put legend to the top left with a line ``set key left top'' in .plt file}
+Subsection~\ref{ssec:exp1}. The experiments are dedicated to solving
+instances of Hermite-Pad\'e approximation, which is a useful
+particular case of Problem~\ref{pb:mosaic}. We discuss two families of
+problems, first the approximation of general power series, then
+algebraic approximants.
+
+In both cases, we show two graphs: on the left, we have five blocks,
+each with $n$ columns; on the right, we have $n$ blocks, each with $n$
+columns.  With the notation of the introduction, this means we are
+looking for approximants $(p_0,\dots,p_4)$, resp.\
+$(p_0,\dots,p_{n-1})$, with degree bounds $(n,n,n,n,n)$, resp.\
+$(n,\dots,n)$. The displacement rank $\alpha$ of these matrices if
+$6$, resp.\ $n+1$.
+
+We first examine the results for the case of general power series
+(times given in sec.). We also have control over the bit sizes of the
+input, but our experiments show that the runtime grows predictably
+with respect to this parameter; as a result, we fix the input to be 10
+bit integers, so the number of lifting steps depends just on $n$.
 
 \includegraphics[width=7cm]{plots/compare-general.pdf}
 
-Here we fix the size of the input to be 10 bit integers, so the
-number of lifting steps needed depends just on $n$. For $\DACQ$ and
-Newton iteration, the sharp increases indicate an additional lifting 
-step as modular operations grow progressively more expensive at
-each level. Although Newton iteration should theoretically be competitive with $\DACQ$ when the 
-number of blocks is small, Newton iteration is affected more by slow integer multiplication since 
-it computes matrix-matrix products rather than matrix-vector products as done by $\DACQ$. 
-The slowness of computing matrix products is significant because it is the bottleneck in both algorithms. 
-CRT, on the other hand, seems to be competitive with $\DACQ$ when $\alpha$ is small but is significantly worse as $\alpha$
-grows since CRT is not linear in $\alpha$ while $\DACQ$ is. Next, we examine the algebraic case.
+Matrices are generated so as to have $1$ less row than they have
+columns; since the inputs are random, they have nullspace of
+dimension $1$ (we also generated instances with nullity up to 10;
+using our heuristic, runtimes were almost indistinguishable from the
+case of nullity 1). The primes we use have 59 to 60 bits.
+
+
+For $\DACQ$ and Newton iteration, the sharp increases indicate an
+additional lifting step. In our tests, Newton iteration is slower than
+$\DACQ$, especially when the number of block grows (since its runtime
+is quadratic in the displacement rank $\alpha$). Newton iteration
+should theoretically be competitive with $\DACQ$ when the number of
+blocks is fixed, and the size (and thus the output bit size) grow,
+since its theoretical runtime is better by a $\log(t)$ factor, where
+$t$ is essentially the output bit size. However, this is not
+noticeable on our experiments: in practice, the integer multiplication
+function $\I(d)$ grows like $d^{1+\varepsilon}$, for some $\varepsilon
+> 0$; in that case, the analysis of $\DACQ$ can be refined to
+$O(\alpha \M(n) \I(t))$. The bottleneck in both algorithms is
+computing structured matrix / vector products with coefficients modulo
+high powers of $p$.
+
+CRT, on the other hand, seems to be competitive with $\DACQ$ when
+$\alpha$ is small but is significantly worse as $\alpha$ grows: the
+runtime CRT is not linear in $\alpha$, while $\DACQ$ is. 
 
 \includegraphics[width=7cm]{plots/compare-algebraic.pdf}
 
-Since we expect the coefficients of the closed form of a generating series to be smaller
-than the coefficients of the series itself, we can better control the behaviour of the algorithms
-by choosing the bit size of the output rather than the input. In these tests, the output was fixed
-to be 1000 bit integers.
-The naive algorithm is the $\DACQ$ algorithm from the general case; 
-\textbf{BMC} is also the $\DACQ$ algorithm, but it uses the bivariate 
-modular composition described in section 4.2. We can see a significant difference 
-between the two algorithms as the size of the matrix grows.
+Next, we examine the algebraic case. In this case, we start by
+generating a bivariate polynomial $P(x,y)$ and compute one of its
+power series solutions. Since we expect the coefficients of $P$ to be
+smaller than the coefficients of the series itself, we can better
+control the behaviour of the algorithms by choosing the bit size of
+$P$ (here, it was fixed to be 1000 bit integers).  We compare the
+$\DACQ$ algorithm as in the general case, with $\CA=O(\alpha \M(n))$,
+to the improved version using the bivariate modular composition (BMC)
+algorithm of~\cite{NuZi04} described above, featuring a lower value
+for $\CA$. We can see a significant difference between the two
+algorithms as the size of the matrix grows: the theoretical speed-up
+predicted in Subsection~\ref{ssec:liftQ} is observed in practice.
+
+Overall, the divide-and-conquer lifting algorithm turned out to be the
+most efficient method in all our experiments, especially as it can
+take extra structure into account, as in the case of algebraic
+approximants.
+
+
 
 \bibliographystyle{plain} {\tiny \bibliography{structured}}
 
