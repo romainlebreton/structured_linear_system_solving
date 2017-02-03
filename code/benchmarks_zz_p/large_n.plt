@@ -1,7 +1,7 @@
 set xlabel "n" offset 14,1.5
 set ylabel "time in sec."
 set terminal pdf
-
+set key left top
 
 set out outfile
 set style line 1 lt 1 lw 8 lc 4
