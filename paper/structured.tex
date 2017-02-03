@@ -114,7 +114,8 @@
 \setcopyright{rightsretained}
 
 
-\title{Algorithms for structured linear systems and their implementation}
+\title{Algorithms for structured linear systems solving and their
+  implementation}
 
 
 \begin{abstract}
@@ -602,10 +603,18 @@ To solve an instance of Problem~\ref{pb:mosaic}, with input matrix
 $\mT$, we apply the transformation of the previous section, to obtain
 a Cauchy-like matrix $\mA = \mV_\vu \mT \mW_{\vv}$. We compute
 generators of $\mA_{r}^{-1}$, where $\mA_r$ is the maximal leading minor
-of $\mA$, and we return a vector $\vb$ of the form
-$\vb=\mW_{\vv}[(-\mA_r^{-1}\vc)^t ~ \vc^t]^t$, where $\vc$ is a random
-vector.
-
+of $\mA$, and we return a vector $b$ with
+$\vb=\mW_{\vv}
+\left[\begin{smallmatrix} 
+-\mA_r^{-1} \ \mB \ \vc \\ 
+\vc
+\end{smallmatrix}\right]$,
+where 
+%
+$\mA_{r,\ast}=\begin{bmatrix}
+    \mA_r & \mB
+  \end{bmatrix}$ 
+and $\vc \in \K^{n-r}$ random.
 
 There exist two major classes of algorithms for handling
 Problem~\ref{pb:cauchy}, iterative ones, of cost  $\Theta(mn)$
@@ -1030,12 +1039,15 @@ of the Cauchy-like matrix products.
 
 We implemented the algorithms described so far, together with all
 subroutines they rely on, in a C++ library available at
-\todo{git}. Our implementation is based on Shoup's
-NTL~\cite{Shoup95,NTL} version 10.3.0, and is dedicated to word-size
-primes (NTL's \texttt{lzz\_p} class); the divide-and-conquer algorithm
-of Subsection~\ref{ssec:MBA-C} actually requires FFT primes.  In all
-that follows, timings are measured on an Intel i7-4790 CPU with 32 GB
-RAM; only one thread is used throughout. 
+\todo{Temporary adress could be
+  \url{https://seafile.lirmm.fr/f/01b53dc420/?raw=1} until we decide
+  where to put it ? Right now, plots and .dat files are in the zip
+  file. Should I remove them ? }. Our implementation is based on
+Shoup's NTL~\cite{Shoup95,NTL} version 10.3.0, and is dedicated to
+word-size primes (NTL's \texttt{lzz\_p} class); the divide-and-conquer
+algorithm of Subsection~\ref{ssec:MBA-C} actually requires FFT primes.
+In all that follows, timings are measured on an Intel i7-4790 CPU with
+32 GB RAM; only one thread is used throughout.
 
 Some goals of our experiments are to assess whether fast matrix
 multiplication can bring practical improvements that reflect the
@@ -1294,18 +1306,26 @@ transformation to the Cauchy structure / regularization technique
 of Section~\ref{sec:basics}.
 
 Over $\Q$, this approach has a certain shortcoming: the output is a
-vector $\vb$ of the form $\vb=\mW_{\vv}[(-\mA_r^{-1}\vc)^t ~
-  \vc^t]^t$, with $\mA=\mV_\vu \mT \mW_{\vv}$, $\mA_r^{-1}$ a maximal
-minor of it and $\vc$ a random vector, and due to the
+vector
+%
+%$\vb=\mW_{\vv}[(-\mA_r^{-1}\vc)^t ~ \vc^t]^t$
+$\vb=\mW_{\vv}
+\left[\begin{smallmatrix} 
+-\mA^{(r)}_{0,0}{}^{-1} \mA^{(r)}_{0,1} \vc \\ 
+\vc
+\end{smallmatrix}\right]$
+%
+, with $\mA=\mV_\vu \mT \mW_{\vv}$, $\mA^{(r)}_{0,0}$ a maximal minor
+of it and $\vc$ a random vector in $\K^{n-r}$, and due to the
 preconditionning, the entries of $\vb$ are expected to be of large
 height (larger than what we may expect for a solution of $\mT$). When
 ${\rm ker}(\mT)$ has dimension $1$, we are not affected by this
-issue. Indeed, in this case, all solutions are of the form $\lambda
-\vb_0$, for some vector $\vb_0 \in \Z^n$ whose bit-size can be bounded
-only in terms of $\mT$. Hence, it suffices to compute the solution $\vb$ of the
-regularized system modulo a large enough integer $N$ and normalize it
-by setting one of its entries to $1$; this gives us the normalization
-of $\vb_0 \bmod N$. 
+issue. Indeed, in this case, all solutions are of the form
+$\lambda \vb_0$, for some vector $\vb_0 \in \Z^n$ whose bit-size can
+be bounded only in terms of $\mT$. Hence, it suffices to compute the
+solution $\vb$ of the regularized system modulo a large enough integer
+$N$ and normalize it by setting one of its entries to $1$; this gives
+us the normalization of $\vb_0 \bmod N$.
 
 This idea could be extended to the case of an arbitrary nullspace
 dimension, but it would be tantamount to lifting a whole nullspace
@@ -1324,7 +1344,7 @@ $\vu,\vv$. After an expected $O(1)$ attempts, we obtain the rank of
 $\mA$ (as a matrix over $\mathbb{F}_p$), and thus the dimension $s$ of
 its nullspace. If $s$ is greater than one, we add a block of Toeplitz
 matrices having $s-1$ rows to $\mT$, with small random entries, and
-update $\mA$ accordingly. We expect the new matrix $\mT$ to have
+update $\mA$ accordingly. Heuristically the new matrix $\mT$ has
 nullspace dimension $1$ (otherwise, add another block of equations).
 
 Let $d={\rm rank}(\mT)$, $\mA_{d}$ be the $d \times d$ top-left
@@ -1353,16 +1373,17 @@ $\vy$ by its first non-zero entry.
 % \end{enumerate}
 
 A complete analysis of this algorithm would quantify the primes of bad
-reduction, and give bounds that allow us to stop lifting the solutions
-if we reduced modulo such a bad prime; we leave this to future work.
-In any case, if the lifting stops, we have obtained a
-solution to our system. Due to the doubling nature of this procedure,
-the runtime is proportional to that of the algorithm for solving
-square systems used at line 3, plus the cost of rational
-reconstruction. The former is $O(\CA \I(t) \log(t) +\alpha \M(n) t)$
-bit operations using divide-and-conquer, and $O(\alpha^2 \M(n) \I(t))$
-or $O(\alpha^{\omega-1} \M(n) \I(t))$ using Newton iteration; the
-latter is $O(n \I(t) \log(t))$.
+reduction, give bounds that allow us to stop lifting the solutions if
+we reduced modulo such a bad prime and study the previous reduction to
+nullity one of $\mT$; we leave this to future work.  In any case, if
+the lifting stops, we have obtained a solution to our system. Due to
+the doubling nature of this procedure, the runtime is proportional to
+that of the algorithm for solving square systems used at line 3, plus
+the cost of rational reconstruction. The former is
+$O(\CA \I(t) \log(t) +\alpha \M(n) t)$ bit operations using
+divide-and-conquer, and $O(\alpha^2 \M(n) \I(t))$ or
+$O(\alpha^{\omega-1} \M(n) \I(t))$ using Newton iteration; the latter
+is $O(n \I(t) \log(t))$.
 
 Finally, we mention the cost of Chinese Remaindering techniques:
 instead of computing the solution modulo the $t$-th power of a single
@@ -1388,20 +1409,15 @@ Section~\ref{sec:abstract} can exploit this extra structure;
 in the case of computations over $\Q$, we will now see that
 improvements are possible.
 
-First, we show how to simplify the reduction to nullity 1.
+First, we show how to simplify the reduction to nullity one.
 Th\'eo\-r\`eme~7.15 in~\cite{BoChGiLeLeSaSc17} shows that if such a
 $P$ exists and is irreducible, then any $Q \in \Q[x,y]$ with the same
-degree bounds as above and such that $Q(x,f) = 0 \bmod x^{2de}$ is a
-multiple of $P$. 
-\\
-%
-\todo{R: When I read Th\'eo\-r\`eme~7.15 in~\cite{BoChGiLeLeSaSc17}, I
-  am convinced that there is a small mistake and that we need $Q(x,f) = 0 \bmod x^{2de+1}$. What do you think ?}
-%
-From this, one deduces easily that if we compute \emph{two} such
-polynomials $Q_1,Q_2$, their GCD will generically be $P$ itself. This
-fact will remain true modulo all primes $p$ except a finite number
-(although $P \bmod p$ may not be irreducible anymore); hence, we can
+degree bounds as above and such that $Q(x,f) = 0 \bmod x^{2de+1}$ is a
+multiple of $P$.  From this, one deduces easily that if we compute
+\emph{two} such polynomials $Q_1,Q_2$, their GCD will generically be
+$P$ itself. This fact will remain true modulo all primes $p$ except a
+finite number; take $p$ so that it does not decrease $\rank(\mT)$
+(note that $P \bmod p$ may not be irreducible anymore). Hence, we can
 (probabilistically) find $P \bmod p$ by computing two solutions
 $Q_1,Q_2$ to the above Hermite-Pad\'e problem modulo $p$ and taking
 their GCD. If we assume further that no term of $P$ vanishes modulo
@@ -1412,7 +1428,11 @@ nullity of matrix $\mT$ to $1$.
 Next, we show how to speed-up algorithm $\DACQ$ in this case. The
 block-Toeplitz matrix $\mT$ of our Hermite-Pad\'e problem has
 displacement rank $\alpha = O(e)$, with $e+1$ Sylvester blocks having
-$O(d)$ columns and $(de)$ rows; as a result, the naive estimate on the
+$O(d)$ columns and $(de)$ rows; 
+%
+\todo{$(de)$ or $O(de)$ rows?}
+%
+as a result, the naive estimate on the
 cost of the matrix-vector product by matrix $\mA = \mV_\vu \mT
 \mW_\vv$ is $\CA=O(e \M(de))$. However, we can reduce this cost using
 baby-steps / giant steps techniques: the bivariate modular composition
@@ -1440,6 +1460,8 @@ algebraic case: on the left, we have five blocks, each with $n$
 columns, and on the right, we have $n$ blocks, each with $n$ columns. 
 Every matrix generated has exactly $n-1$
 rows. We first examine the results for the general case.
+\todo{Time in sec ? 
+Put legend to the top left with a line ``set key left top'' in .plt file}
 
 \includegraphics[width=7cm]{plots/compare-general.pdf}
 
