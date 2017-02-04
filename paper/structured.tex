@@ -558,7 +558,7 @@ with $k_1 < \cdots < k_i$, then
 $\vv^K := v_1^{n-k_1} \cdots v_i^{n-k_i}=\lm(\gamma_{K,I})$. Since $\mT$ is of
 rank greater of equal to $i$, at least one of its $i$th minor $\beta_{J,K}$ does
 not vanish. Let $J_{\max},K_{\max}$ be the pair of subsets that maximizes
-$\vu^J \vv^K$ amongst those for which $\beta_{J,K} \neq 0$. Then we must have
+$\vu^J \vv^K$ among those for which $\beta_{J,K} \neq 0$. Then we must have
 $\lm(\det(\mA_{I,I})) = \vu^{J_{\max}} \vv^{K_{\max}}$, which shows that
 $\det(\mA_{I,I})$ is non-zero. The partial degree of $\det(\mA_{I,I})$ in any variable
  is at most $\max(n,m)$. 
@@ -1039,12 +1039,12 @@ of the Cauchy-like matrix products.
 
 We implemented the algorithms described so far, together with all
 subroutines they rely on, in a C++ library available at
-  \url{https://seafile.lirmm.fr/f/01b53dc420/?raw=1}. Our implementation is based on
-Shoup's NTL~\cite{Shoup95,NTL} version 10.3.0, and is dedicated to
-word-size primes (NTL's \texttt{lzz\_p} class); the divide-and-conquer
-algorithm of Subsection~\ref{ssec:MBA-C} actually requires FFT primes.
-In all that follows, timings are measured on an Intel i7-4790 CPU with
-32 GB RAM; only one thread is used throughout.
+\url{https://seafile.lirmm.fr/f/01b53dc420/}. Our implementation
+is based on Shoup's NTL~\cite{Shoup95,NTL} version 10.3.0, and is
+dedicated to word-size primes (NTL's \texttt{lzz\_p} class); the
+divide-and-conquer algorithm of Subsection~\ref{ssec:MBA-C} actually
+requires FFT primes.  In all that follows, timings are measured on an
+Intel i7-4790 CPU with 32 GB RAM; only one thread is used throughout.
 
 % \todo{we decide where to put it ? Right now, plots and .dat files are
 %   in the zip file. Should I remove them ? }
@@ -1494,13 +1494,11 @@ CRT, on the other hand, seems to be competitive with $\DACQ$ when
 $\alpha$ is small but is significantly worse as $\alpha$ grows: the
 runtime CRT is not linear in $\alpha$, while $\DACQ$ is. 
 
-\includegraphics[width=7cm]{plots/compare-algebraic.pdf}
-
 Next, we examine the algebraic case. In this case, we start by
 generating a bivariate polynomial $P(x,y)$ and compute one of its
 power series solutions. Since we expect the coefficients of $P$ to be
 smaller than the coefficients of the series itself, we can better
-control the behaviour of the algorithms by choosing the bit size of
+control the behavior of the algorithms by choosing the bit size of
 $P$ (here, it was fixed to be 1000 bit integers).  We compare the
 $\DACQ$ algorithm as in the general case, with $\CA=O(\alpha \M(n))$,
 to the improved version using the bivariate modular composition (BMC)
@@ -1508,6 +1506,8 @@ algorithm of~\cite{NuZi04} described above, featuring a lower value
 for $\CA$. We can see a significant difference between the two
 algorithms as the size of the matrix grows: the theoretical speed-up
 predicted in Subsection~\ref{ssec:liftQ} is observed in practice.
+
+\includegraphics[width=7cm]{plots/compare-algebraic.pdf}
 
 Overall, the divide-and-conquer lifting algorithm turned out to be the
 most efficient method in all our experiments, especially as it can
