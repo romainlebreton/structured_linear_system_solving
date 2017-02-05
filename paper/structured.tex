@@ -209,12 +209,12 @@ co-authors~\cite{KaKuMo79,KaSa99}, Pan~\cite{Pan90,Pan92},
 Kaltofen~\cite{Kaltofen94}, Cardinal~\cite{Cardinal99}, etc.
 
 We complement the existing literature as follows. First, we define a
-class of ``Cauchy-like'' matrices (see definitions below) for which
+class of Cauchy-like matrices (see definitions below) for which
 the matrix-vector product is faster by a constant factor than previous
 designs. Next, we show how Pan's technique of ``multiplicative
 transformation'' of operators results in matrices that have generic
 rank profile (with high probability), so that further regularization
-is not needed in general. We then describe an improved ``fast''
+is not needed in general. We then describe an improved iterative
 algorithm (of quadratic complexity with respect to the matrix size),
 that makes use of fast matrix multiplication; finally, for matrices
 defined over $\Q$, we introduce a divide-and-conquer algorithm as an
@@ -353,7 +353,7 @@ structured with respect to $\nabla_{\vv,\vu}$: if $\mD_\vu \mA - \mA
 is a shorthand for $(\mA^{-1})^t$.
 
 
-\smallskip\noindent{\bf \small Algorithms.}  In most the paper, we
+\smallskip\noindent{\bf \small Algorithms.}  In most of the paper, we
 give costs in an algebraic model, counting base field operations at
 unit cost (in Section~\ref{sec:lifting}, we work over $\Q$ and use 
 a boolean model).
@@ -404,7 +404,7 @@ $$
 \noindent where $\mD_{\tau^{-1}}$ is diagonal with entries
 $(1,\tau^{-1},\tau^{-2},\dots,\tau^{1-m})$, and where the right-hand matrix
 is Toeplitz. In the reconstruction formula~\eqref{eq:recA}, the
-diagonal matrix $\mD_\tau$ commutes with all matrices $\mD_{g_i}$, so
+diagonal matrix $\mD_{\tau^{-1}}$ commutes with all matrices $\mD_{\vg_i}$, so
 we can take it out of the sum. Hence, we replaced $\alpha$ evaluations
 / interpolations at geometric progressions by $\alpha$ product by
 Toeplitz matrices, each of which can be done in a single polynomial
@@ -431,7 +431,7 @@ about Cauchy-like matrices (and conversely, if one wishes to), for a
 moderate cost overhead. In this paragraph, we give details on 
 this transformation, following~\cite[Chapter~4.8]{Pan01}.
 
-To a vector $\vu$ in $\K^m$, let us further associate the
+To a vector $\vu$ in $\K^m$, let us  associate the
 corresponding Vandermonde matrices
 $
 \mV_\vu = \left[\begin{smallmatrix}
@@ -466,15 +466,15 @@ For $1 \le j \le q$, define $\mT_{*,j}$ similarly to $\mT_{i,*}$;
  $m_1 + \cdots + m_j$ are set to zero. We define
  $\vg_{p+j}=(\lambda'_{j}-\lambda_{j+1})$ ($\lambda_{q+1}$ is set to
  zero) and let $\vh_{p+j}=\ve_{n_1 + \cdots +n_j,n}$.  With
- these definitions,  the matrices $\mG=\langle \vg_1
- | \dots | \vg_{p+q} \rangle$ and $\mH= \langle\vh^t_1 | \dots |
- \vh^t_{p+q} \rangle$ are $\phi$-generators of $\mT$.
+ these definitions,  the matrices $\mG=[ \vg_1
+  \cdots  \vg_{p+q} ]$ and $\mH=[\vh^t_1  \cdots 
+ \vh^t_{p+q}]$ are $\phi$-generators of $\mT$.
 
 To obtain $\mA$, we conjugate $\mT$ by Vandermonde matrices, since $
 \mD_{\vu} \mV_{\vu} - \mV_{\vu} \mZ_m$ and $ \mW_{\vv} \mD_{\vv} -
 \mZ_n \mW_{\vv}$ have small rank; explicitly, they are equal to
 respectively $(\vu^m)^t \, \ve_{m,m}$ and $(\ve_{1,n})^t \, \vv^n$,
-where $\vu^m = \begin{bmatrix} u_1^m & \cdots & u_n^m \end{bmatrix}$,
+where $\vu^m = [ u_1^m  \cdots  u_n^m ]$,
 and similarly for $\vv^n$. As a
 consequence, since $\phi(\mT)=\mG \mH^t$, we have
 \begin{align}\label{eq:gentoetogencau}
@@ -496,8 +496,8 @@ $\mT \mW_\vv$; we also define $\vg_{p+q+2}$ as the first column of
 $-\mV_\vu \mT$, and $\vh_{p+q+2} = \vv^n$.
 
 By Eq.~(\ref{eq:gentoetogencau}),
-$\mG'= \langle \vg'_1 | \dots | \vg'_{p+q+2}\rangle$, and
-$\mH' = \langle {\vh'_1}^t | \dots | {\vh'_{p+q+2}}^t\rangle$ are
+$\mG'= [ \vg'_1  \cdots  \vg'_{p+q+2}]$ and
+$\mH' =[ {\vh'_1}^t  \cdots  {\vh'_{p+q+2}}^t]$ are
 $\nabla_{\vu,\vv}$-generators of $\mA$ of length $p+q+2$ (whereas
 $\mT$ has $\phi$-generators of length $p+q$). The bottleneck in the
 computation of $\mG'$ and $\mH'$ are $p$ left-products by $\mW_\vv$
@@ -606,7 +606,7 @@ generators of $\mA_{r}^{-1}$, where $\mA_r$ is the maximal leading minor
 of $\mA$, and we return a vector $b$ with
 $\vb=\mW_{\vv}
 \left[\begin{smallmatrix} 
--\mA_r^{-1} \ \mB \ \vc \\ 
+-\mA_r^{-1}  \mB \vc \\ 
 \vc
 \end{smallmatrix}\right]$,
 where 
@@ -652,12 +652,9 @@ to bypass costly compression stages that are needed in Kaltofen's
 algorithm and its extensions, by predicting the shape of the
 generators we have to compute. For the case of square Cauchy-like
 matrices of size $n$, this results in an algorithm of cost
-$O(\alpha^2 \M(n)\log(n)^2)$. As pointed out
-in~\cite[Theorem~5.3.1]{Pan01} (see also~\cite{ChPa00}), the cost can
-be reduced to $O(\alpha^2 \M(n)\log(n))$ by choosing vectors $\vu$ and
-$\vv$ in geometric progression. In our case, we will use vectors
-$\vu$, $\vv$ that are in geometric progression with the same ratio, in
-order to apply Remark~\ref{rmk:factor3}.
+$O(\alpha^2 \M(n)\log(n)^2)$, but we will point out that 
+better estimates are available by choosing
+$\vu,\vv$ suitably.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -764,11 +761,11 @@ $(\mY^{(0)},\mZ^{(0)})=(\mG,\mH)$ and
 \begin{lemma}\label{lemma:cpj-cm}
  $(\mY^{(i)},\mZ^{(i)})$ are $\nabla_{\vu^{(i)},\vv^{(i)}}$-generators for $\mS^{(i)}$.
 \end{lemma}
-If $\mA$ has generic rank profile, Lemma~\ref{lemma:cpj-cm} shows
+If $\mA$ has generic rank profile, this shows
 that for $r=\rank(\mA)$, $(\mY^{(r)}_0,\mZ^{(r)}_0)$ are
 $\nabla_{\vv',\vu'}$-generators for ${\mA^{(r)}_{0,0}}{}^{-1}$, for
-$\vu',\vv'$ as in Problem~\ref{pb:cauchy}, so they solve our problem.
-It remains to explain how to compute these matrices.
+$\vu',\vv'$ as in Problem~\ref{pb:cauchy}, so they solve our problem;
+it remains to explain how to compute these matrices.
 %
 Let $i,j$ be non-negative integers with $0 \le i+j \le \mn$, and
 ${\mA^{(i)}_{0,0}}$ invertible. Decompose $\mS^{(i)}$, $\mY^{(i)}$ and
@@ -794,7 +791,7 @@ $\vu^{(i)} =
   \end{smallmatrix} ]$ 
 with $\vu^{(i,j)}_0 \in \K^j$ and the same for $\vv^{(i)}$.
 Operations that derive $\mS^{(i+j)}$ from
-$\mS^{(j)}$ and $\mS^{(i)}$ from $\mS^{(0)}$ are similar; a direct calculation shows
+$\mS^{(j)}$ and $\mS^{(i)}$ from $\mA=\mS^{(0)}$ are similar; a direct calculation shows
 \begin{equation}
 \label{eq:Si+j}
 \mS^{(i+j)} = 
@@ -867,7 +864,7 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
     \lIf{$\mS^{(i,j)}_{0,0}$ does not have generic rank profile}{\Raise}
     \lIf{$\rho<j$}{$j=\rho,\ \bar{r}=i+\rho$}
     Recover $\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$ 
-    from their generator\; \label{line:rowcol}
+    from their generators\; \label{line:rowcol}
 
     Compute the generators $(\mY^{(i+j)},\mZ^{(i+j)})$ 
     of $\mS^{(i+j)}$\; \label{line:nextgen}
@@ -882,16 +879,16 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
   \lElse {\Return $(\bar{r},\mY^{(\bar{r},m-\bar{r})}_1,\mZ^{(\bar{r},n-\bar{r})}_1)$}
 \end{algorithm}
 
-We describe in Algorithm~\ref{algo:iter} a quadratic-time iterative
-algorithm for Problem~\ref{pb:cauchy}; we will use a step size
-$\beta \in \{1,\dots,\alpha\}$, given as a parameter.  The
-formulae that computes $(\mY^{(i+j)},\mZ^{(i+j)})$ from
-$(\mY^{(i)},\mZ^{(i)})$ only involves $\mS^{(i,j)}_{0,0}{}^{-1}$,
-$\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$; hence,
-line~\ref{line:rowcol} recovers
-$\mS^{(i,j)}_{0,1}$ from its
+Using the previous discussion, we describe in
+Algorithm~\ref{algo:iter} a quadratic-time iterative algorithm for
+Problem~\ref{pb:cauchy}; we will use a step size $\beta \in
+\{1,\dots,\alpha\}$, given as a parameter.  The formulae in~\eqref{eq:Yi+j} that compute
+$(\mY^{(i+j)},\mZ^{(i+j)})$ from $(\mY^{(i)},\mZ^{(i)})$ only involve
+$\mS^{(i,j)}_{0,0}{}^{-1}$, $\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$.
+Hence, line~\ref{line:rowcol} recovers $\mS^{(i,j)}_{0,1}$ from its
 $\nabla_{\vu^{(i,j)}_0, \vv^{(i,j)}_1}$-generators
-$(\mY^{(i,j)}_0,\mZ^{(i,j)}_1)$ and the same for $\mS^{(i,j)}_{1,0}$.
+$(\mY^{(i,j)}_0,\mZ^{(i,j)}_1)$ and does the same for $\mS^{(i,j)}_{1,0}$
+(Lemma~\ref{lemma:cpj-cm}); this allows us to apply~\eqref{eq:Yi+j}.
 
 %% \smallskip\noindent{\bf \small Termination and correction.}
 For the correction of the algorithm, note that $\mA$ has generic rank
@@ -906,36 +903,32 @@ Lemma~\ref{lemma:update} to test if $\mA^{(i+j)}_{0,0}$ has the same
 properties.
 
 The loop exits on one of two conditions that both ensures that
-$\bar{r} = r_{\max}$.  Either $\rank(\mS^{(i,j)}_{0,0})$ is always $j$
-%(then $i$ will eventually reach $\bar{r}=\mn$)
-, or
+$\bar{r} = r_{\max}$.  Either $\rank(\mS^{(i,j)}_{0,0})$ is always $j$, or
 $\rank(\mS^{(i,j)}_{0,0})<j$ at some point and after setting
 $\bar{r}=i+\rank( \mS^{(i,j)}_{0,0})$, we have
 $\det(\mA^{(\ell)}_{0,0}) \neq 0$ for all $\ell \leq \bar{r}$ and
 $\det(\mA^{(\bar{r}+1)}_{0,0}) = 0$; we exit the while loop right
 after.
-
-After the while loop, it remains to test if $\rank(\mA) = \bar{r}$
+After the while loop, it remains to test if $\rank(\mA) = \bar{r}$,
 which is done by checking that the Schur complement of
 $\mA^{(\bar{r})}_{0,0}$ in $\mA$ is zero.
 
-%% \smallskip\noindent{\bf \small Complexity.} 
 
-Computing the rank profile
-in line~\ref{line:rankprof} costs $O(\beta^\omega)$.  Using block
-matrix multiplication in Eq.~\eqref{eq:recA2}, we recover the
-matrices of line~\ref{line:rowcol} in time
-$O(\beta^{\omega-2} \alpha (m+n))$, since $j \le \beta \le \alpha$.  To
-compute $\mY^{(i+j)}$ on line~\ref{line:nextgen}, we first compute
-$\mS^{(i,j)}_{0,0}{}^{-1}$ in time $O(\beta^{\omega})$,
-$\mS^{(i,j)}_{0,0}{}^{-1} \mY^{(i,j)}_1$ in time
-$O(\beta^{\omega-1} \alpha)$; then all other operations take time
-$O(\beta^{\omega-2} \alpha m)$.  Similarly, computing $\mZ^{(i+j)}$
-takes time $O(\beta^{\omega-2} \alpha n)$.  We recover  $\mS^{(\bar{r})}$ on line~\ref{line:recoverwhole} from its
+
+Computing the rank profile at line~\ref{line:rankprof} costs
+$O(\beta^\omega)$.  Using block matrix multiplication in
+Eq.~\eqref{eq:recA2}, we recover the matrices of
+line~\ref{line:rowcol} in time $O(\beta^{\omega-2} \alpha (m+n))$,
+since $j \le \beta \le \alpha$.  To compute $\mY^{(i+j)}$ at
+line~\ref{line:nextgen}, we first compute $\mS^{(i,j)}_{0,0}{}^{-1}$
+in time $O(\beta^{\omega})$, $\mS^{(i,j)}_{0,0}{}^{-1} \mY^{(i,j)}_1$
+in time $O(\beta^{\omega-1} \alpha)$; then all other operations take
+time $O(\beta^{\omega-2} \alpha m)$.  Similarly, computing
+$\mZ^{(i+j)}$ takes time $O(\beta^{\omega-2} \alpha n)$.  We recover
+$\mS^{(\bar{r})}$ at line~\ref{line:recoverwhole} from its
 $\nabla_{\vu^{(\bar{r})},\vv^{(\bar{r})}}$-generators
-$(\mY^{(\bar{r})},\mZ^{(\bar{r})})$  by means
-of~\eqref{eq:recA2}, with a cost $O(\alpha^{\omega-2} mn)$ using block
-matrix multiplication.
+$(\mY^{(\bar{r})},\mZ^{(\bar{r})})$ by means of~\eqref{eq:recA2}, with
+a cost $O(\alpha^{\omega-2} mn)$ using block matrix multiplication.
 
 One iteration of the while loop costs
 $O(\beta^{\omega-2} \alpha (m+n))$; we iterate $O(\mn/\beta)$ times, for
@@ -989,39 +982,51 @@ cost drops to $O(\alpha^{\omega-2} mn)$.
 
 
 We finally review the divide-and-conquer approach to solving
-Problem~\ref{pb:cauchy}. Algorithm~\ref{algo:dac} essentially
-follows~\cite{JeMo10}, with the minor difference that do not assume
-$\mA$ invertible, and that we explicitly check if $\mA$ satisfies the
+Problem~\ref{pb:cauchy}, as a basis for the discussion of the next
+subsection. Algorithm~\ref{algo:dac} follows~\cite{JeMo10}, recast in
+our framework, with the minor difference that do not assume $\mA$
+invertible, and that we explicitly check if $\mA$ satisfies the
 generic rank profile assumption.
 
 %% \smallskip\noindent{\bf \small Termination and correction.}
-Recursive calls on lines~\ref{line:dac0},~\ref{line:dac1}
-will raise an error if the respective input matrix
-${\mA^{(i)}_{0,0}}$ and its Schur complement $\mA^{(i)}_{1,1} -
-\mA^{(i)}_{1,0} {\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1}$ are not in
-generic position, so we assume that we are not in that case; then, the
-correction proof is similar to that in Section~\ref{ssec:quad}.
-%% \smallskip\noindent{\bf \small Complexity.} 
-Computations of
+Recursive calls on lines~\ref{line:dac0},~\ref{line:dac1} will raise
+an error if the respective input matrix ${\mA^{(i)}_{0,0}}$ and its
+Schur complement $\mA^{(i)}_{1,1} - \mA^{(i)}_{1,0}
+{\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1}$ are not in generic position,
+so we assume that we are not in that case; then, the correction proof
+is similar to that in Section~\ref{ssec:quad}.  Computations of
 lines~\ref{line:recoverfullgen0},~\ref{line:recoverfullgen1} are of
 the same essence; using Eq.~\eqref{eq:Si+j} and \eqref{eq:Yi+j}, we
 recover the full generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of
 $\mS^{(i+j)}$ if we know the generators
-$(\mY^{(i+j,m-j)}_1,\mZ^{(i+j,m-j)}_1)$ of $\mS^{(i,j)}_{0,0}{}^{-1}$
+$(\mY^{(i+j,m-j)}_1,\mZ^{(i+j,n-j)}_1)$ of $\mS^{(i,j)}_{0,0}{}^{-1}$
 and previous full generators $(\mY^{(i)},\mZ^{(i)})$ of $\mS^{(i)}$.
-Altogether, this boils down to $O(1)$ multiplications of Cauchy-like
-matrices (for which we have generators of length $\alpha$) 
+Rather than reconstructing the submatrices of $\mS^{(i,j)}$ as in the
+previous subsection, we use them through their generators: the
+formulae of~\eqref{eq:Yi+j} boil down to $O(1)$ multiplications of
+Cauchy-like matrices (for which we have generators of length $\alpha$)
 by $\alpha$ vectors.
 
-In general, this costs $O(\alpha^2 \M(\mx) \log(\mx))$
-operations, with $\mx=\max(m,n)$. If $\vu$ and $\vv$ are 
-geometric progressions, the cost for the matrix-vectors multiplication
-drops to $O(\alpha^2 \M(\mx))$. If $\vu$ and $\vv$ have the same ratio
-(if this is the case at the top-level, this will remain the case for
-all recursive calls),  by Remark~\ref{rmk:factor3}, we can save
-a further constant factor.  For large values of $\alpha$, we
-can also apply an algorithm given in~\cite{BoJeMoSc16}, which reduces the
-cost to $O(\alpha^{\omega-1} \M(\mx))$.
+In general, these multiplications cost $O(\alpha^2 \M(\mx) \log(\mx))$
+operations, with $\mx=\max(m,n)$.  As pointed out
+in~\cite[Theorem~5.3.1]{Pan01} (see also~\cite{ChPa00}), if $\vu$ and
+$\vv$ are geometric progressions, the cost for the matrix-vectors
+multiplication drops to $O(\alpha^2 \M(\mx))$.  If $\vu$ and $\vv$
+have the same ratio (if this is the case at the top-level, this will
+remain the case for all recursive calls), by Remark~\ref{rmk:factor3},
+we can save a further constant factor.  For large values of $\alpha$,
+we can also apply the algorithm of~\cite{BoJeMoSc16}, which uses fast
+polynomial matrix multiplication to reduce the cost to
+$O(\alpha^{\omega-1} \M(\mx))$.
+
+
+%% the cost can
+%% be reduced to $O(\alpha^2 \M(n)\log(n))$ by choosing $\vu$ and
+%% $\vv$ in geometric progression. We will use vectors
+%% $\vu$, $\vv$ that are in geometric progression with the same ratio, in
+%% order to apply Remark~\ref{rmk:factor3}; for large $\alpha$, 
+%% using the algorithm of~\cite{BoJeMoSc16} reduces the
+%% cost to $O(\alpha^{\omega-1} \M(n) \log(n))$.
 
 On line~\ref{algo:testschur}, the Schur complement is zero iff
 $\mY'\, \mZ' = 0$. This is tested by finding a minimal set of
@@ -1216,7 +1221,7 @@ p^t$ in $O(\CA \I(t))$ bit operations, given a vector $\vx$ with
 entries defined modulo $p^t$. Below, we will assume that $\mA$ is
 Cauchy-like as in Remark~\ref{rmk:factor3}, and given by generators of
 length $\alpha$, so that we can take $\CA \in O(\alpha \M(n))$. We
-will see below that in the case of algebraic approximants, better
+will see however that in the case of algebraic approximants, better
 estimates are available.
 
 We consider two approaches: a divide-and-conquer algorithm and Newton
@@ -1227,7 +1232,7 @@ thesis~\cite{Lebreton12} describes this algorithm for Toeplitz-like
 matrices.
 
 % \vspace{-1mm}
-\begin{algorithm}[b]
+\begin{algorithm}[h]
 \setstretch{0.1}
   \LinesNumbered \DontPrintSemicolon
   \caption{Divide-And-Conquer algorithm $\DACQ$ \label{algo:dacQ}}
@@ -1251,9 +1256,9 @@ Compute $\vx_1 = $\DACQ($\mA$, $\vr_1$, $\mB$, $p$, $t/2$)\;
 Assume that we have obtained generators of length $\alpha$ for $\mB$,
 for instance by applying the algorithm of the previous section.  Thus,
 at the leaves of the recursion, each product $\mB \vb$ mod $p$ can be
-computed using $O(\alpha \M(n) $ bit operations. Using our assumption
+computed using $O(\alpha \M(n))$ bit operations; using our assumption
 on $\I$, the total runtime is then $O(\CA \I(t) \log(t) +\alpha \M(n)
-t)$ bit operations. Using our upper bounds on $\CA$, this simplifies
+t)$ bit operations. With our upper bounds on $\CA$, this simplifies
 further as $O(\alpha \M(n) \I(t) \log(t))$.
 
 We turn next to Newton iteration. The matrix form of Newton iteration
@@ -1330,7 +1335,7 @@ us the normalization of $\vb_0 \bmod N$.
 This idea could be extended to the case of an arbitrary nullspace
 dimension, but it would be tantamount to lifting a whole nullspace
 basis. Instead, we will reduce the nullspace dimension by adding a new
-of equations; when ${\rm ker}(\mT)$ has moderate dimension, this
+block of equations; when ${\rm ker}(\mT)$ has moderate dimension, this
 barely affects the overall runtime (for particular applications to
 algebraic approximants, another solution is described below).
 
@@ -1415,15 +1420,15 @@ $P$ exists and is irreducible, then any $Q \in \Q[x,y]$ with the same
 degree bounds as above and such that $Q(x,f) = 0 \bmod x^{2de+1}$ is a
 multiple of $P$.  From this, one deduces easily that if we compute
 \emph{two} such polynomials $Q_1,Q_2$, their GCD will generically be
-$P$ itself. This fact will remain true modulo all primes $p$ except a
-finite number; take $p$ so that it does not decrease $\rank(\mT)$
-(note that $P \bmod p$ may not be irreducible anymore). Hence, we can
-(probabilistically) find $P \bmod p$ by computing two solutions
-$Q_1,Q_2$ to the above Hermite-Pad\'e problem modulo $p$ and taking
-their GCD. If we assume further that no term of $P$ vanishes modulo
-$p$, this reveals the support of $P$. We can then refine the degree
-bounds in our Hermite-Pad\'e problem, which in turn reduces the
-nullity of matrix $\mT$ to $1$.
+$P$ itself. For all primes $p$ except a finite number, the rank of our
+matrix $\mT$ does not change modulo $p$, and the GCD of two random
+basis elements commutes with reduction modulo $p$ (note that $P \bmod
+p$ may not be irreducible anymore). Hence, we can (probabilistically)
+find $P \bmod p$ by computing two solutions $Q_1,Q_2$ to the above
+Hermite-Pad\'e problem modulo $p$ and taking their GCD. This reveals
+the support of $P$; we can then refine the degree bounds in our
+Hermite-Pad\'e problem, which in turn reduces the nullity of matrix
+$\mT$ to $1$.
 
 Next, we show how to speed-up algorithm $\DACQ$ in this case. The
 block-Toeplitz matrix $\mT$ of our Hermite-Pad\'e problem has
@@ -1445,12 +1450,12 @@ algorithm of~\cite{BoSc09}.
 \vspace{-5px}
 \subsection{Experimental Results}
 
-The timings in this section are measured on the same machine as
-Subsection~\ref{ssec:exp1}. The experiments are dedicated to solving
-instances of Hermite-Pad\'e approximation, which is a useful
-particular case of Problem~\ref{pb:mosaic}. We discuss two families of
-problems, first the approximation of general power series, then
-algebraic approximants.
+Our experiments are dedicated to solving instances of Hermite-Pad\'e
+approximation, which is a useful particular case of
+Problem~\ref{pb:mosaic}. We discuss two families of problems, first
+the approximation of general power series, then algebraic
+approximants. Timings are measured on the same machine as
+Subsection~\ref{ssec:exp1}.
 
 In both cases, we show two graphs: on the left, we have five blocks,
 each with $n$ columns; on the right, we have $n$ blocks, each with $n$
@@ -1460,50 +1465,51 @@ $(p_0,\dots,p_{n-1})$, with degree bounds $(n,n,n,n,n)$, resp.\
 $(n,\dots,n)$. The displacement rank $\alpha$ of these matrices if
 $6$, resp.\ $n+1$.
 
-We first examine the results for the case of general power series
-(times given in sec.). We also have control over the bit sizes of the
-input, but our experiments show that the runtime grows predictably
-with respect to this parameter; as a result, we fix the input to be 10
-bit integers, so the number of lifting steps depends just on $n$.
+We first examine the results for general power series. Our experiments
+showed that the runtime grows predictably with respect to the input
+bit-size; as a result, we fix the input coefficients to be 10 bit
+integers, so the number of lifting steps depends just on~$n$.
 
 \includegraphics[width=7cm]{plots/compare-general.pdf}
 
 Matrices are generated so as to have $1$ less row than they have
-columns; since the inputs are random, they have nullspace of
-dimension $1$ (we also generated instances with nullity up to 10;
-using our heuristic, runtimes were almost indistinguishable from the
-case of nullity 1). The primes we use have 59 to 60 bits.
+columns; since the inputs are random, they have nullspace of dimension
+$1$ (we also generated instances with nullity up to 10; using our
+heuristic to reduce nullity, runtimes were almost
+indistinguishable). The primes we use have 59 to 60 bits.  For $\DACQ$
+and Newton iteration, the sharp increases indicate an additional
+lifting step.
 
-
-For $\DACQ$ and Newton iteration, the sharp increases indicate an
-additional lifting step. In our tests, Newton iteration is slower than
-$\DACQ$, especially when the number of block grows (since its runtime
-is quadratic in the displacement rank $\alpha$). Newton iteration
-should theoretically be competitive with $\DACQ$ when the number of
-blocks is fixed, and the size (and thus the output bit size) grow,
-since its theoretical runtime is better by a $\log(t)$ factor, where
-$t$ is essentially the output bit size. However, this is not
-noticeable on our experiments: in practice, the integer multiplication
-function $\I(d)$ grows like $d^{1+\varepsilon}$, for some $\varepsilon
-> 0$; in that case, the analysis of $\DACQ$ can be refined to
-$O(\alpha \M(n) \I(t))$. The bottleneck in both algorithms is
-computing structured matrix / vector products with coefficients modulo
-high powers of $p$.
+Newton iteration is slower than $\DACQ$, especially when the number of
+block grows (since its runtime is quadratic in the displacement rank
+$\alpha$). Newton iteration should theoretically be competitive with
+$\DACQ$ when the number of blocks is fixed, and the size (and thus the
+output bit size) grow, since its theoretical runtime is better by a
+$\log(t)$ factor, where $t$ is essentially the output bit
+size. However, this is not noticeable on our experiments: in practice,
+the integer multiplication function $\I(d)$ grows like
+$d^{1+\varepsilon}$, for some $\varepsilon > 0$; in that case, the
+analysis of $\DACQ$ can be refined to $O(\alpha \M(n) \I(t))$. 
 
 CRT, on the other hand, seems to be competitive with $\DACQ$ when
 $\alpha$ is small but is significantly worse as $\alpha$ grows: the
 runtime CRT is not linear in $\alpha$, while $\DACQ$ is. 
 
-Next, we examine the algebraic case. In this case, we start by
-generating a bivariate polynomial $P(x,y)$ and compute one of its
-power series solutions. Since we expect the coefficients of $P$ to be
-smaller than the coefficients of the series itself, we can better
-control the behavior of the algorithms by choosing the bit size of
-$P$ (here, it was fixed to be 1000 bit integers).  We compare the
-$\DACQ$ algorithm as in the general case, with $\CA=O(\alpha \M(n))$,
-to the improved version using the bivariate modular composition (BMC)
-algorithm of~\cite{NuZi04} described above, featuring a lower value
-for $\CA$. We can see a significant difference between the two
+Next, we examine the computation of algebraic approximants; on the
+basis of the previous experiments, we consider algorithm $\DACQ$ only.
+We start by generating a bivariate polynomial $P(x,y)$ and compute one
+of its power series solutions $f$. Since we expect the coefficients of
+$P$ to be smaller than the coefficients of $f$, we can better control
+the behavior of the algorithms by choosing the bit size of $P$ (here,
+it was fixed to be 1000 bit integers).  We compare algorithm $\DACQ$
+as in the general case, with $\CA=O(\alpha \M(n))$, to the improved
+version using the bivariate modular composition (BMC) algorithm
+of~\cite{NuZi04} described above, featuring a lower value for
+$\CA$. The latter algorithm uses polynomial matrix multiplication,
+which we implemented using reduction modulo FFT primes and TFT
+polynomial multiplication.
+
+As a result, we can see a significant difference between the two
 algorithms as the size of the matrix grows: the theoretical speed-up
 predicted in Subsection~\ref{ssec:liftQ} is observed in practice.
 
