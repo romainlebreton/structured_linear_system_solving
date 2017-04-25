@@ -357,7 +357,7 @@ is a shorthand for $(\mA^{-1})^t$.
 give costs in an algebraic model, counting base field operations at
 unit cost (in Section~\ref{sec:lifting}, we work over $\Q$ and use 
 a boolean model).
-
+%
 We let $\M$ be such that over any ring, polynomials of degree at most
 $d$ can be multiplied in $\M(d)$ base ring operations; we also assume
 that the super-linearity assumptions of~\cite[Chapter~8]{GaGe13}
@@ -579,9 +579,10 @@ solve a linear system, the algorithms do slightly more: they compute
 the inverse of a given matrix (or of a maximal minor thereof); this is
 similar to what happens for dense matrices, where it is not known how
 to solve linear systems with an exponent better than $\omega$.
-Then, the main question of this section is the following (the
-assumptions on the vectors $\vu,\vv$ are slightly stronger than the
-one required for $\nabla_{\vu,\vv}$ to be invertible). 
+Then, the main question of this section is the following 
+%
+% (the assumptions on the vectors $\vu,\vv$ are slightly stronger than
+% the one required for $\nabla_{\vu,\vv}$ to be invertible).
 %
 % \vspace{-5px}
 \begin{pbm}\label{pb:cauchy}
@@ -844,6 +845,66 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
 % \vspace{-5px}
 \subsection{A faster iterative algorithm}\label{ssec:quad}
 
+Using the previous discussion, we describe in
+Algorithm~\ref{algo:iter} a quadratic-time iterative algorithm for
+Problem~\ref{pb:cauchy}; we will use a step size
+$\beta \in \{1,\dots,\alpha\}$, given as a parameter.  The formulae
+in~\eqref{eq:Yi+j} that computes $(\mY^{(i+j)},\mZ^{(i+j)})$ from
+$(\mY^{(i)},\mZ^{(i)})$ only involve $\mS^{(i,j)}_{0,0}{}^{-1}$,
+$\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$.  Hence,
+line~\ref{line:rowcol} recovers $\mS^{(i,j)}_{0,1}$ from its
+$\nabla_{\vu^{(i,j)}_0, \vv^{(i,j)}_1}$-generators
+$(\mY^{(i,j)}_0,\mZ^{(i,j)}_1)$ and does the same for
+$\mS^{(i,j)}_{1,0}$ (Lemma~\ref{lemma:cpj-cm}); this allows us to
+apply~\eqref{eq:Yi+j}.
+
+%% \smallskip\noindent{\bf \small Termination and correction.}
+% For the correction of the algorithm, note that $\mA$ has generic rank
+% profile iff the rank of $\mA$ is
+% $r_{\max}=\max\{ r \ |\ \forall \ell \leq r, \det(\mA^{(\ell)}_{0,0})
+% \neq 0 \}$.
+% The while loop of the algorithm will find the maximal leading
+% principal minor of $\mA$ that is non-zero and has generic rank
+% profile. If at some step $i$, we know that $\mA^{(i)}_{0,0}$ is
+% invertible and has generic rank profile, we use
+% Lemma~\ref{lemma:update} to test if $\mA^{(i+j)}_{0,0}$ has the same
+% properties.
+
+% The loop exits on one of two conditions that both ensures that
+% $\bar{r} = r_{\max}$.  Either $\rank(\mS^{(i,j)}_{0,0})$ is always $j$, or
+% $\rank(\mS^{(i,j)}_{0,0})<j$ at some point and after setting
+% $\bar{r}=i+\rank( \mS^{(i,j)}_{0,0})$, we have
+% $\det(\mA^{(\ell)}_{0,0}) \neq 0$ for all $\ell \leq \bar{r}$ and
+% $\det(\mA^{(\bar{r}+1)}_{0,0}) = 0$; we exit the while loop right
+% after.
+% After the while loop, it remains to test if $\rank(\mA) = \bar{r}$,
+% which is done by checking that the Schur complement of
+% $\mA^{(\bar{r})}_{0,0}$ in $\mA$ is zero.
+
+Computing the rank profile at line~\ref{line:rankprof} costs
+$O(\beta^\omega)$.  Using block matrix multiplication in
+Eq.~\eqref{eq:recA2}, we recover the matrices of
+line~\ref{line:rowcol} in time $O(\beta^{\omega-2} \alpha (m+n))$,
+since $j \le \beta \le \alpha$.  To compute $\mY^{(i+j)}$ at
+line~\ref{line:nextgen}, we first compute $\mS^{(i,j)}_{0,0}{}^{-1}$
+in time $O(\beta^{\omega})$, $\mS^{(i,j)}_{0,0}{}^{-1} \mY^{(i,j)}_1$
+in time $O(\beta^{\omega-1} \alpha)$; then all other operations take
+time $O(\beta^{\omega-2} \alpha m)$.  Similarly, computing
+$\mZ^{(i+j)}$ takes time $O(\beta^{\omega-2} \alpha n)$.  We recover
+$\mS^{(\bar{r})}$ at line~\ref{line:recoverwhole} from its
+$\nabla_{\vu^{(\bar{r})},\vv^{(\bar{r})}}$-generators
+$(\mY^{(\bar{r})},\mZ^{(\bar{r})})$ by means of~\eqref{eq:recA2}, with
+a cost $O(\alpha^{\omega-2} mn)$ using block matrix multiplication.
+
+One iteration of the while loop costs
+$O(\beta^{\omega-2} \alpha (m+n))$; we iterate $O(\mn/\beta)$ times, for
+a total cost of $O(\beta^{\omega-3} \alpha \mn(m+n))$, which is
+$O(\beta^{\omega-3} \alpha mn)$. This dominates the cost of
+line~\ref{line:recoverwhole}, so that the whole running time is
+$O(\beta^{\omega-3} \alpha mn)$. The algorithm of~\cite{Mouilleron08}
+uses $\beta=1$, for which the cost is $O(\alpha mn)$; choosing
+$\beta=\alpha$, we benefit from fast matrix multiplication, as the
+cost drops to $O(\alpha^{\omega-2} mn)$.
 
 \setlength{\textfloatsep}{3pt}
 \setlength{\intextsep}{1\baselineskip}
@@ -880,71 +941,67 @@ $\mA^{(i+j)}_{0,0}$. This implies the following result.
   \lElse {\Return $(\bar{r},\mY^{(\bar{r},m-\bar{r})}_1,\mZ^{(\bar{r},n-\bar{r})}_1)$}
 \end{algorithm}
 
-Using the previous discussion, we describe in
-Algorithm~\ref{algo:iter} a quadratic-time iterative algorithm for
-Problem~\ref{pb:cauchy}; we will use a step size $\beta \in
-\{1,\dots,\alpha\}$, given as a parameter.  The formulae in~\eqref{eq:Yi+j} that compute
-$(\mY^{(i+j)},\mZ^{(i+j)})$ from $(\mY^{(i)},\mZ^{(i)})$ only involve
-$\mS^{(i,j)}_{0,0}{}^{-1}$, $\mS^{(i,j)}_{0,1}$, $\mS^{(i,j)}_{1,0}$.
-Hence, line~\ref{line:rowcol} recovers $\mS^{(i,j)}_{0,1}$ from its
-$\nabla_{\vu^{(i,j)}_0, \vv^{(i,j)}_1}$-generators
-$(\mY^{(i,j)}_0,\mZ^{(i,j)}_1)$ and does the same for $\mS^{(i,j)}_{1,0}$
-(Lemma~\ref{lemma:cpj-cm}); this allows us to apply~\eqref{eq:Yi+j}.
-
-%% \smallskip\noindent{\bf \small Termination and correction.}
-For the correction of the algorithm, note that $\mA$ has generic rank
-profile iff the rank of $\mA$ is
-$r_{\max}=\max\{ r \ |\ \forall \ell \leq r, \det(\mA^{(\ell)}_{0,0})
-\neq 0 \}$.
-The while loop of the algorithm will find the maximal leading
-principal minor of $\mA$ that is non-zero and has generic rank
-profile. If at some step $i$, we know that $\mA^{(i)}_{0,0}$ is
-invertible and has generic rank profile, we use
-Lemma~\ref{lemma:update} to test if $\mA^{(i+j)}_{0,0}$ has the same
-properties.
-
-The loop exits on one of two conditions that both ensures that
-$\bar{r} = r_{\max}$.  Either $\rank(\mS^{(i,j)}_{0,0})$ is always $j$, or
-$\rank(\mS^{(i,j)}_{0,0})<j$ at some point and after setting
-$\bar{r}=i+\rank( \mS^{(i,j)}_{0,0})$, we have
-$\det(\mA^{(\ell)}_{0,0}) \neq 0$ for all $\ell \leq \bar{r}$ and
-$\det(\mA^{(\bar{r}+1)}_{0,0}) = 0$; we exit the while loop right
-after.
-After the while loop, it remains to test if $\rank(\mA) = \bar{r}$,
-which is done by checking that the Schur complement of
-$\mA^{(\bar{r})}_{0,0}$ in $\mA$ is zero.
-
-
-
-Computing the rank profile at line~\ref{line:rankprof} costs
-$O(\beta^\omega)$.  Using block matrix multiplication in
-Eq.~\eqref{eq:recA2}, we recover the matrices of
-line~\ref{line:rowcol} in time $O(\beta^{\omega-2} \alpha (m+n))$,
-since $j \le \beta \le \alpha$.  To compute $\mY^{(i+j)}$ at
-line~\ref{line:nextgen}, we first compute $\mS^{(i,j)}_{0,0}{}^{-1}$
-in time $O(\beta^{\omega})$, $\mS^{(i,j)}_{0,0}{}^{-1} \mY^{(i,j)}_1$
-in time $O(\beta^{\omega-1} \alpha)$; then all other operations take
-time $O(\beta^{\omega-2} \alpha m)$.  Similarly, computing
-$\mZ^{(i+j)}$ takes time $O(\beta^{\omega-2} \alpha n)$.  We recover
-$\mS^{(\bar{r})}$ at line~\ref{line:recoverwhole} from its
-$\nabla_{\vu^{(\bar{r})},\vv^{(\bar{r})}}$-generators
-$(\mY^{(\bar{r})},\mZ^{(\bar{r})})$ by means of~\eqref{eq:recA2}, with
-a cost $O(\alpha^{\omega-2} mn)$ using block matrix multiplication.
-
-One iteration of the while loop costs
-$O(\beta^{\omega-2} \alpha (m+n))$; we iterate $O(\mn/\beta)$ times, for
-a total cost of $O(\beta^{\omega-3} \alpha \mn(m+n))$, which is
-$O(\beta^{\omega-3} \alpha mn)$. This dominates the cost of
-line~\ref{line:recoverwhole}, so that the whole running time is
-$O(\beta^{\omega-3} \alpha mn)$. The algorithm of~\cite{Mouilleron08}
-uses $\beta=1$, for which the cost is $O(\alpha mn)$; choosing
-$\beta=\alpha$, we benefit from fast matrix multiplication, as the
-cost drops to $O(\alpha^{\omega-2} mn)$.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \vspace{-5px}
 \subsection{The divide-and-conquer algorithm}\label{ssec:MBA-C}
+
+We finally review the divide-and-conquer approach to solving
+Problem~\ref{pb:cauchy}, as a basis for the discussion of the next
+subsection. Algorithm~\ref{algo:dac} follows~\cite{JeMo10}, recast in
+our framework, with the minor difference that do not assume $\mA$
+invertible, and that we explicitly check if $\mA$ satisfies the
+generic rank profile assumption.
+
+%% \smallskip\noindent{\bf \small Termination and correction.}
+% Recursive calls on lines~\ref{line:dac0},~\ref{line:dac1} will raise
+% an error if the respective input matrix ${\mA^{(i)}_{0,0}}$ and its
+% Schur complement $\mA^{(i)}_{1,1} - \mA^{(i)}_{1,0}
+% {\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1}$ are not in generic position,
+% so we assume that we are not in that case; then, the correction proof
+% is similar to that in Section~\ref{ssec:quad}. 
+%
+Computations of
+lines~\ref{line:recoverfullgen0},~\ref{line:recoverfullgen1} are of
+the same essence; using Eq.~\eqref{eq:Si+j} and \eqref{eq:Yi+j}, we
+recover the full generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of
+$\mS^{(i+j)}$ if we know the generators
+$(\mY^{(i+j,m-j)}_1,\mZ^{(i+j,n-j)}_1)$ of $\mS^{(i,j)}_{0,0}{}^{-1}$
+and previous full generators $(\mY^{(i)},\mZ^{(i)})$ of $\mS^{(i)}$.
+Rather than reconstructing the submatrices of $\mS^{(i,j)}$ as in the
+previous subsection, we use them through their generators: the
+formulae of~\eqref{eq:Yi+j} boil down to $O(1)$ multiplications of
+Cauchy-like matrices (for which we have generators of length $\alpha$)
+by $\alpha$ vectors.
+
+In general, these multiplications cost $O(\alpha^2 \M(\mx) \log(\mx))$
+operations, with $\mx=\max(m,n)$.  As pointed out
+in~\cite[Theorem~5.3.1]{Pan01} (see also~\cite{ChPa00}), if $\vu$ and
+$\vv$ are geometric progressions, the cost for the matrix-vectors
+multiplication drops to $O(\alpha^2 \M(\mx))$.  If $\vu$ and $\vv$
+have the same ratio (if this is the case at the top-level, this will
+remain the case for all recursive calls), by Remark~\ref{rmk:factor3},
+we can save a further constant factor.  For large values of $\alpha$,
+we can also apply the algorithm of~\cite{BoJeMoSc16}, which uses fast
+polynomial matrix multiplication to reduce the cost to
+$O(\alpha^{\omega-1} \M(\mx))$.
+
+%% the cost can
+%% be reduced to $O(\alpha^2 \M(n)\log(n))$ by choosing $\vu$ and
+%% $\vv$ in geometric progression. We will use vectors
+%% $\vu$, $\vv$ that are in geometric progression with the same ratio, in
+%% order to apply Remark~\ref{rmk:factor3}; for large $\alpha$, 
+%% using the algorithm of~\cite{BoJeMoSc16} reduces the
+%% cost to $O(\alpha^{\omega-1} \M(n) \log(n))$.
+
+On line~\ref{algo:testschur}, the Schur complement is zero iff
+$\mY'\, \mZ' = 0$. This is tested by finding a minimal set of
+independent rows in $\mZ'$ (this takes time
+$O(\alpha^{\omega-1} \mx)$) and multiplying their transposes by
+${\mY'}$. There are at most $\alpha$ such rows, so this takes time
+$O(\alpha^{\omega-1} \mx)$ as well.  Taking all recursive steps into
+account, the total cost of $\DACp$ is a factor $\log(\mx)$ times that
+of the Cauchy-like matrix products.
 
 \begin{algorithm}[t]
 \setstretch{0.1}
@@ -980,63 +1037,6 @@ cost drops to $O(\alpha^{\omega-2} mn)$.
   $(\mY^{(r_0)},\mZ^{(r_0)})$
   \label{line:recoverfullgen1}\;
 \end{algorithm}
-
-
-We finally review the divide-and-conquer approach to solving
-Problem~\ref{pb:cauchy}, as a basis for the discussion of the next
-subsection. Algorithm~\ref{algo:dac} follows~\cite{JeMo10}, recast in
-our framework, with the minor difference that do not assume $\mA$
-invertible, and that we explicitly check if $\mA$ satisfies the
-generic rank profile assumption.
-
-%% \smallskip\noindent{\bf \small Termination and correction.}
-Recursive calls on lines~\ref{line:dac0},~\ref{line:dac1} will raise
-an error if the respective input matrix ${\mA^{(i)}_{0,0}}$ and its
-Schur complement $\mA^{(i)}_{1,1} - \mA^{(i)}_{1,0}
-{\mA^{(i)}_{0,0}}{}^{-1} \mA^{(i)}_{0,1}$ are not in generic position,
-so we assume that we are not in that case; then, the correction proof
-is similar to that in Section~\ref{ssec:quad}.  Computations of
-lines~\ref{line:recoverfullgen0},~\ref{line:recoverfullgen1} are of
-the same essence; using Eq.~\eqref{eq:Si+j} and \eqref{eq:Yi+j}, we
-recover the full generators $(\mY^{(i+j)},\mZ^{(i+j)})$ of
-$\mS^{(i+j)}$ if we know the generators
-$(\mY^{(i+j,m-j)}_1,\mZ^{(i+j,n-j)}_1)$ of $\mS^{(i,j)}_{0,0}{}^{-1}$
-and previous full generators $(\mY^{(i)},\mZ^{(i)})$ of $\mS^{(i)}$.
-Rather than reconstructing the submatrices of $\mS^{(i,j)}$ as in the
-previous subsection, we use them through their generators: the
-formulae of~\eqref{eq:Yi+j} boil down to $O(1)$ multiplications of
-Cauchy-like matrices (for which we have generators of length $\alpha$)
-by $\alpha$ vectors.
-
-In general, these multiplications cost $O(\alpha^2 \M(\mx) \log(\mx))$
-operations, with $\mx=\max(m,n)$.  As pointed out
-in~\cite[Theorem~5.3.1]{Pan01} (see also~\cite{ChPa00}), if $\vu$ and
-$\vv$ are geometric progressions, the cost for the matrix-vectors
-multiplication drops to $O(\alpha^2 \M(\mx))$.  If $\vu$ and $\vv$
-have the same ratio (if this is the case at the top-level, this will
-remain the case for all recursive calls), by Remark~\ref{rmk:factor3},
-we can save a further constant factor.  For large values of $\alpha$,
-we can also apply the algorithm of~\cite{BoJeMoSc16}, which uses fast
-polynomial matrix multiplication to reduce the cost to
-$O(\alpha^{\omega-1} \M(\mx))$.
-
-
-%% the cost can
-%% be reduced to $O(\alpha^2 \M(n)\log(n))$ by choosing $\vu$ and
-%% $\vv$ in geometric progression. We will use vectors
-%% $\vu$, $\vv$ that are in geometric progression with the same ratio, in
-%% order to apply Remark~\ref{rmk:factor3}; for large $\alpha$, 
-%% using the algorithm of~\cite{BoJeMoSc16} reduces the
-%% cost to $O(\alpha^{\omega-1} \M(n) \log(n))$.
-
-On line~\ref{algo:testschur}, the Schur complement is zero iff
-$\mY'\, \mZ' = 0$. This is tested by finding a minimal set of
-independent rows in $\mZ'$ (this takes time
-$O(\alpha^{\omega-1} \mx)$) and multiplying their transposes by
-${\mY'}$. There are at most $\alpha$ such rows, so this takes time
-$O(\alpha^{\omega-1} \mx)$ as well.  Taking all recursive steps into
-account, the total cost of $\DACp$ is a factor $\log(\mx)$ times that
-of the Cauchy-like matrix products.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
