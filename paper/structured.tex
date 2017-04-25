@@ -140,24 +140,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\vspace{-5px}
+\vspace{-10px}
 \section{Introduction}
 
-In this paper, we discuss linear algebra algorithms inspired by the
-following kind of question: given polynomials such as
-\[
-\left\{
-\begin{array}{rcl}
-t_0 &=& 8x^4 - 8x^2 + 1\\
-t_1 &=& 16x^5 - 20x^3 + 5x\\
-t_2 &=& 32x^6 - 48x^4 + 18x^2 - 1,
-\end{array}
-\right.
-\]
-find that the relation $t_0-2x t_1+t_2=0$ holds (this is the
-recurrence between Chebyshev polynomials of the first kind).  
+% In this paper, we discuss linear algebra algorithms inspired by the
+% following kind of question: given polynomials such as
+% \[
+% \left\{
+% \begin{array}{rcl}
+% t_0 &=& 8x^4 - 8x^2 + 1\\
+% t_1 &=& 16x^5 - 20x^3 + 5x\\
+% t_2 &=& 32x^6 - 48x^4 + 18x^2 - 1,
+% \end{array}
+% \right.
+% \]
+% find that the relation $t_0-2x t_1+t_2=0$ holds (this is the
+% recurrence between Chebyshev polynomials of the first kind).  
 
-More precisely, given input polynomials $(t_0,\dots,t_{s-1})$ over a
+Given input polynomials $(t_0,\dots,t_{s-1})$ over a
 field $\K$, together with integers $(n_0,\dots,n_{s-1})$ and $\sigma$,
 the {\em Hermite-Pad\'e} approximation problem asks to compute
 polynomials $(p_0,\dots,p_{s-1})$, not all zero, such that $\deg(p_i)
@@ -254,14 +254,14 @@ matrices, and the corresponding implementation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\vspace{-5px}
+\vspace{-6px}
 \section{Basic results}\label{sec:basics}
 
 This section reviews background material on structured matrices; for a
 more comprehensive treatment, we refer the reader to~\cite{Pan01}.
 
-
-\smallskip\noindent{\bf \small Overview.}  Developed
+%\smallskip
+\noindent{\bf \small Overview.}  Developed
 in~\cite{KaKuMo79}, the {\it displacement operator} approach
 associates to a matrix $\mA$ its displacement $\nabla(\mA)$, that is, the
 image of $\mA$ under a \textit{displacement operator}~$\nabla$.  Then,
@@ -272,11 +272,12 @@ $\nabla$. A prominent example is the family of so-called {\em
   Toeplitz-like} matrices, which are structured for the Toeplitz
 displacement operator
 % \vspace{-1px}
-\begin{eqnarray*}
-  \phi: \mA & \mapsto & \left( \mZ_m \mA - \mA \mZ_n \right) = 
+% \begin{eqnarray*}
+$  \phi: \mA \mapsto \left( \mZ_m \mA - \mA \mZ_n \right) = 
                         (\mA \downarrow) - (\mA \leftarrow)
-\end{eqnarray*}
-%\vspace{-1px}
+$
+% \end{eqnarray*}
+% \vspace{-1px}
 where the $n \times n$ lower shift matrix $\mZ_n$ is the matrix
 with ones below the diagonal.  The displacement rank of a Toeplitz
 matrix for this operator is at most two; the displacement rank of a
@@ -293,7 +294,8 @@ idea behind algorithms for structured matrices is to use generators as
 a compact data structure, involving $\alpha (m+n)$ field elements
 instead of $mn$.
 
-\smallskip\noindent{\bf \small Cauchy-like matrices.}  Beyond the
+%\smallskip
+\noindent{\bf \small Cauchy-like matrices.}  Beyond the
 Toeplitz structure (and the directly related Hankel one), two other
 important cases are the so-called Vandermonde and Cauchy
 structures. While the case of Toeplitz-like matrices was the first one
@@ -312,6 +314,7 @@ $\nabla_{\vu,\vv}(\mA)$ has small rank.
 Let $\vu,\vv$ be given and suppose that $u_i \ne v_j$ holds for all
 $i,j$. Then, the operator $\nabla_{\vu,\vv}$ is invertible: given
 $\nabla_{\vu,\vv}$-generators $(\mG,\mH)$ of length $\alpha$ for $\mA$, we can reconstruct $\mA$ as
+\vspace{-5px}
 \begin{equation}\label{eq:recA}
 \mA = \sum_{i=1}^\alpha
 \mD_{\vg_i} 
@@ -320,14 +323,19 @@ $\nabla_{\vu,\vv}$-generators $(\mG,\mH)$ of length $\alpha$ for $\mA$, we can r
 \frac 1{u_i-v_j}
 \end{bmatrix}_{\substack{1 \leq i \leq m\\1 \leq j \leq n}},
 \end{equation}
-where $\vg_i$ and $\vh_i$ are the $i$th columns of respectively $\mG$
+
+\vspace{-5px}
+{\noindent}where $\vg_i$ and $\vh_i$ are the $i$th columns of respectively $\mG$
 and~$\mH$, and  matrix $\mC_{\vu,\vv}$ is known as a {\em Cauchy
   matrix}. Remark that we can
 equivalently rewrite $\mA$ as
+\vspace{-5px}
 \begin{equation}\label{eq:recA2}
 \mA= (\mG \mH^t) \odot \mC_{\vu,\vv},
 \end{equation}
-where $\odot$ denotes the entrywise product.
+
+\vspace{-7px}
+{\noindent}where $\odot$ denotes the entrywise product.
 
 We will have to handle submatrices of $\mA$ through their
 generators. The fact that $\mD_{\vu}$ and $\mD_{\vv}$ are diagonal
@@ -352,8 +360,8 @@ structured with respect to $\nabla_{\vv,\vu}$: if $\mD_\vu \mA - \mA
 \mA^{-1} \mD_\vu = - (\mA^{-1} \mG) (\mA^{-t} \mH)^t$, where $\mA^{-t}$
 is a shorthand for $(\mA^{-1})^t$.
 
-
-\smallskip\noindent{\bf \small Algorithms.}  In most of the paper, we
+%\smallskip
+\noindent{\bf \small Algorithms.}  In most of the paper, we
 give costs in an algebraic model, counting base field operations at
 unit cost (in Section~\ref{sec:lifting}, we work over $\Q$ and use 
 a boolean model).
@@ -426,7 +434,8 @@ by $\alpha$ vectors in time $O(\alpha^{\omega-1} \M(\mx))$ instead of
 $O(\alpha^2 \M(\mx))$, by reduction to a sequence of polynomial matrix
 multiplications.
 
-\smallskip\noindent{\bf \small Reduction from mosaic Toeplitz to
+%\smallskip
+\noindent{\bf \small Reduction from mosaic Toeplitz to
   Cauchy, and regularization.}
 Our primary interest lies in mosaic
 Toep\-litz matrices. An important insight of Pan~\cite{Pan90} shows
@@ -453,7 +462,7 @@ see \cite[Chapter~4.8]{Pan01}). The bottleneck in the computation of
 $\nabla_{\vu,\vv}$-generators from $\phi$-generators are products of
 structured matrices by vectors.  If all entries of $\vu$ and $\vv$ are
 in geometric progression, it takes time $O(p \M(n) + q \M(m))$.
-\todo{Keep or remove previous complexity statement ?}
+% \todo{Keep or remove previous complexity statement ?}
 
 % The $\nabla_{\vu,\vv}$-generators of $\mA$ depend on the
 % $\phi$-generators of $\mT$, so let us start with those. If
@@ -525,7 +534,7 @@ compute a pair of generators of length $p+q+4$ for $\mA'$, involving
 the multiplication of $\mG'$ and $\mH'$ by $\mC_{\va,\vu}$ and
 $\mC_{\vv,\vb}$.
 
-\smallskip
+% \smallskip
 
 We now prove a new property, involving only
 $\mA = \mV_\vu\, \mT\, \mW_\vv$ as above. For the rest of this
@@ -561,17 +570,17 @@ $\vu^J \vv^K$ among those for which $\beta_{J,K} \neq 0$. Then we must have
 $\lm(\det(\mA_{I,I})) = \vu^{J_{\max}} \vv^{K_{\max}}$, which shows that
 $\det(\mA_{I,I})$ is non-zero. The partial degree of $\det(\mA_{I,I})$ in any variable
  is at most $\max(n,m)$. 
-
+%
 %% \todo{See if we can derive anything for geometric sequences $\vu, \vv$
 %%   with the same ratio}
-
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\vspace{-5px}
+\vspace{-8px}
 \section{Over an abstract field}\label{sec:abstract}
-
+%
 In this section, we work over a field $\K$, and we explain how to
 solve Problem~\ref{pb:mosaic} by using Pan's reduction to the
 Cauchy-like Problem~\ref{pb:cauchy} below. Even though our goal is to
@@ -584,7 +593,8 @@ Then, the main question of this section is the following
 % (the assumptions on the vectors $\vu,\vv$ are slightly stronger than
 % the one required for $\nabla_{\vu,\vv}$ to be invertible).
 %
-% \vspace{-5px}
+
+\vspace{-10px}
 \begin{pbm}\label{pb:cauchy}
   Consider $\vu=(u_1,\dots,u_m)$ and $\vv=(v_1,\dots,v_n)$,
   such that $(\vu,\vv)$ has $m+n$ distinct entries. Given
@@ -597,8 +607,8 @@ Then, the main question of this section is the following
     $\vv'=(v_1,\dots,v_r)$, $\vu'=(u_1,\dots,u_r)$ and
     $r={\rm rank}(\mA)$.
 \end{pbm}
-% \vspace{-5px}
-%
+
+\vspace{-10px}
 To solve an instance of Problem~\ref{pb:mosaic}, with input matrix
 $\mT$, we apply the transformation of the previous section, to obtain
 a Cauchy-like matrix $\mA = \mV_\vu \mT \mW_{\vv}$. We compute
@@ -658,7 +668,7 @@ $\vu,\vv$ suitably.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\vspace{-5px}
+\vspace{-9px}
 \subsection{Cauchy generators of the inverse}\label{ssec:genofinv}
 
 Let $(\mG,\mH) \in \K^{m\times \alpha} \times \K^{n\times \alpha}$ be
@@ -697,34 +707,35 @@ $$
 is similar to~\cite{Cardinal99}, where
 the order of block rows and columns was however different). The sequence of
 matrices $( \mS^{(i)})_{i=0\dots \mn}$  starts from $\mA=\mS^{(0)}$ and ends at
-$\mA^{-1}=\mS^{(\mn)}$, at least when $\mA$ is square and invertible. To
-understand where these matrices come from, we introduce the matrix
-$ \mR^{(0)} = \left [\begin{smallmatrix}
-  \mA \\
-  \mI_{\mn, n}
-\end{smallmatrix} \right ]
-$
-in $\K^{(m + \mn) \times n} $, where $\mI_{\mn, n} \in \K^{\mn \times n}$ is
-the rectangular matrix with ones on the main diagonal. If one applies to
-$\mR^{(0)}$ the column operations that reduce its first $i$th rows
-$\left[ \begin{smallmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{smallmatrix} \right ]$ to
-$\left [\begin{smallmatrix} 0 & \mI_{i,i} \end{smallmatrix} \right ]$  using $\mA^{(i)}_{0,0}$
-as pivot, we get
-\begin{equation}\label{eq:Ri}
-\mR^{(i)} =
-\begin{bmatrix}
-  \mS^{(i)} \\
-  \mI_{\mu, n}
-\end{bmatrix} 
-= \mP^i \ \mR^{(0)} 
-\begin{bmatrix}
-  - \mA_{0, 0}^{(i)} \phantom{}^{- 1} \mA_{0, 1}^{(i)}
-  & 
-  \mA_{0, 0}^{(i)} \phantom{}^{- 1} \\
- \mI_{n - i,n-i} & 0
-\end{bmatrix},
-\end{equation}
-$\mP$ being a cyclic permutation matrix than moves the rows up once.
+$\mA^{-1}=\mS^{(\mn)}$, at least when $\mA$ is square and invertible. 
+
+% To understand where these matrices come from, we introduce the matrix
+% $ \mR^{(0)} = \left [\begin{smallmatrix}
+%     \mA \\
+%     \mI_{\mn, n}
+% \end{smallmatrix} \right ]
+% $
+% in $\K^{(m + \mn) \times n} $, where $\mI_{\mn, n} \in \K^{\mn \times n}$ is
+% the rectangular matrix with ones on the main diagonal. If one applies to
+% $\mR^{(0)}$ the column operations that reduce its first $i$th rows
+% $\left[ \begin{smallmatrix} \mA^{(i)}_{0,0} & \mA^{(i)}_{0,1} \end{smallmatrix} \right ]$ to
+% $\left [\begin{smallmatrix} 0 & \mI_{i,i} \end{smallmatrix} \right ]$  using $\mA^{(i)}_{0,0}$
+% as pivot, we get
+% \begin{equation}\label{eq:Ri}
+% \mR^{(i)} =
+% \begin{bmatrix}
+%   \mS^{(i)} \\
+%   \mI_{\mu, n}
+% \end{bmatrix} 
+% = \mP^i \ \mR^{(0)} 
+% \begin{bmatrix}
+%   - \mA_{0, 0}^{(i)} \phantom{}^{- 1} \mA_{0, 1}^{(i)}
+%   & 
+%   \mA_{0, 0}^{(i)} \phantom{}^{- 1} \\
+%  \mI_{n - i,n-i} & 0
+% \end{bmatrix},
+% \end{equation}
+% $\mP$ being a cyclic permutation matrix than moves the rows up once.
 
 Given integers $a,b$, $\vu_{a:b}$ denotes the sequence
 $(u_a,\dots,u_b)$, and similarly for $\vv_{a:b}$; we then define
@@ -814,16 +825,16 @@ generalizes previous formulae for $(\mY^{(i)},\mZ^{(i)})$ :
 \mZ^{(i+j,n-j)}_0&=-{\mS^{(i,j)}_{0,1}}{}^t \,\mZ^{(i+j,n-j)}_1 + \mZ^{(i,j)}_1 \nonumber.
 \end{align}
 %
-The idea behind Eq.~(\ref{eq:Yi+j}) is that by decomposing the column
-operations that reduce
-$[\begin{smallmatrix} \mA^{(i+j)}_{0,0} &
-  \mA^{(i+j)}_{0,1} \end{smallmatrix}]$
-to $[\begin{smallmatrix} 0 & \mI_{i+j,i+j} \end{smallmatrix}]$~(see
-Eq.\eqref{eq:Ri}) into two operations that respectively reduce the
-first $i$th rows using $\mA^{(i)}_{0,0}$ as pivot, then the next $j$
-rows using $\mS^{(i,j)}_{0,0}$ as pivot, we split the computation of
-$\mR^{(i+j)}$ into two similar operations that map $\mR^{(0)}$ to
-$\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
+% The idea behind Eq.~(\ref{eq:Yi+j}) is that by decomposing the column
+% operations that reduce
+% $[\begin{smallmatrix} \mA^{(i+j)}_{0,0} &
+%   \mA^{(i+j)}_{0,1} \end{smallmatrix}]$
+% to $[\begin{smallmatrix} 0 & \mI_{i+j,i+j} \end{smallmatrix}]$~(see
+% Eq.\eqref{eq:Ri}) into two operations that respectively reduce the
+% first $i$th rows using $\mA^{(i)}_{0,0}$ as pivot, then the next $j$
+% rows using $\mS^{(i,j)}_{0,0}$ as pivot, we split the computation of
+% $\mR^{(i+j)}$ into two similar operations that map $\mR^{(0)}$ to
+% $\mR^{(i)}$ and $\mR^{(i)}$ to $\mR^{(i+j)}$.
 
 Finally, to solve Problem~\ref{pb:cauchy}, we need to detect when $\mA$ has
 generic rank profile. By construction, $\mS^{(i,j)}_{0,0}$ is the
