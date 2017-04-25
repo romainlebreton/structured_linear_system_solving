@@ -426,14 +426,14 @@ by $\alpha$ vectors in time $O(\alpha^{\omega-1} \M(\mx))$ instead of
 $O(\alpha^2 \M(\mx))$, by reduction to a sequence of polynomial matrix
 multiplications.
 
-\smallskip\noindent{\bf \small Reduction from mosaic Toeplitz to Cauchy structure.}
+\smallskip\noindent{\bf \small Reduction from mosaic Toeplitz to
+  Cauchy, and regularization.}
 Our primary interest lies in mosaic
 Toep\-litz matrices. An important insight of Pan~\cite{Pan90} shows
 that one can reduce questions about Toeplitz-like matrices to ones
 about Cauchy-like matrices (and conversely, if one wishes to), for a
-moderate cost overhead. In this paragraph, we give details on 
-this transformation, following~\cite[Chapter~4.8]{Pan01}.
-
+moderate cost overhead. 
+%
 To a vector $\vu$ in $\K^m$, let us  associate the
 corresponding Vandermonde matrices
 $
@@ -446,67 +446,64 @@ u_j^{m-i}
 $
 %
 For $\vu$ as above, $\vv$ in $\K^n$ and $\mT$ in $\K^{m\times n}$, we
-let $\mA = \mV_\vu\, \mT\, \mW_\vv$; we now prove that if $\mT$ is
-Toeplitz-like, $\mA$ is Cauchy-like.
-
-The $\nabla_{\vu,\vv}$-generators of $\mA$ depend on the
-$\phi$-generators of $\mT$, so let us start with those. If
-$\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le q}$ is mosaic Toeplitz of
-size $m \times n$, with $\mT_{i,j}$ of size $m_i \times n_j$, we
-define the following.
-
-For $1 \le i \le p$, let $\mT_{i,*}$ be the block matrix
-$[\mT_{i,1}~\cdots~\mT_{i,q}]$.  Let $\eta_i$ be the first row of
-$\mT_{i,*}$, shifted left once, let $\eta'_i$ be the last row of
-$\mT_{i,*}$, and finally let $\vh_i=(\eta'_{i-1}-\eta_i)$ (for $i=1$,
-$\eta'_0$ is the zero vector); this is a row-vector of size $n$. If
-$\ve_{i,n}$ denotes the row-vector of dimension $n$ with only a one at
-index $i$, we also let $\vg_{i}$ be the transpose of
-$\ve_{m_1 + \cdots +m_{i-1}+1,m}$.  For $1 \le j \le q$, define
-$\mT_{*,j}$ similarly to $\mT_{i,*}$; $\lambda_j$ and $\lambda'_j$ are
-its first and last columns, with now a downward shift for
-$\lambda'_j$; in addition, their entry of index $m_1 + \cdots + m_j$
-are set to zero. We define $\vg_{p+j}=(\lambda'_{j}-\lambda_{j+1})$
-($\lambda_{q+1}$ is set to zero) and let
-$\vh_{p+j}=\ve_{n_1 + \cdots +n_j,n}$.  With these definitions, the
-matrices $\mG=[ \vg_1, \dots, \vg_{p+q} ]$ and
-$\mH=[\vh^t_1, \dots, \vh^t_{p+q}]$ are $\phi$-generators of $\mT$.
-
-To obtain $\mA$, we conjugate $\mT$ by Vandermonde matrices, since $
-\mD_{\vu} \mV_{\vu} - \mV_{\vu} \mZ_m$ and $ \mW_{\vv} \mD_{\vv} -
-\mZ_n \mW_{\vv}$ have small rank; explicitly, they are equal to
-respectively $(\vu^m)^t \, \ve_{m,m}$ and $(\ve_{1,n})^t \, \vv^n$,
-where $\vu^m = [ u_1^m , \dots,  u_n^m ]$,
-and similarly for $\vv^n$. As a
-consequence, since $\phi(\mT)=\mG \mH^t$, we have
-\begin{align}\label{eq:gentoetogencau}
-  \nabla_{\vu, \vv} \left( \mA \right) 
-  % & =  \mD_{\vu}  \mV_{\vu} \mT  \mW_{\vv} - \mV_{\vu}  \mT  \mW_{\vv}  \mD_{\vv} \nonumber \\
-  & =  \mV_{\vu}\, \phi(\mT)\, \mW_{\vv} 
-  %% \\
-  %% &   &
-  + (\vu^m)^t \, \ve_{m,m}  \mT  \mW_{\vv} 
-        - \mV_{\vu}  \mT  (\ve_{1,n})^t \, \vv^n. 
-\end{align}
-This motivates the following definitions. For $1 \le i \le p$, let
-$\vh'_i=\vh_i \mW_\vv$ and also let $\vg'_{i}$ be the column of
-$\mV_\vu$ of index $m_1 + \cdots +m_{i-1}+1$. For $1 \le j \le q$,
-define $\vg'_{p+j} = \mV_\vu \vg_{p+j}$ and also let $\vh'_{p+j}$ be
-the row of index $n_1 + \cdots +n_j$ in $\mW_\vv$.  We define
-$\vg_{p+q+1} = (\vu^m)^t$, and $\vh_{p+q+1}$ as the last row of
-$\mT \mW_\vv$; we also define $\vg_{p+q+2}$ as the first column of
-$-\mV_\vu \mT$, and $\vh_{p+q+2} = \vv^n$.
-
-By Eq.~(\ref{eq:gentoetogencau}),
-$\mG'= [ \vg'_1  \cdots  \vg'_{p+q+2}]$ and
-$\mH' =[ {\vh'_1}^t  \cdots  {\vh'_{p+q+2}}^t]$ are
-$\nabla_{\vu,\vv}$-generators of $\mA$ of length $p+q+2$ (whereas
-$\mT$ has $\phi$-generators of length $p+q$). The bottleneck in the
-computation of $\mG'$ and $\mH'$ are $p$ left-products by $\mW_\vv$
-and $q$ products by $\mV_\vu$.  If all entries of $\vu$ and $\vv$ are
+let $\mA = \mV_\vu\, \mT\, \mW_\vv$. If $\mT$ is Toeplitz-like, then
+$\mA$ is Cauchy-like : $\mA$ has $\nabla_{\vu,\vv}$-generators of
+length $p+q+2$ (whereas $\mT$ has $\phi$-generators of length $p+q$,
+see \cite[Chapter~4.8]{Pan01}). The bottleneck in the computation of
+$\nabla_{\vu,\vv}$-generators from $\phi$-generators are products of
+structured matrices by vectors.  If all entries of $\vu$ and $\vv$ are
 in geometric progression, it takes time $O(p \M(n) + q \M(m))$.
+\todo{Keep or remove previous complexity statement ?}
 
-\smallskip\noindent{\bf \small Regularization.}  In our algorithms for
+% The $\nabla_{\vu,\vv}$-generators of $\mA$ depend on the
+% $\phi$-generators of $\mT$, so let us start with those. If
+% $\mT=(\mT_{i,j})_{1 \le i \le p,1 \le j \le q}$ is mosaic Toeplitz of
+% size $m \times n$, with $\mT_{i,j}$ of size $m_i \times n_j$, we
+% define the following.
+
+% For $1 \le i \le p$, let $\mT_{i,*}$ be the block matrix
+% $[\mT_{i,1}~\cdots~\mT_{i,q}]$.  Let $\eta_i$ be the first row of
+% $\mT_{i,*}$, shifted left once, let $\eta'_i$ be the last row of
+% $\mT_{i,*}$, and finally let $\vh_i=(\eta'_{i-1}-\eta_i)$ (for $i=1$,
+% $\eta'_0$ is the zero vector); this is a row-vector of size $n$. If
+% $\ve_{i,n}$ denotes the row-vector of dimension $n$ with only a one at
+% index $i$, we also let $\vg_{i}$ be the transpose of
+% $\ve_{m_1 + \cdots +m_{i-1}+1,m}$.  For $1 \le j \le q$, define
+% $\mT_{*,j}$ similarly to $\mT_{i,*}$; $\lambda_j$ and $\lambda'_j$ are
+% its first and last columns, with now a downward shift for
+% $\lambda'_j$; in addition, their entry of index $m_1 + \cdots + m_j$
+% are set to zero. We define $\vg_{p+j}=(\lambda'_{j}-\lambda_{j+1})$
+% ($\lambda_{q+1}$ is set to zero) and let
+% $\vh_{p+j}=\ve_{n_1 + \cdots +n_j,n}$.  With these definitions, the
+% matrices $\mG=[ \vg_1, \dots, \vg_{p+q} ]$ and
+% $\mH=[\vh^t_1, \dots, \vh^t_{p+q}]$ are $\phi$-generators of $\mT$.
+
+% To obtain $\mA$, we conjugate $\mT$ by Vandermonde matrices, since $
+% \mD_{\vu} \mV_{\vu} - \mV_{\vu} \mZ_m$ and $ \mW_{\vv} \mD_{\vv} -
+% \mZ_n \mW_{\vv}$ have small rank; explicitly, they are equal to
+% respectively $(\vu^m)^t \, \ve_{m,m}$ and $(\ve_{1,n})^t \, \vv^n$,
+% where $\vu^m = [ u_1^m , \dots,  u_n^m ]$,
+% and similarly for $\vv^n$. As a
+% consequence, since $\phi(\mT)=\mG \mH^t$, we have
+% \begin{align}\label{eq:gentoetogencau}
+%   \nabla_{\vu, \vv} \left( \mA \right) 
+%   % & =  \mD_{\vu}  \mV_{\vu} \mT  \mW_{\vv} - \mV_{\vu}  \mT  \mW_{\vv}  \mD_{\vv} \nonumber \\
+%   & =  \mV_{\vu}\, \phi(\mT)\, \mW_{\vv} 
+%   %% \\
+%   %% &   &
+%   + (\vu^m)^t \, \ve_{m,m}  \mT  \mW_{\vv} 
+%         - \mV_{\vu}  \mT  (\ve_{1,n})^t \, \vv^n. 
+% \end{align}
+% This motivates the following definitions. For $1 \le i \le p$, let
+% $\vh'_i=\vh_i \mW_\vv$ and also let $\vg'_{i}$ be the column of
+% $\mV_\vu$ of index $m_1 + \cdots +m_{i-1}+1$. For $1 \le j \le q$,
+% define $\vg'_{p+j} = \mV_\vu \vg_{p+j}$ and also let $\vh'_{p+j}$ be
+% the row of index $n_1 + \cdots +n_j$ in $\mW_\vv$.  We define
+% $\vg_{p+q+1} = (\vu^m)^t$, and $\vh_{p+q+1}$ as the last row of
+% $\mT \mW_\vv$; we also define $\vg_{p+q+2}$ as the first column of
+% $-\mV_\vu \mT$, and $\vh_{p+q+2} = \vv^n$.
+
+In our algorithms for
 Cauchy-like matrices, we will assume that the input matrix has {\em
   generic rank profile}, that is, that its leading principal minors of
 size up to its rank are invertible.  Regularization for structured
