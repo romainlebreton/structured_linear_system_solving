@@ -402,17 +402,20 @@ $$
 
 \vspace{-3px}
 \noindent where $\mD_{\tau^{-1}}$ is diagonal with entries
-$(1,\tau^{-1},\tau^{-2},\dots,\tau^{1-m})$, and where the right-hand matrix
-is Toeplitz. In the reconstruction formula~\eqref{eq:recA}, the
-diagonal matrix $\mD_{\tau^{-1}}$ commutes with all matrices $\mD_{\vg_i}$, so
-we can take it out of the sum. Hence, we replaced $\alpha$ evaluations
-/ interpolations at geometric progressions by $\alpha$ product by
-Toeplitz matrices, each of which can be done in a single polynomial
-multiplication. The cost for a matrix-vector product by $\mA$ remains
-$O(\alpha \M(\mx))$, but the constant in the big-O is lower: for $m=n$,
-using middle product techniques~\cite{HaQuZi04,BoLeSc03}, the
-cost goes down from $3\alpha \M(\mx) +O(\alpha \mx)$ to $\alpha \M(\mx)
-+O(\alpha \mx)$. 
+$(1,\tau^{-1},\tau^{-2},\dots,\tau^{1-m})$, and where the right-hand
+matrix is Toeplitz. In the reconstruction formula~\eqref{eq:recA}, the
+diagonal matrix $\mD_{\tau^{-1}}$ commutes with all matrices
+$\mD_{\vg_i}$, so we can take it out of the sum. Hence, we replaced
+$\alpha$ evaluations / interpolations at geometric progressions by
+$\alpha$ product by Toeplitz matrices, each of which can be done in a
+single polynomial multiplication.
+%
+% The cost for a matrix-vector product by $\mA$ remains
+% $O(\alpha \M(\mx))$, but the constant in the big-O is lower:
+%
+For $m=n$, using middle product techniques~\cite{HaQuZi04,BoLeSc03},
+the cost goes down from $3\alpha \M(\mx) +O(\alpha \mx)$ to
+$\alpha \M(\mx) +O(\alpha \mx)$.
 \end{remark}
 
 If one needs to multiply $\mA$ by {\em several} vectors,
