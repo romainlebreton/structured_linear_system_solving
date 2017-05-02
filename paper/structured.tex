@@ -910,14 +910,19 @@ $(\mY^{(\bar{r})},\mZ^{(\bar{r})})$ by means of~\eqref{eq:recA2}, with
 a cost $O(\alpha^{\omega-2} mn)$ using block matrix multiplication.
 
 One iteration of the while loop costs
-$O(\beta^{\omega-2} \alpha (m+n))$; we iterate $O(\mn/\beta)$ times, for
-a total cost of $O(\beta^{\omega-3} \alpha \mn(m+n))$, which is
+$O(\beta^{\omega-2} \alpha (m+n))$; we iterate $O(\mn/\beta)$ times,
+for a total cost of $O(\beta^{\omega-3} \alpha \mn(m+n))$, which is
 $O(\beta^{\omega-3} \alpha mn)$. This dominates the cost of
 line~\ref{line:recoverwhole}, so that the whole running time is
 $O(\beta^{\omega-3} \alpha mn)$. The algorithm of~\cite{Mouilleron08}
 uses $\beta=1$, for which the cost is $O(\alpha mn)$; choosing
 $\beta=\alpha$, we benefit from fast matrix multiplication, as the
-cost drops to $O(\alpha^{\omega-2} mn)$.
+cost drops to $O(\alpha^{\omega-2} mn)$. Note that this theoretical
+improvement by a factor $\alpha^{3-\omega}$ has also practical
+implications : first $\omega < 3$ is achieved also in
+practice~\cite{DGP08,BoDu16} and second linear algebra implementations
+are highly optimized and gain a significant constant factor even for
+$\omega = 3$.
 
 \setlength{\textfloatsep}{3pt}
 \setlength{\intextsep}{1\baselineskip}
