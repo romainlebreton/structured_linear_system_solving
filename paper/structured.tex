@@ -108,14 +108,23 @@
 
 \def\gathen#1{{#1}}
 
-\acmConference[ISSAC]{International Symposium on Symbolic and Algebraic Computation}{2017}{Kaiserslautern, Germany}
-\acmYear{2017}
+% \acmConference[ISSAC]{International Symposium on Symbolic and Algebraic Computation}{2017}{Kaiserslautern, Germany}
+% \acmYear{2017}
+% \copyrightyear{2017}
+% \setcopyright{rightsretained}
+
 \copyrightyear{2017}
-\setcopyright{rightsretained}
+\acmYear{2017}
+\setcopyright{licensedothergov}
+\acmConference{ISSAC '17}{July 25-28, 2017}{Kaiserslautern, Germany}
+\acmPrice{15.00}
+\acmDOI{http://dx.doi.org/10.1145/3087604.3087659}
+\acmISBN{978-1-4503-5064-8/17/07}
 
+\fancyhead{}
 
-\title{Algorithms for structured linear systems solving and their
-  implementation}
+\title{Algorithms for Structured Linear Systems Solving and their
+  Implementation}
 
 
 \begin{abstract}
@@ -192,15 +201,17 @@ $\P=(P_{\mT_{i,j}})_{1 \le i \le p,1 \le j \le q}$.
 % blocks.
 %
 Then, our main problem is as follows.
+
 %
-\vspace{-5px}
+% \vspace{-5px}
 \begin{pbm}\label{pb:mosaic}
   Given $\P$ and integers $I,J$ as above, 
   defining a mosaic Toeplitz matrix $\mT$, find a non-zero
   vector in the kernel of $\mT$.
 \end{pbm}
-\vspace{-5px}
+% \vspace{-5px}
 %
+
 We consider two situations, first over an arbitrary field $\K$,
 counting all operations in $\K$ at unit cost, then over $\Q$, taking
 bit-size into account. In all this paper, we closely follow the
@@ -316,18 +327,18 @@ $\nabla_{\vu,\vv}(\mA)$ has small rank.
 Let $\vu,\vv$ be given and suppose that $u_i \ne v_j$ holds for all
 $i,j$. Then, the operator $\nabla_{\vu,\vv}$ is invertible: given
 $\nabla_{\vu,\vv}$-generators $(\mG,\mH)$ of length $\alpha$ for $\mA$, we can reconstruct $\mA$ as
-\vspace{-5px}
+% \vspace{-5px}
 \begin{equation}\label{eq:recA}
 \mA = \sum_{i=1}^\alpha
 \mD_{\vg_i} 
 \mC_{\vu,\vv}\,\mD_{\vh_i}= (\mG \mH^t) \odot \mC_{\vu,\vv},\ \ \ 
 \mC_{\vu,\vv}=\begin{bmatrix}
 \frac 1{u_i-v_j}
-\end{bmatrix}_{\substack{1 \leq i \leq m\\1 \leq j \leq n}},
+\end{bmatrix}_{\substack{1 \leq i \leq m\\1 \leq j \leq n}}
 \end{equation}
-
-\vspace{-5px}
-{\noindent}where $\vg_i$ and $\vh_i$ are the $i$th columns of respectively $\mG$
+% \vspace{-5px}
+% {\noindent}
+where $\vg_i$ and $\vh_i$ are the $i$th columns of respectively $\mG$
 and~$\mH$,  matrix $\mC_{\vu,\vv}$ is known as a {\em Cauchy
   matrix} and $\odot$ is the entry-wise product.
 
@@ -386,7 +397,7 @@ points in geometric progression can be done in time $O(\M(n))$~\cite{Bluestein70
 then, multiplication by $\mA$ as above takes time
 $O(\alpha\M(\mx))$.
 
-\vspace{-2mm}
+% \vspace{-2mm}
 
 \begin{remark}\label{rmk:factor3}
 We propose here a refinement of this idea, that allows us to
@@ -394,16 +405,17 @@ save a constant factor in runtime: we require that $\vu$ and $\vv$ be
 geometric progressions with {\em the same ratio} $\tau$. Then, the
 Cauchy matrix $\mC_{\vu,\vv}$ has entries $1/(u_i -
 v_j) = 1/(u_1 \tau^{i-1} - v_1 \tau^{j-1})$, so it can be factored as
-\vspace{-3px}
+% \vspace{-3px}
 $$
 \mC_{\vu,\vv}=\mD_{\tau^{-1}}
 \begin{bmatrix}
 \frac{1}{u_1 - v_1 \tau^{j-i}}
 \end{bmatrix}_{\substack{1 \leq i \leq m\\1 \leq j \leq n}},
 $$
-
-\vspace{-3px}
-\noindent where $\mD_{\tau^{-1}}$ is diagonal with entries
+%
+% \vspace{-3px}
+% \noindent 
+where $\mD_{\tau^{-1}}$ is diagonal with entries
 $(1,\tau^{-1},\tau^{-2},\dots,\tau^{1-m})$, and where the right-hand
 matrix is Toeplitz. In the reconstruction formula~\eqref{eq:recA}, the
 diagonal matrix $\mD_{\tau^{-1}}$ commutes with all matrices
@@ -1119,17 +1131,16 @@ algorithm.
 \vspace{1mm}
 
 \centerline{
-{\small
-\begin{tabular}{|c||c|c|c|c|c|c|c|}\hline
-  $\alpha$ & 1 & 5 & 10 & 15 & 20 & 25 &30 \\\hline\hline
-$p=65537$  & 400 &400 &500  &1000  &2000  &3300  &4200 \\\hline
-$p\simeq 2^{59}$  & 200 & 400 & 400 & 700 & 1300 & 1600 & 2000\\\hline
-\end{tabular}
-}
+  {\small
+    \begin{tabular}{|c||c|c|c|c|c|c|c|}\hline
+      $\alpha$ & 1 & 5 & 10 & 15 & 20 & 25 &30 \\\hline\hline
+      $p=65537$  & 400 &400 &500  &1000  &2000  &3300  &4200 \\\hline
+      $p\simeq 2^{59}$  & 200 & 400 & 400 & 700 & 1300 & 1600 & 2000\\\hline
+    \end{tabular}
+  }
 }
 
 \vspace{1mm}
-
 
 These values being set, we show runtimes for solving
 Problem~\ref{pb:cauchy} modulo $p=65537$ and
@@ -1217,7 +1228,7 @@ version of it is in~\cite{BeLe12} for dense matrices; the PhD
 thesis~\cite{Lebreton12} describes this algorithm for Toeplitz-like
 matrices.
 
- \vspace{-1mm}
+% \vspace{-1mm}
 \begin{algorithm}[h]
 \setstretch{0.1}
   \LinesNumbered \DontPrintSemicolon
@@ -1238,7 +1249,7 @@ Compute $\vx_1 = $\DACQ($\mA$, $\vr_1$, $\mB$, $p$, $t/2$)\;
 \Return $\vx_0 - p^{t/2}  \vx_1$ mod $p^t$
 \end{algorithm}
 
-\vspace{-7px}
+% \vspace{-7px}
 \noindent Assume that we have know generators of length $\alpha$ for $\mB$.  Thus,
 at the leaves of the recursion, each product $\mB \vb$ mod $p$ can be
 computed using $O(\alpha \M(n))$ bit operations; with our assumption
@@ -1258,8 +1269,7 @@ p^{2^k}$, we can reconstruct $\mB_k$, but to deduce
 $(\mX_{k+1},\mY_{k+1})$, we have to multiply $\mG$ and $\mH$ by
 $\mB_{k+1}$ or $\mB_{k+1}^t$. This is done using the expression for
 $\mB_{k+1}$ above, which gives
-
-\vspace{-4mm}
+% \vspace{-4mm}
 \begin{align*}
 \mX_{k+1} &= -(2\mB_k - \mB_k \mA \mB_k)\phantom{^t\,} \mG \bmod p^{2^{k+1}}\\[-1mm]
 \mY_{k+1} &= \phantom{-}(2\mB_k - \mB_k \mA \mB_k)^t\, \mH \bmod p^{2^{k+1}}.
