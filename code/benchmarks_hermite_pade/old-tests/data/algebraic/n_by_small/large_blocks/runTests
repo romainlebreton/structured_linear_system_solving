@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#for i in *.data; do
+#  out="${i%data}result"
+#  ./test_algebraic 0 < "$i" > results/bmc/"$out"
+#done
+
+for i in *.data; do
+  out="${i%data}result"
+  ./test_algebraic_naive 0 < "$i" > results/naive/"$out"
+done
+

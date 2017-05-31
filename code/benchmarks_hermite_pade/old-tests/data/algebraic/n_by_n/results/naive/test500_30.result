@@ -1,0 +1,29 @@
+enter nbits: 
+nbits: 500
+enter dx: 
+enter dy: 
+rk=991 rk2=991
+original rank: 991
+new rank: 991
+dx=30 dy=30
+type [31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31]
+rank: 991
+dimensions:= 991 992
+nullity 1
+early abort in ratrecon with n=0 i=1
+early abort in ratrecon with n=1 i=1
+early abort in ratrecon with n=2 i=1
+early abort in ratrecon with n=3 i=1
+early abort in ratrecon with n=4 i=1
+everything: 1.7
+loop: 1.672
+mul time: 1.436
+mul M right: 1.296
+mul X right: 0.072
+mul Y right: 0.068
+total reconstruction time: 0.016
+reconstruction only: 0.012
+divisions in recon: 0.004
+checking p2: 0
+first coefficient of sol: -22574843024055137051445260925029471743061889513479579554914850345032394391762827331782375053666355967278648728972827018251153890615081623082991132514168
+first coefficient of F: -22574843024055137051445260925029471743061889513479579554914850345032394391762827331782375053666355967278648728972827018251153890615081623082991132514168

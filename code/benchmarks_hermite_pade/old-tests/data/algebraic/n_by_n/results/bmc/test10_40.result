@@ -1,0 +1,24 @@
+enter nbits: 
+nbits: 10
+enter dx: 
+enter dy: 
+ZZ_p: 779169047333882572771768659332825089
+done finding the solution
+rk=1721 rk2=1721
+dx=40 dy=40
+type [41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41]
+rank: 1721
+dimensions:= 1721 1722
+nullity 1
+everything: 0.028
+loop: 0.004
+mul time: 0.016
+mul M right: 0.016
+mul X right: 0
+mul Y right: 0
+total reconstruction time: 0.004
+reconstruction only: 0.004
+divisions in recon: 0
+checking p2: 0
+first coefficient of sol: 3564
+first coefficient of F: -3564

@@ -1,0 +1,23 @@
+enter nbits: 
+enter dx: 
+enter dy: 
+rk=5111 rk2=5111
+original rank: 5111
+new rank: 5111
+dx=70 dy=70
+type [71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71 71]
+rank: 5111
+dimensions:= 5111 5112
+nullity 1
+everything: 0.488
+loop: 0.008
+mul time: 0.424
+mul M right: 0.408
+mul X right: 0.012
+mul Y right: 0.004
+total reconstruction time: 0.008
+reconstruction only: 0.004
+divisions in recon: 0
+checking p2: 0
+first coefficient of sol: 7766
+first coefficient of F: -7766

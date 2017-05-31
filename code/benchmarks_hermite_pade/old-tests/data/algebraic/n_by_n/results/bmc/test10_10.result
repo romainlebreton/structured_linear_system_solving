@@ -1,0 +1,24 @@
+enter nbits: 
+nbits: 10
+enter dx: 
+enter dy: 
+ZZ_p: 779169047333882572771768659332825089
+done finding the solution
+rk=131 rk2=131
+dx=10 dy=10
+type [11 11 11 11 11 11 11 11 11 11 11]
+rank: 131
+dimensions:= 131 132
+nullity 1
+everything: 0.004
+loop: 0
+mul time: 0.004
+mul M right: 0
+mul X right: 0
+mul Y right: 0.004
+total reconstruction time: 0
+reconstruction only: 0
+divisions in recon: 0
+checking p2: 0
+first coefficient of sol: 440
+first coefficient of F: -440

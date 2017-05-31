@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for i in *.data; do
+  out="${i%data}result"
+  echo "running $i"
+  ./test_n_by_n "$i" 0 > results/crt/"$out"
+done
+

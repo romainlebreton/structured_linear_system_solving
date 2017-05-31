@@ -1,0 +1,17 @@
+Running Dixon
+original rank: 224
+new rank: 224
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+mul time: 1.012
+setup BMC time: 0.004
+time reconstructing: 0.04
+time switching: 0.684
+time converting: 0
+Took: 1.332
+check ZZ: []

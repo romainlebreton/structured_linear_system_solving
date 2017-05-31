@@ -1,0 +1,27 @@
+enter nbits: 
+nbits: 200
+enter dx: 
+enter dy: 
+rk=461 rk2=461
+original rank: 461
+new rank: 461
+dx=20 dy=20
+type [21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21]
+rank: 461
+dimensions:= 461 462
+nullity 1
+early abort in ratrecon with n=0 i=1
+early abort in ratrecon with n=1 i=1
+early abort in ratrecon with n=2 i=1
+everything: 0.116
+loop: 0.108
+mul time: 0.084
+mul M right: 0.072
+mul X right: 0.008
+mul Y right: 0.004
+total reconstruction time: 0
+reconstruction only: 0
+divisions in recon: 0
+checking p2: 0
+first coefficient of sol: -13482064912726994893210081624123038198522404945768056528987938
+first coefficient of F: 13482064912726994893210081624123038198522404945768056528987938

@@ -1,0 +1,23 @@
+enter nbits: 
+enter dx: 
+enter dy: 
+rk=6641 rk2=6641
+original rank: 6641
+new rank: 6641
+dx=80 dy=80
+type [81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81 81]
+rank: 6641
+dimensions:= 6641 6642
+nullity 1
+everything: 0.752
+loop: 0.012
+mul time: 0.68
+mul M right: 0.66
+mul X right: 0.016
+mul Y right: 0.004
+total reconstruction time: 0.012
+reconstruction only: 0.004
+divisions in recon: 0.004
+checking p2: 0
+first coefficient of sol: -2574
+first coefficient of F: 2574

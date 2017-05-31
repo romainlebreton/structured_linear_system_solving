@@ -1,0 +1,13 @@
+#!/bin/bash
+
+for i in tests/*.data; do
+  out="${i%data}result"
+  echo "running $i"
+  ./test_n_by_n "$i" 1 > results/dac/"$out"
+done
+
+for i in tests/*.data; do
+  out="${i%data}result"
+  echo "running $i$"
+  ./test_n_by_n "$i" 3 > results/newton/"$out"
+done

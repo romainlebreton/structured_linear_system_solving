@@ -1,0 +1,28 @@
+Running DAC using a witness
+original rank: 3749
+new rank: 3749
+original rank: 3749
+new rank: 3749
+failed ratrecon with n=0
+failed ratrecon with n=1
+failed ratrecon with n=2
+failed ratrecon with n=3
+failed ratrecon with n=4
+failed ratrecon with n=5
+failed ratrecon with n=6
+failed ratrecon with n=7
+failed ratrecon with n=8
+failed ratrecon with n=9
+failed ratrecon with n=10
+everything: 464.62
+loop: 464.6
+mul time: 316.304
+mul M right: 136.904
+mul X right: 102.444
+mul Y right: 76.808
+total reconstruction time: 85.084
+reconstruction only: 83.332
+divisions in recon: 1.624
+checking p2: 0
+Took : 465.004
+check ZZ: []

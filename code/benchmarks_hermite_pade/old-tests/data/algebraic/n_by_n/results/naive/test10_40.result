@@ -1,0 +1,23 @@
+enter nbits: 
+enter dx: 
+enter dy: 
+rk=1721 rk2=1721
+original rank: 1721
+new rank: 1721
+dx=40 dy=40
+type [41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41]
+rank: 1721
+dimensions:= 1721 1722
+nullity 1
+everything: 0.076
+loop: 0.004
+mul time: 0.064
+mul M right: 0.06
+mul X right: 0.004
+mul Y right: 0
+total reconstruction time: 0.004
+reconstruction only: 0
+divisions in recon: 0.004
+checking p2: 0
+first coefficient of sol: -3212
+first coefficient of F: 3212

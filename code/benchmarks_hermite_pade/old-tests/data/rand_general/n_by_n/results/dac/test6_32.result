@@ -1,0 +1,19 @@
+Running DAC
+failed ratrecon with n=0
+failed ratrecon with n=1
+failed ratrecon with n=2
+failed ratrecon with n=3
+failed ratrecon with n=4
+failed ratrecon with n=5
+failed ratrecon with n=6
+failed ratrecon with n=7
+failed ratrecon with n=8
+everything: 26.024
+loop: 25.988
+mul time: 21.212
+total reconstruction time: 1.884
+reconstruction only: 1.492
+divisions in recon: 0.028
+checking p2: 0.36
+Took : 26.448
+check ZZ: []

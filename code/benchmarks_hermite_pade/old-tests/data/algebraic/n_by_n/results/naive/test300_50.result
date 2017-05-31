@@ -1,0 +1,28 @@
+enter nbits: 
+nbits: 300
+enter dx: 
+enter dy: 
+rk=2651 rk2=2651
+original rank: 2651
+new rank: 2651
+dx=50 dy=50
+type [51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51 51]
+rank: 2651
+dimensions:= 2651 2652
+nullity 1
+early abort in ratrecon with n=0 i=1
+early abort in ratrecon with n=1 i=1
+early abort in ratrecon with n=2 i=1
+early abort in ratrecon with n=3 i=1
+everything: 5.556
+loop: 5.38
+mul time: 4.9
+mul M right: 4.568
+mul X right: 0.184
+mul Y right: 0.148
+total reconstruction time: 0.028
+reconstruction only: 0.024
+divisions in recon: 0
+checking p2: 0
+first coefficient of sol: 18471859718250052063506908622869925836417519943271123960953737845443677340432318775298002948
+first coefficient of F: -18471859718250052063506908622869925836417519943271123960953737845443677340432318775298002948

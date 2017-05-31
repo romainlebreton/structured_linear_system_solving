@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#for i in *.data; do
+#  out="${i%data}result"
+#  ./test_n_by_small "$i" 1 > results/dac/"$out"
+#done
+
+#for i in tests/*.data; do
+#  out="${i%data}result"
+#  ./test_n_by_small "$i" 2 > results/dixon/"$out"
+#done
+
+#for i in tests/*.data; do
+#  out="${i%data}result"
+#  ./test_n_by_small "$i" 3 > results/newton/"$out"
+#done
+
+for i in *.data; do
+  out="${i%data}result"
+  ./test_n_by_small "$i" 0 > results/crt/"$out"
+done

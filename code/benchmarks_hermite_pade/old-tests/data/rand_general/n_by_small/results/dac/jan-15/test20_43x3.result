@@ -1,0 +1,17 @@
+Running DAC
+original rank: 128
+new rank: 128
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+mul time: 0.192
+setup BMC time: 0
+time reconstructing: 0.016
+time switching: 0.132
+time converting: 0
+Took : 0.348
+check ZZ: []

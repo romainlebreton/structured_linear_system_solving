@@ -1,0 +1,24 @@
+enter nbits: 
+nbits: 10
+enter dx: 
+enter dy: 
+ZZ_p: 779169047333882572771768659332825089
+done finding the solution
+rk=8371 rk2=8371
+dx=90 dy=90
+type [91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91]
+rank: 8371
+dimensions:= 8371 8372
+nullity 1
+everything: 0.304
+loop: 0.02
+mul time: 0.16
+mul M right: 0.128
+mul X right: 0.024
+mul Y right: 0.008
+total reconstruction time: 0.02
+reconstruction only: 0.012
+divisions in recon: 0
+checking p2: 0
+first coefficient of sol: -2024
+first coefficient of F: 2024

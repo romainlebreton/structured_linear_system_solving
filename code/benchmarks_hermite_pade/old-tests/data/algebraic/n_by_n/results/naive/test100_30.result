@@ -1,0 +1,25 @@
+enter nbits: 
+enter dx: 
+enter dy: 
+rk=991 rk2=991
+original rank: 991
+new rank: 991
+dx=30 dy=30
+type [31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31]
+rank: 991
+dimensions:= 991 992
+nullity 1
+failed ratrecon with n=0
+failed ratrecon with n=1
+everything: 0.208
+loop: 0.176
+mul time: 0.172
+mul M right: 0.156
+mul X right: 0.008
+mul Y right: 0.008
+total reconstruction time: 0.012
+reconstruction only: 0.008
+divisions in recon: 0.004
+checking p2: 0
+first coefficient of sol: -11373648655893140102551713841644
+first coefficient of F: -11373648655893140102551713841644

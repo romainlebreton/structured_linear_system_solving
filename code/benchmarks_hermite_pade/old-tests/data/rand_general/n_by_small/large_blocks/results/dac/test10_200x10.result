@@ -1,0 +1,27 @@
+Running DAC using a witness
+original rank: 1999
+new rank: 1999
+original rank: 1999
+new rank: 1999
+early abort in ratrecon with n=0 i=1
+early abort in ratrecon with n=1 i=1
+early abort in ratrecon with n=2 i=1
+early abort in ratrecon with n=3 i=1
+early abort in ratrecon with n=4 i=1
+early abort in ratrecon with n=5 i=1
+early abort in ratrecon with n=6 i=1
+early abort in ratrecon with n=7 i=1
+early abort in ratrecon with n=8 i=1
+early abort in ratrecon with n=9 i=1
+everything: 106.404
+loop: 106.388
+mul time: 85.672
+mul M right: 54.58
+mul X right: 17.628
+mul Y right: 13.432
+total reconstruction time: 8.208
+reconstruction only: 7.868
+divisions in recon: 0.32
+checking p2: 0
+Took : 106.74
+check ZZ: []

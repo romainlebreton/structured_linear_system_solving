@@ -1,0 +1,24 @@
+enter nbits: 
+nbits: 10
+enter dx: 
+enter dy: 
+ZZ_p: 779169047333882572771768659332825089
+done finding the solution
+rk=3781 rk2=3781
+dx=60 dy=60
+type [61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61]
+rank: 3781
+dimensions:= 3781 3782
+nullity 1
+everything: 0.08
+loop: 0.008
+mul time: 0.048
+mul M right: 0.044
+mul X right: 0.004
+mul Y right: 0
+total reconstruction time: 0.008
+reconstruction only: 0.004
+divisions in recon: 0.004
+checking p2: 0
+first coefficient of sol: -9240
+first coefficient of F: 9240

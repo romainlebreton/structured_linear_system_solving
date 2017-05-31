@@ -1,0 +1,27 @@
+Running DAC
+original rank: 17
+new rank: 17
+failed ratrecon with n=0
+failed ratrecon with n=1
+failed ratrecon with n=2
+failed ratrecon with n=3
+failed ratrecon with n=4
+failed ratrecon with n=5
+failed ratrecon with n=6
+failed ratrecon with n=7
+failed ratrecon with n=8
+failed ratrecon with n=9
+failed ratrecon with n=10
+failed ratrecon with n=11
+everything: 3.9
+loop: 3.9
+mul time: 1.552
+mul M: 0.364
+mul X: 0.704
+mul Y: 0.48
+total reconstruction time: 1.604
+reconstruction only: 1.576
+divisions in recon: 0.024
+checking p2: 0
+Took : 3.9
+check ZZ: []

@@ -1,0 +1,25 @@
+enter nbits: 
+enter dx: 
+enter dy: 
+rk=8371 rk2=8371
+original rank: 8371
+new rank: 8371
+dx=90 dy=90
+type [91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91 91]
+rank: 8371
+dimensions:= 8371 8372
+nullity 1
+failed ratrecon with n=0
+failed ratrecon with n=1
+everything: 9.3
+loop: 7.92
+mul time: 8.416
+mul M right: 8.116
+mul X right: 0.18
+mul Y right: 0.12
+total reconstruction time: 0.084
+reconstruction only: 0.056
+divisions in recon: 0.004
+checking p2: 0
+first coefficient of sol: -5864952573214477916874947909894
+first coefficient of F: 5864952573214477916874947909894

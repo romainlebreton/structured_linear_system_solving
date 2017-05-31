@@ -1,0 +1,23 @@
+enter nbits: 
+enter dx: 
+enter dy: 
+rk=461 rk2=461
+original rank: 461
+new rank: 461
+dx=20 dy=20
+type [21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21 21]
+rank: 461
+dimensions:= 461 462
+nullity 1
+everything: 0.008
+loop: 0
+mul time: 0.004
+mul M right: 0.004
+mul X right: 0
+mul Y right: 0
+total reconstruction time: 0
+reconstruction only: 0
+divisions in recon: 0
+checking p2: 0
+first coefficient of sol: 9328
+first coefficient of F: -9328

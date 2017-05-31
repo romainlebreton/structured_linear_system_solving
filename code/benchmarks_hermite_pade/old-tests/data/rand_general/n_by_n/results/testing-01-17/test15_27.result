@@ -1,0 +1,20 @@
+Running DAC
+rank: 728
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+failed p2
+everything: 19.464
+loop: 19.448
+mul time: 15.2
+total reconstruction time: 1.564
+reconstruction only: 1.328
+divisions in recon: 0.04
+checking p2: 0.192
+Took : 19.648
+check ZZ: []

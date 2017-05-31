@@ -1,0 +1,23 @@
+Running Dixon
+original rank: 749
+new rank: 749
+failed ratrecon with n=0
+failed ratrecon with n=1
+failed ratrecon with n=2
+failed ratrecon with n=3
+failed ratrecon with n=4
+failed ratrecon with n=5
+failed ratrecon with n=6
+failed ratrecon with n=7
+failed ratrecon with n=8
+everything: 166.996
+loop: 166.992
+mul time: 161.472
+mul M: 54.04
+mul X: 58.736
+mul Y: 48.688
+total reconstruction time: 1.864
+reconstruction only: 1.772
+divisions in recon: 0.048
+checking p2: 0.028
+check ZZ: []

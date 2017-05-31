@@ -1,0 +1,26 @@
+enter nbits: 
+nbits: 100
+enter dx: 
+enter dy: 
+ZZ_p: 368575757748615532189376846560184331346516806754026704505439106311850428184152381277306061079586414883734260155099537238693998545206493042442241
+done finding the solution
+rk=991 rk2=991
+dx=30 dy=30
+type [31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31 31]
+rank: 991
+dimensions:= 991 992
+nullity 1
+failed ratrecon with n=0
+failed ratrecon with n=1
+everything: 0.136
+loop: 0.12
+mul time: 0.096
+mul M right: 0.084
+mul X right: 0.008
+mul Y right: 0.004
+total reconstruction time: 0.004
+reconstruction only: 0.004
+divisions in recon: 0
+checking p2: 0
+first coefficient of sol: -10774388394504685079217170998630
+first coefficient of F: -10774388394504685079217170998630

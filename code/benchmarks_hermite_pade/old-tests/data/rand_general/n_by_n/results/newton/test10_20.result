@@ -1,0 +1,17 @@
+Running Newton
+failed ratrecon with n=0
+failed ratrecon with n=1
+failed ratrecon with n=2
+failed ratrecon with n=3
+failed ratrecon with n=4
+failed ratrecon with n=5
+failed ratrecon with n=6
+failed ratrecon with n=7
+everything: 254.624
+loop: 254.616
+mul time: 19.38
+total reconstruction time: 0.276
+reconstruction only: 0.22
+divisions in recon: 0.004
+checking p2: 0.052
+check ZZ: []

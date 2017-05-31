@@ -1,0 +1,10 @@
+#!/bin/bash
+
+dirs="n_by_n n_by_small rank_defect"
+
+for i in $dirs; do
+  cd ~/structured_matrices/code/hermite_pade/test/data/rand_general/$i
+  if [ -f ./runTests ]; then
+    ./runTests
+  fi
+done

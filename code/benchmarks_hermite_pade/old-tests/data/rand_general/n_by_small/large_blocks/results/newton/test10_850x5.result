@@ -1,0 +1,25 @@
+Running Newton
+original rank: 4249
+new rank: 4249
+failed ratrecon with n=0
+failed ratrecon with n=1
+failed ratrecon with n=2
+failed ratrecon with n=3
+failed ratrecon with n=4
+failed ratrecon with n=5
+failed ratrecon with n=6
+failed ratrecon with n=7
+failed ratrecon with n=8
+failed ratrecon with n=9
+failed ratrecon with n=10
+everything: 6880.58
+loop: 6880.54
+mul time: 1318.36
+mul M: 155.536
+mul X: 309.12
+mul Y: 254.808
+total reconstruction time: 105.784
+reconstruction only: 103.236
+divisions in recon: 2.248
+checking p2: 0.228
+check ZZ: []
