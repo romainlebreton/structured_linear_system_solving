@@ -33,7 +33,7 @@ ZZX f = ... // some function
 Vec<long> type = ... // some integers
 long prec = ... // requested precision
 hermite_pade_algebraic hp(f, type, prec);
-if (hp.NumCols() - hp.Rank() > 1){
+if (hp.NumCols() - hp.Rank() > 1){ // this means that the kernel space has dimension > 1
 	type = hp.find_new_type(); // attempts to find the min type
 	hp = hermite_pade_algebraic(f,type,prec);
 }

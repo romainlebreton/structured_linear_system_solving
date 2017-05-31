@@ -119,29 +119,6 @@ class ZZ_p_bivariate_modular_composition : public ZZ_p_block_sylvester {
 
   ZZ_p_block_sylvester_general S;
 
-  /* /\*----------------------------------------------------*\/ */
-  /* /\* creates a matrix of f^i for i = 0..sqrtP-1         *\/ */
-  /* /\* partitions each f^i into len(type) slices          *\/ */
-  /* /\*----------------------------------------------------*\/ */
-  /* void create_rhs_matrix (Mat<ZZ_pX>& B, const Vec<ZZ_pX>& powsF); */
-
-  /* /\*----------------------------------------------------*\/ */
-  /* /\* creates a matrix for left-multiplication           *\/ */
-  /* /\*----------------------------------------------------*\/ */
-  /* void create_rhs_matrix_left (Mat<ZZ_pX>& C, const Vec<ZZ_pX>& powsF); */
-  
-  /* /\*----------------------------------------------------*\/ */
-  /* /\* given the result of create_lhs_list, returns a     *\/ */
-  /* /\* matrix representation with dimension               *\/ */
-  /* /\*  ceil(len(type)/sqrtP) x sqrtP                     *\/ */
-  /* /\*----------------------------------------------------*\/ */
-  /* void create_lhs_matrix (Mat<ZZ_pX>& mat, const Vec<ZZ_pX>& vec); */
-
-  /* /\*----------------------------------------------------*\/ */
-  /* /\* converts the sliced up matrix into a vector        *\/ */
-  /* /\*----------------------------------------------------*\/ */
-  /* void deslice (Vec<ZZ_pX>& de_sliced, const Mat<ZZ_pX> & sliced_mat); */
-
 public:
   /*----------------------------------------------------*/
   /* ?                                                  */
